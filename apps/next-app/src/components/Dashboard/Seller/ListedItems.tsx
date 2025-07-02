@@ -7,62 +7,21 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Search, Eye, Edit, Trash2 } from 'lucide-react';
-import type { ListedItem } from '@/types';
 import axios from 'axios';
 import { toast } from 'sonner';
 import {ListSchema} from '@repo/zod/zodTypes'
 import {z} from 'zod'
-
-// Mock data
-const mockItems: ListedItem[] = [
-  {
-    id: '1',
-    title: 'Premium Cotton T-Shirt',
-    description: 'High-quality cotton t-shirt with modern fit',
-    size: 'M',
-    category: 'Men',
-    status: 'Active',
-    price: 29.99,
-    dateCreated: '2024-01-15'
-  },
-  {
-    id: '2',
-    title: 'Designer Jeans',
-    description: 'Stylish denim jeans with perfect fit',
-    size: 'L',
-    category: 'Women',
-    status: 'Sold',
-    price: 89.99,
-    dateCreated: '2024-01-10'
-  },
-  {
-    id: '3',
-    title: 'Kids Summer Dress',
-    description: 'Colorful summer dress for children',
-    size: 'S',
-    category: 'Children',
-    status: 'Active',
-    price: 39.99,
-    dateCreated: '2024-01-20'
-  },
-  {
-    id: '4',
-    title: 'Casual Sneakers',
-    description: 'Comfortable casual sneakers for everyday wear',
-    size: 'L',
-    category: 'Men',
-    status: 'Draft',
-    price: 79.99,
-    dateCreated: '2024-01-25'
-  }
-];
-
-
+import { formatDate } from '@/lib/formatDate'
 
 export function ListedItems() {
+
   type ListItem = z.infer<typeof ListSchema>;
 
   const [listedItems, setListedItems] = useState<ListItem[]>([])
+  const [filteredItems, setFilteredItems] = useState<ListItem[]>(listedItems);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [categoryFilter, setCategoryFilter] = useState<string>('all');
 
   const allListedItems = async () => {
     try{
@@ -83,25 +42,10 @@ export function ListedItems() {
     allListedItems()
   },[])
 
-  function formatDate(isoString: string) {
-    const date = new Date(isoString);
-
-    // Options to display date nicely
-    const options: Intl.DateTimeFormatOptions = {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-    };
-
-    return date.toLocaleString('en-US', options);
-  }
-
-  const [items] = useState<ListedItem[]>(mockItems);
-  const [filteredItems, setFilteredItems] = useState<ListedItem[]>(mockItems);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [categoryFilter, setCategoryFilter] = useState<string>('all');
-  console.log(listedItems)
+  useEffect(() => {
+    setFilteredItems(listedItems);
+  }, [listedItems]);
+  
   const handleSearch = (term: string) => {
     setSearchTerm(term);
     filterItems(term, statusFilter, categoryFilter);
@@ -118,7 +62,7 @@ export function ListedItems() {
   };
 
   const filterItems = (search: string, status: string, category: string) => {
-    let filtered = items;
+    let filtered = listedItems;
 
     if (search) {
       filtered = filtered.filter(item =>
@@ -127,9 +71,9 @@ export function ListedItems() {
       );
     }
 
-    // if (status !== 'all') {
-    //   filtered = filtered.filter(item => item. === status);
-    // }
+    if (status !== 'all') {
+      filtered = filtered.filter(item => item.status === status);
+    }
 
     if (category !== 'all') {
       filtered = filtered.filter(item => item.category === category);
@@ -138,13 +82,18 @@ export function ListedItems() {
     setFilteredItems(filtered);
   };
 
-  const getStatusBadgeVariant = (status: boolean) => {
-    if(status === true){
-      return 'secondary'
-    }else{
-      return 'default'
-    }
-  };
+ const getStatusBadgeVariant = (status: string) => {
+  switch (status) {
+    case 'Active':
+      return 'secondary'; 
+    case 'Draft':
+      return 'outline';   
+    case 'Sold':
+      return 'destructive';
+    default:
+      return 'default';  
+  }
+ };
 
   return (
     <div className="space-y-6">
@@ -156,7 +105,7 @@ export function ListedItems() {
       <Card className="bg-slate-800 border-slate-700">
         <CardHeader>
           <CardTitle className="text-white">Your Items</CardTitle>
-          <div className="flex flex-col sm:flex-row gap-4 mt-4">
+          <div className="flex flex-col sm:flex-row gap-4 mt-4 ">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
               <Input
@@ -205,7 +154,7 @@ export function ListedItems() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {listedItems.map((item, index) => (
+                {filteredItems.map((item, index) => (
                   <TableRow key={index} className="border-slate-700 hover:bg-slate-700/50">
                     <TableCell>
                       <div>
@@ -219,8 +168,8 @@ export function ListedItems() {
                     <TableCell className="text-slate-200">{item.stock}</TableCell>
                     <TableCell className="text-slate-200">${item.price}</TableCell>
                     <TableCell>
-                      <Badge variant={getStatusBadgeVariant(item.isAvailable)} className="text-xs">
-                        {item.isAvailable ? 'Available' : 'Not Available'}
+                      <Badge variant={getStatusBadgeVariant(item.status)} className="text-xs">
+                        {item.status}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-slate-200">{formatDate(item.createdAt)}</TableCell>

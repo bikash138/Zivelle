@@ -9,6 +9,8 @@ import { Search, Eye, Package, ArrowUpDown } from 'lucide-react';
 import type { Order } from '@/types';
 import axios from 'axios';
 import { toast } from 'sonner';
+import { formatDate } from '@/lib/formatDate';
+import { Copy } from 'lucide-react';
 
 // Mock data
 const mockOrders: Order[] = [
@@ -72,7 +74,7 @@ export function Orders() {
     }
   }
 
-  const[order, setOrders] = useState<OrderType[]>([])
+  const[orders, setOrders] = useState<OrderType[]>([])
 
   const fetchOrders = async () => {
     try{
@@ -93,25 +95,25 @@ export function Orders() {
     fetchOrders()
   },[])
 
-  function formatDate(isoString: string) {
-    const date = new Date(isoString);
-
-    // Options to display date nicely
-    const options: Intl.DateTimeFormatOptions = {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-    };
-
-    return date.toLocaleString('en-US', options);
-  }
+  useEffect(()=>{
+    setFilteredOrders(orders)
+  },[orders])
   
-  const [orders] = useState<Order[]>(mockOrders);
-  const [filteredOrders, setFilteredOrders] = useState<Order[]>(mockOrders);
+  const [filteredOrders, setFilteredOrders] = useState<OrderType[]>(orders);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [sortBy, setSortBy] = useState<string>('date');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+
+  const handleCopy = (text: string) => {
+    navigator.clipboard.writeText(text);
+    toast.success('Order ID copied!');
+  };
+
+  const trimOrderId = (id: string) => {
+    if (id.length <= 8) return id;
+    return `${id.slice(0, 4)}...${id.slice(-4)}`;
+  };
 
   const handleSearch = (term: string) => {
     setSearchTerm(term);
@@ -136,8 +138,8 @@ export function Orders() {
     if (search) {
       filtered = filtered.filter(order =>
         order.id.toLowerCase().includes(search.toLowerCase()) ||
-        order.itemName.toLowerCase().includes(search.toLowerCase()) ||
-        order.buyerEmail.toLowerCase().includes(search.toLowerCase())
+        order.item.title.toLowerCase().includes(search.toLowerCase())
+        // order.buyerEmail.toLowerCase().includes(search.toLowerCase())
       );
     }
 
@@ -325,9 +327,20 @@ export function Orders() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {order.map((order, index) => (
+                {filteredOrders.map((order, index) => (
                   <TableRow key={index} className="border-slate-700 hover:bg-slate-700/50">
-                    <TableCell className="font-medium text-white">{order?.id}</TableCell>
+                    <TableCell className="font-medium text-white flex items-center gap-2">
+                      <span>{trimOrderId(order.id)}</span>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="cursor-pointer h-6 w-6 p-0 text-slate-400 hover:bg-gray-900 hover:text-orange-400"
+                        onClick={() => handleCopy(order.id)}
+                        title="Copy Order ID"
+                      >
+                        <Copy className="h-4 w-4" />
+                      </Button>
+                    </TableCell>
                     <TableCell>
                       <div>
                         <div className="font-medium text-white">{order?.item.title}</div>

@@ -29,6 +29,12 @@ enum Size {
   XXL
 }
 
+enum ListStatus {
+  Active
+  Draft
+  Sold
+}
+
 enum Status {
   Confirmed
   Shipped
@@ -60,6 +66,7 @@ model Item{
   orders        Order[]          
   category      Category 
   subCategory   SubCategory
+  status        ListStatus  @default(Draft)
   stock         Int         @default(0)
   isAvailable   Boolean     @default(true)
   createdAt     DateTime    @default(now())

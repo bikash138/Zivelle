@@ -38,6 +38,7 @@ export const ListSchema = z.object({
     price: z.number().min(100),
     category: z.enum(categories),
     stock: z.number().min(10),
+    status: z.string(),
     isAvailable: z.boolean(),
     createdAt: z.string()
 })
