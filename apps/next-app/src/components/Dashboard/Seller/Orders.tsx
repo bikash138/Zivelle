@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -7,6 +7,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Search, Eye, Package, ArrowUpDown } from 'lucide-react';
 import type { Order } from '@/types';
+import axios from 'axios';
+import { toast } from 'sonner';
+import { formatDate } from '@/lib/formatDate';
+import { Copy } from 'lucide-react';
 
 // Mock data
 const mockOrders: Order[] = [
@@ -58,12 +62,58 @@ const mockOrders: Order[] = [
 ];
 
 export function Orders() {
-  const [orders] = useState<Order[]>(mockOrders);
-  const [filteredOrders, setFilteredOrders] = useState<Order[]>(mockOrders);
+
+  interface OrderType{
+    id: string
+    quantity: number,
+    total: number,
+    placedOn: string,
+    status: string,
+    item: {
+      title: string
+    }
+  }
+
+  const[orders, setOrders] = useState<OrderType[]>([])
+
+  const fetchOrders = async () => {
+    try{
+      const response = await axios.get('/api/orders')
+      if (!response.data?.success) {
+        toast.error("Fetching Ordered Items Failed");
+        return; 
+      }
+      setOrders(response.data?.allOrders)
+      toast.success(response.data?.message)
+    }catch(error){
+      console.log("Something went wrong while fetching orders", error)
+      toast.error("Something went wrong while fetching orders")
+    }
+  }
+
+  useEffect(()=>{
+    fetchOrders()
+  },[])
+
+  useEffect(()=>{
+    setFilteredOrders(orders)
+  },[orders])
+  
+  const [filteredOrders, setFilteredOrders] = useState<OrderType[]>(orders);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [sortBy, setSortBy] = useState<string>('date');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+
+  const handleCopy = (text: string) => {
+    navigator.clipboard.writeText(text);
+    toast.success('Order ID copied!');
+  };
+
+  const trimOrderId = (id: string) => {
+    if (id.length <= 8) return id;
+    return `${id.slice(0, 4)}...${id.slice(-4)}`;
+  };
 
   const handleSearch = (term: string) => {
     setSearchTerm(term);
@@ -88,8 +138,8 @@ export function Orders() {
     if (search) {
       filtered = filtered.filter(order =>
         order.id.toLowerCase().includes(search.toLowerCase()) ||
-        order.itemName.toLowerCase().includes(search.toLowerCase()) ||
-        order.buyerEmail.toLowerCase().includes(search.toLowerCase())
+        order.item.title.toLowerCase().includes(search.toLowerCase())
+        // order.buyerEmail.toLowerCase().includes(search.toLowerCase())
       );
     }
 
@@ -277,17 +327,28 @@ export function Orders() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredOrders.map((order) => (
-                  <TableRow key={order.id} className="border-slate-700 hover:bg-slate-700/50">
-                    <TableCell className="font-medium text-white">{order.id}</TableCell>
+                {filteredOrders.map((order, index) => (
+                  <TableRow key={index} className="border-slate-700 hover:bg-slate-700/50">
+                    <TableCell className="font-medium text-white flex items-center gap-2">
+                      <span>{trimOrderId(order.id)}</span>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="cursor-pointer h-6 w-6 p-0 text-slate-400 hover:bg-gray-900 hover:text-orange-400"
+                        onClick={() => handleCopy(order.id)}
+                        title="Copy Order ID"
+                      >
+                        <Copy className="h-4 w-4" />
+                      </Button>
+                    </TableCell>
                     <TableCell>
                       <div>
-                        <div className="font-medium text-white">{order.itemName}</div>
-                        <div className="text-sm text-slate-400">{order.buyerEmail}</div>
+                        <div className="font-medium text-white">{order?.item.title}</div>
+                        {/* <div className="text-sm text-slate-400">{order.buyerEmail}</div> */}
                       </div>
                     </TableCell>
-                    <TableCell className="text-slate-200">{order.quantity}</TableCell>
-                    <TableCell className="text-slate-200">${order.total.toFixed(2)}</TableCell>
+                    <TableCell className="text-slate-200">{order?.quantity}</TableCell>
+                    <TableCell className="text-slate-200">${order?.total}</TableCell>
                     <TableCell>
                       <Badge 
                         variant={getStatusBadgeVariant(order.status)} 
@@ -296,12 +357,12 @@ export function Orders() {
                         {order.status}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-slate-200">{order.date}</TableCell>
+                    <TableCell className="text-slate-200">{formatDate(order?.placedOn)}</TableCell>
                     <TableCell>
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8 text-slate-400 hover:text-white hover:bg-slate-600"
+                        className="cursor-pointer h-8 w-8 text-slate-400 hover:text-white hover:bg-slate-600"
                       >
                         <Eye className="h-4 w-4" />
                       </Button>

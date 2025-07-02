@@ -7,7 +7,6 @@ export async function POST(req: NextRequest){
     try{
         const userId = '7897a286-164c-4766-b031-74498767fbc4'
         const body = await req.json()
-        console.log(body)
         const parsedData = ListItemSchema.safeParse(body)
 
         if(!parsedData.success){

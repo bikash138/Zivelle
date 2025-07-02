@@ -2,12 +2,12 @@ export interface ListedItem {
   id: string;
   title: string;
   description: string;
-  size: 'S' | 'M' | 'L';
+  size: [];
   category: 'Men' | 'Women' | 'Children';
   image?: string;
-  status: 'Active' | 'Sold' | 'Draft';
+  isAvailable: boolean;
   price: number;
-  dateCreated: string;
+  createdAt: string;
 }
 
 export interface Order {
@@ -23,10 +23,8 @@ export interface Order {
 export interface SellerProfile {
   name: string;
   email: string;
-  storeName: string;
-  joinDate: string;
-  totalSales: number;
-  activeListings: number;
+  store: string;
+  createdAt: string;
 }
 
 export interface NewItemForm {

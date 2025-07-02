@@ -90,7 +90,7 @@ export function Sidebar({ activeSection, onSectionChange }: SidebarProps) {
                 variant="ghost"
                 onClick={() => onSectionChange(item.id)}
                 className={cn(
-                  'w-full justify-start text-left transition-colors duration-200',
+                  'w-full justify-start text-left transition-colors duration-200 cursor-pointer',
                   isActive
                     ? 'bg-orange-600 text-white hover:bg-orange-700'
                     : 'text-slate-400 hover:text-white hover:bg-slate-800',
