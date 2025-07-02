@@ -1,8 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
   provider = "prisma-client-js"
@@ -34,6 +29,14 @@ enum Size {
   XXL
 }
 
+enum Status {
+  Confirmed
+  Shipped
+  Delivered
+  Pending
+  Cancelled
+}
+
 model Seller{
   id        String    @id @default(uuid())
   email     String    @unique
@@ -44,6 +47,7 @@ model Seller{
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   items     Item[]
+  orders    Order[]
 }
 
 model Item{
@@ -53,6 +57,7 @@ model Item{
   description   String
   price         Int
   size          Size[]
+  orders        Order[]          
   category      Category 
   subCategory   SubCategory
   stock         Int         @default(0)
@@ -63,3 +68,17 @@ model Item{
   @@index([category])
   @@index([subCategory])
 }
+
+model Order{
+  id          String    @id    @default(uuid())
+  itemId      Int
+  quantity    Int
+  total       Float
+  status      Status    @default(Pending)
+  placedOn    DateTime  @default(now())
+  sellerId    String
+  item        Item      @relation(fields: [itemId], references: [id])
+  seller      Seller    @relation(fields: [sellerId], references: [id])
+}
+  // customerId  String
+  // customer    Customer  @relation((fields: [customerId], references: [id]))

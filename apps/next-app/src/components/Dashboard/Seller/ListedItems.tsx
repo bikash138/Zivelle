@@ -1,4 +1,5 @@
-import { useState } from 'react';
+'use client'
+import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -7,6 +8,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Search, Eye, Edit, Trash2 } from 'lucide-react';
 import type { ListedItem } from '@/types';
+import axios from 'axios';
+import { toast } from 'sonner';
+import {ListSchema} from '@repo/zod/zodTypes'
+import {z} from 'zod'
 
 // Mock data
 const mockItems: ListedItem[] = [
@@ -52,13 +57,51 @@ const mockItems: ListedItem[] = [
   }
 ];
 
+
+
 export function ListedItems() {
+  type ListItem = z.infer<typeof ListSchema>;
+
+  const [listedItems, setListedItems] = useState<ListItem[]>([])
+
+  const allListedItems = async () => {
+    try{
+      const response = await axios.get('/api/getAllListedItems')
+      if (!response.data?.success) {
+        toast.error("Fetching Listed Items Failed", );
+        return; // Exit the function early
+      }
+      setListedItems(response.data?.allListedItems)
+      toast.success(response.data?.message)
+    }catch(error){
+      console.log("Something went wrong while fetching", error)
+      toast.error("Something went wrong while fetching")
+    }
+  }
+
+  useEffect(()=>{
+    allListedItems()
+  },[])
+
+  function formatDate(isoString: string) {
+    const date = new Date(isoString);
+
+    // Options to display date nicely
+    const options: Intl.DateTimeFormatOptions = {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    };
+
+    return date.toLocaleString('en-US', options);
+  }
+
   const [items] = useState<ListedItem[]>(mockItems);
   const [filteredItems, setFilteredItems] = useState<ListedItem[]>(mockItems);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
-
+  console.log(listedItems)
   const handleSearch = (term: string) => {
     setSearchTerm(term);
     filterItems(term, statusFilter, categoryFilter);
@@ -84,9 +127,9 @@ export function ListedItems() {
       );
     }
 
-    if (status !== 'all') {
-      filtered = filtered.filter(item => item.status === status);
-    }
+    // if (status !== 'all') {
+    //   filtered = filtered.filter(item => item. === status);
+    // }
 
     if (category !== 'all') {
       filtered = filtered.filter(item => item.category === category);
@@ -95,16 +138,11 @@ export function ListedItems() {
     setFilteredItems(filtered);
   };
 
-  const getStatusBadgeVariant = (status: string) => {
-    switch (status) {
-      case 'Active':
-        return 'default';
-      case 'Sold':
-        return 'secondary';
-      case 'Draft':
-        return 'outline';
-      default:
-        return 'default';
+  const getStatusBadgeVariant = (status: boolean) => {
+    if(status === true){
+      return 'secondary'
+    }else{
+      return 'default'
     }
   };
 
@@ -167,8 +205,8 @@ export function ListedItems() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredItems.map((item) => (
-                  <TableRow key={item.id} className="border-slate-700 hover:bg-slate-700/50">
+                {listedItems.map((item, index) => (
+                  <TableRow key={index} className="border-slate-700 hover:bg-slate-700/50">
                     <TableCell>
                       <div>
                         <div className="font-medium text-white">{item.title}</div>
@@ -178,34 +216,34 @@ export function ListedItems() {
                       </div>
                     </TableCell>
                     <TableCell className="text-slate-200">{item.category}</TableCell>
-                    <TableCell className="text-slate-200">{item.size}</TableCell>
+                    <TableCell className="text-slate-200">{item.stock}</TableCell>
                     <TableCell className="text-slate-200">${item.price}</TableCell>
                     <TableCell>
-                      <Badge variant={getStatusBadgeVariant(item.status)} className="text-xs">
-                        {item.status}
+                      <Badge variant={getStatusBadgeVariant(item.isAvailable)} className="text-xs">
+                        {item.isAvailable ? 'Available' : 'Not Available'}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-slate-200">{item.dateCreated}</TableCell>
+                    <TableCell className="text-slate-200">{formatDate(item.createdAt)}</TableCell>
                     <TableCell>
                       <div className="flex space-x-2">
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-8 w-8 text-slate-400 hover:text-white hover:bg-slate-600"
+                          className="cursor-pointer h-8 w-8 text-slate-400 hover:text-white hover:bg-slate-600"
                         >
                           <Eye className="h-4 w-4" />
                         </Button>
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-8 w-8 text-slate-400 hover:text-white hover:bg-slate-600"
+                          className="cursor-pointer h-8 w-8 text-slate-400 hover:text-white hover:bg-slate-600"
                         >
                           <Edit className="h-4 w-4" />
                         </Button>
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-8 w-8 text-slate-400 hover:text-red-400 hover:bg-slate-600"
+                          className="cursor-pointer h-8 w-8 text-slate-400 hover:text-red-400 hover:bg-slate-600"
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>

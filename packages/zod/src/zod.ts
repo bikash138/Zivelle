@@ -32,3 +32,17 @@ export const ListItemSchema = z.object({
     //     stock: z.number().min(0)
     // })).nonempty()
 })
+export const ListSchema = z.object({
+    title: z.string().max(30),
+    description: z.string(),
+    price: z.number().min(100),
+    category: z.enum(categories),
+    stock: z.number().min(10),
+    isAvailable: z.boolean(),
+    createdAt: z.string()
+})
+export const OrderSchema = z.object({
+    itemId: z.number(),
+    quantity: z.number(),
+    total: z.number().min(100)
+})
