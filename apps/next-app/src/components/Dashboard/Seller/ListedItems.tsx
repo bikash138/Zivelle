@@ -7,40 +7,22 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Search, Eye, Edit, Trash2 } from 'lucide-react';
-import axios from 'axios';
-import { toast } from 'sonner';
 import {ListSchema} from '@repo/zod/zodTypes'
 import {z} from 'zod'
 import { formatDate } from '@/lib/formatDate'
 
-export function ListedItems() {
+type ListedItems = z.infer<typeof ListSchema>;
+interface ListedItemsProps {
+  initialListedItems: ListedItems[];
+}
 
-  type ListItem = z.infer<typeof ListSchema>;
+export function ListedItems({ initialListedItems }: ListedItemsProps) {
 
-  const [listedItems, setListedItems] = useState<ListItem[]>([])
-  const [filteredItems, setFilteredItems] = useState<ListItem[]>(listedItems);
+  const [listedItems] = useState<ListedItems[]>(initialListedItems)
+  const [filteredItems, setFilteredItems] = useState<ListedItems[]>(listedItems);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
-
-  const allListedItems = async () => {
-    try{
-      const response = await axios.get('/api/getAllListedItems')
-      if (!response.data?.success) {
-        toast.error("Fetching Listed Items Failed", );
-        return; // Exit the function early
-      }
-      setListedItems(response.data?.allListedItems)
-      toast.success(response.data?.message)
-    }catch(error){
-      console.log("Something went wrong while fetching", error)
-      toast.error("Something went wrong while fetching")
-    }
-  }
-
-  useEffect(()=>{
-    allListedItems()
-  },[])
 
   useEffect(() => {
     setFilteredItems(listedItems);

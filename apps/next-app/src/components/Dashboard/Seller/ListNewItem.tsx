@@ -1,3 +1,4 @@
+'use client'
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,8 +7,6 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from "@/components/ui/checkbox"
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Upload, X, ImageIcon } from 'lucide-react';
-import type { NewItemForm } from '@/types';
 import { useForm, Controller } from 'react-hook-form'
 import { ListItemSchema } from '@repo/zod/zodTypes'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -49,7 +48,7 @@ export function ListNewItem() {
   //   price: 0,
   //   sizes: [],
   // });
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  // const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -286,7 +285,7 @@ export function ListNewItem() {
                         value={field.value}
                         onValueChange={field.onChange}
                       >
-                        <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
+                        <SelectTrigger className="cursor-pointer bg-slate-700 border-slate-600 text-white">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent className="bg-slate-700 border-slate-600">
@@ -314,10 +313,10 @@ export function ListNewItem() {
                       value={field.value}
                         onValueChange={field.onChange}
                       >
-                        <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
+                        <SelectTrigger className="cursor-pointer bg-slate-700 border-slate-600 text-white">
                           <SelectValue />
                         </SelectTrigger>
-                        <SelectContent className="bg-slate-700 border-slate-600">
+                        <SelectContent className=" bg-slate-700 border-slate-600">
                           <SelectItem value="Topwear" className="text-white cursor-pointer">Topwear</SelectItem>
                           <SelectItem value="Bottomwear" className="text-white cursor-pointer">Bottomwear</SelectItem>
                           <SelectItem value="Winterwear" className="text-white cursor-pointer">Winterwear</SelectItem>
@@ -335,7 +334,7 @@ export function ListNewItem() {
             </div>
             <Button
               type="submit"
-              className="w-full bg-orange-600 hover:bg-orange-700 text-white"
+              className="w-full cursor-pointer bg-orange-600 hover:bg-orange-700 text-white"
               disabled={isSubmitting}
             >
               {isSubmitting ? 'Listing Item...' : 'List Item'}

@@ -1,11 +1,14 @@
 import { ListItemSchema } from '@repo/zod/zodTypes'
 import { prisma } from '@repo/database/prisma'
 import { NextRequest, NextResponse } from 'next/server'
-
+import getUserId from "@/lib/getUserId"
 
 export async function POST(req: NextRequest){
     try{
-        const userId = '7897a286-164c-4766-b031-74498767fbc4'
+        const {userId, error} = await getUserId(req)
+        if(error){
+            return error
+        }
         const body = await req.json()
         const parsedData = ListItemSchema.safeParse(body)
 

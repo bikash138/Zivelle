@@ -1,3 +1,4 @@
+'use client'
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -6,105 +7,70 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Search, Eye, Package, ArrowUpDown } from 'lucide-react';
-import type { Order } from '@/types';
-import axios from 'axios';
 import { toast } from 'sonner';
 import { formatDate } from '@/lib/formatDate';
 import { Copy } from 'lucide-react';
 
-// Mock data
-const mockOrders: Order[] = [
-  {
-    id: 'ORD-001',
-    itemName: 'Premium Cotton T-Shirt',
-    quantity: 2,
-    status: 'Shipped',
-    date: '2024-01-25',
-    total: 59.98,
-    buyerEmail: 'john@example.com'
-  },
-  {
-    id: 'ORD-002',
-    itemName: 'Designer Jeans',
-    quantity: 1,
-    status: 'Delivered',
-    date: '2024-01-20',
-    total: 89.99,
-    buyerEmail: 'sarah@example.com'
-  },
-  {
-    id: 'ORD-003',
-    itemName: 'Kids Summer Dress',
-    quantity: 1,
-    status: 'Pending',
-    date: '2024-01-28',
-    total: 39.99,
-    buyerEmail: 'mike@example.com'
-  },
-  {
-    id: 'ORD-004',
-    itemName: 'Casual Sneakers',
-    quantity: 1,
-    status: 'Cancelled',
-    date: '2024-01-15',
-    total: 79.99,
-    buyerEmail: 'anna@example.com'
-  },
-  {
-    id: 'ORD-005',
-    itemName: 'Premium Cotton T-Shirt',
-    quantity: 3,
-    status: 'Shipped',
-    date: '2024-01-30',
-    total: 89.97,
-    buyerEmail: 'david@example.com'
-  }
-];
-
-export function Orders() {
-
-  interface OrderType{
+ interface OrderType{
     id: string
     quantity: number,
     total: number,
-    placedOn: string,
+    placedOn: Date,
     status: string,
     item: {
       title: string
     }
   }
-
-  const[orders, setOrders] = useState<OrderType[]>([])
-
-  const fetchOrders = async () => {
-    try{
-      const response = await axios.get('/api/orders')
-      if (!response.data?.success) {
-        toast.error("Fetching Ordered Items Failed");
-        return; 
-      }
-      setOrders(response.data?.allOrders)
-      toast.success(response.data?.message)
-    }catch(error){
-      console.log("Something went wrong while fetching orders", error)
-      toast.error("Something went wrong while fetching orders")
-    }
+  interface OrdersProps {
+    initialOrders: OrderType[];
   }
 
-  useEffect(()=>{
-    fetchOrders()
-  },[])
+export function Orders({ initialOrders }: OrdersProps) {
+
+  const[orders] = useState<OrderType[]>(initialOrders)
+  const [filteredOrders, setFilteredOrders] = useState<OrderType[]>(orders);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [sortBy, setSortBy] = useState<string>('placedOn');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+
+  // const fetchOrders = async () => {
+    // const toastId = toast.loading("Loading...")
+    // try{
+    //   const response = await axios.get('/api/orders')
+    //   if (!response.data?.success) {
+    //     toast.error("Fetching Ordered Items Failed");
+    //     return; 
+    //   }
+    //   setOrders(response.data?.allOrders)
+    //   toast.dismiss(toastId)
+    // }catch(error){
+    //   console.log("Something went wrong while fetching orders", error)
+    //   toast.error("Something went wrong while fetching orders")
+    // }
+  // }
+  // const { data, error, isLoading } = useQuery({
+  //   queryKey: ['orders'],
+  //   queryFn: fetchOrders,
+  //   refetchInterval: 30000,  // 30 seconds
+  //   staleTime: 10000,        // 10 seconds
+  //   //@ts-ignore
+  //   cacheTime: 300000,       // 5 minutes
+  // });
+
+  
+  // if (isLoading) return <div>Loading orders...</div>;
+  // if (error) return <div>Error: {error.message}</div>;
+  // if(data) console.log(data)
+
+  // useEffect(()=>{
+  //   fetchOrders()
+  // },[])
 
   useEffect(()=>{
     setFilteredOrders(orders)
   },[orders])
   
-  const [filteredOrders, setFilteredOrders] = useState<OrderType[]>(orders);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [sortBy, setSortBy] = useState<string>('date');
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
-
   const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text);
     toast.success('Order ID copied!');
@@ -139,7 +105,6 @@ export function Orders() {
       filtered = filtered.filter(order =>
         order.id.toLowerCase().includes(search.toLowerCase()) ||
         order.item.title.toLowerCase().includes(search.toLowerCase())
-        // order.buyerEmail.toLowerCase().includes(search.toLowerCase())
       );
     }
 
@@ -149,12 +114,30 @@ export function Orders() {
 
     // Sort orders
     filtered = [...filtered].sort((a, b) => {
-      let aValue: any = a[sort as keyof Order];
-      let bValue: any = b[sort as keyof Order];
+      let aValue: string | number | Date;
+      let bValue: string | number | Date;
 
-      if (sort === 'date') {
-        aValue = new Date(aValue);
-        bValue = new Date(bValue);
+      if (sort === 'id') {
+        aValue = a.id;
+        bValue = b.id;
+      } else if (sort === 'total') {
+        aValue = a.total;
+        bValue = b.total;
+      } else if (sort === 'placedOn') {
+        aValue = new Date(a.placedOn);
+        bValue = new Date(b.placedOn);
+      } else if (sort === 'quantity') {
+        aValue = a.quantity;
+        bValue = b.quantity;
+      } else if (sort === 'status') {
+        aValue = a.status;
+        bValue = b.status;
+      } else if (sort === 'item') {
+        aValue = a.item.title;
+        bValue = b.item.title;
+      } else {
+        aValue = '';
+        bValue = '';
       }
 
       if (order === 'asc') {
@@ -257,7 +240,7 @@ export function Orders() {
           </CardContent>
         </Card>
       </div>
-
+      
       <Card className="bg-slate-800 border-slate-700">
         <CardHeader>
           <CardTitle className="text-white">Order History</CardTitle>
@@ -272,7 +255,7 @@ export function Orders() {
               />
             </div>
             <Select value={statusFilter} onValueChange={handleStatusFilter}>
-              <SelectTrigger className="w-[180px] bg-slate-700 border-slate-600 text-white">
+              <SelectTrigger className="w-[180px] cursor-pointer hover:bg-gray-600 bg-slate-700 border-slate-600 text-white">
                 <SelectValue placeholder="Filter by status" />
               </SelectTrigger>
               <SelectContent className="bg-slate-700 border-slate-600">
@@ -294,7 +277,7 @@ export function Orders() {
                     <Button
                       variant="ghost"
                       onClick={() => handleSort('id')}
-                      className="text-slate-300 hover:text-white p-0 font-medium"
+                      className="text-slate-300 hover:text-white hover:bg-gray-700 cursor-pointer p-0 font-medium"
                     >
                       Order ID
                       <ArrowUpDown className="ml-1 h-4 w-4" />
@@ -306,7 +289,7 @@ export function Orders() {
                     <Button
                       variant="ghost"
                       onClick={() => handleSort('total')}
-                      className="text-slate-300 hover:text-white p-0 font-medium"
+                      className="cursor-pointer text-slate-300 hover:text-white hover:bg-gray-700 p-0 font-medium"
                     >
                       Total
                       <ArrowUpDown className="ml-1 h-4 w-4" />
@@ -316,8 +299,8 @@ export function Orders() {
                   <TableHead className="text-slate-300">
                     <Button
                       variant="ghost"
-                      onClick={() => handleSort('date')}
-                      className="text-slate-300 hover:text-white p-0 font-medium"
+                      onClick={() => handleSort('placedOn')}
+                      className="text-slate-300 hover:text-white hover:bg-gray-700 cursor-pointer p-0 font-medium"
                     >
                       Date
                       <ArrowUpDown className="ml-1 h-4 w-4" />
@@ -357,7 +340,7 @@ export function Orders() {
                         {order.status}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-slate-200">{formatDate(order?.placedOn)}</TableCell>
+                    <TableCell className="text-slate-200">{formatDate(String(order?.placedOn))}</TableCell>
                     <TableCell>
                       <Button
                         variant="ghost"

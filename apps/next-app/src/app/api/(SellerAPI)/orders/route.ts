@@ -1,6 +1,7 @@
 import { prisma } from "@repo/database/prisma";
 import { OrderSchema } from "@repo/zod/zodTypes";
 import { NextRequest, NextResponse } from "next/server";
+import getUserId from "@/lib/getUserId"
 
 export async function POST(req: NextRequest){
     try{
@@ -29,16 +30,20 @@ export async function POST(req: NextRequest){
             order
         },{status:200})
     }catch(error){
+        console.log(error)
         return NextResponse.json({
             success: false,
             message: "Order Can't Placed"
-        },{status: 500})
+        }, {status: 500})
     }
 }
 
 export async function GET(req: NextRequest) {
     try{
-        const userId = '7897a286-164c-4766-b031-74498767fbc4'
+        const {userId, error} = await getUserId(req)
+        if(error){
+            return error
+        }
         const allOrders = await prisma.order.findMany({
             where: {
                 sellerId: userId
@@ -62,9 +67,10 @@ export async function GET(req: NextRequest) {
             allOrders
         }, {status: 200})
     }catch(error){
+        console.log(error)
         return NextResponse.json({
             success: false,
             message: "Order Can't Placed"
-        },{status: 500})
+        }, {status: 500})
     }
 }

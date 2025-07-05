@@ -1,9 +1,14 @@
 import { prisma } from "@repo/database/prisma"
 import { NextResponse } from "next/server"
+import getUserId from "@/lib/getUserId"
+import { NextRequest } from "next/server"
 
-export async function GET(){
+export async function GET(req: NextRequest){
     try{
-        const userId = '7897a286-164c-4766-b031-74498767fbc4'
+        const {userId, error} = await getUserId(req)
+        if(error){
+            return error
+        }
         const allListedItems = await prisma.item.findMany({
             where:{
                 adminId: userId

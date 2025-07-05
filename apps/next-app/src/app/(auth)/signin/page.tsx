@@ -1,18 +1,47 @@
 'use client'
-
-import { useState } from 'react';
 import Link from 'next/link'
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { toast } from 'sonner';
+import axios from 'axios';
+import { useForm } from 'react-hook-form';
+import { SignInSchema } from '@repo/zod/zodTypes';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from 'next/navigation';
+
+type formType = z.infer<typeof SignInSchema>;
 
 const Signin = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const router = useRouter()
+  const{
+      register,
+      handleSubmit,
+      reset 
+    } = useForm<formType>({
+      resolver: zodResolver(SignInSchema),
+      defaultValues:{
+        email: '',
+        password: '',
+      }
+    })
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log('Signin attempt:', { email, password });
+  const onsubmit = async (data: formType) => {
+    const toastId = toast.loading('Signing in...')
+    try{
+      const response = await axios.post('/api/signin', data)
+      if(!response.data?.success){
+        toast.error(response.data?.message, {id: toastId})
+        return
+      }
+      toast.success(response.data?.message, {id: toastId})
+      reset()
+      router.push("/dashboard/seller/profile")
+    }catch(error){
+      console.log("Something went wrong while SignIn", error)
+      toast.error('SignIn Failed', {id: toastId})
+    }
   };
 
   return (
@@ -34,20 +63,17 @@ const Signin = () => {
         </div>
 
         {/* Sign In Form */}
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit(onsubmit)}>
           <div className="space-y-4">
             <div>
               <Label htmlFor="email" className="text-white">
                 Email address
               </Label>
               <Input
-                id="email"
-                name="email"
+                {...register('email')}
                 type="email"
                 autoComplete="email"
                 required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
                 className="mt-1 bg-gray-900/50 border-gray-700 text-white placeholder-gray-400 focus:border-white focus:ring-white"
                 placeholder="Enter your email"
               />
@@ -57,13 +83,9 @@ const Signin = () => {
                 Password
               </Label>
               <Input
-                id="password"
-                name="password"
+              {...register('password')}
                 type="password"
                 autoComplete="current-password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
                 className="mt-1 bg-gray-900/50 border-gray-700 text-white placeholder-gray-400 focus:border-white focus:ring-white"
                 placeholder="Enter your password"
               />
@@ -89,7 +111,7 @@ const Signin = () => {
 
           <div className="text-center">
             <p className="text-gray-400">
-              Don't have an account?{' '}
+              Don&apos;t have an account?{' '}
               <Link
                 href="/signup"
                 className="text-white hover:text-gray-300 font-semibold transition-colors duration-200"

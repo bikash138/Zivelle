@@ -1,30 +1,50 @@
 'use client'
-
-import { useState } from 'react';
 import Link from 'next/link'
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { SignUpSchema } from '@repo/zod/zodTypes';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { toast } from 'sonner';
+import axios from 'axios';
+
+type formType = z.infer<typeof SignUpSchema>;
+
 
 const Signup = () => {
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    password: '',
-    confirmPassword: ''
-  });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
+  const{
+    register,
+    handleSubmit,
+    reset 
+  } = useForm<formType>({
+    resolver: zodResolver(SignUpSchema),
+    defaultValues:{
+      name: '',
+      store: '',
+      email: '',
+      password: '',
+      confirmPassword: ''
+    }
+  })
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log('Signup attempt:', formData);
+
+  const onsubmit = async (data: formType) => {
+    const toastId = toast.loading('Creating Account...')
+    try{
+      const response = await axios.post('/api/signup', data)
+      if(!response.data?.success){
+        toast.error(response.data?.message, {id: toastId})
+        return
+      }
+      toast.success(response.data?.message, {id: toastId})
+      reset()
+    }catch(error){
+      console.log("Something went wrong while SigningUp", error)
+      toast.error('SignUp Failed', {id: toastId})
+    }
   };
 
   return (
@@ -46,39 +66,32 @@ const Signup = () => {
         </div>
 
         {/* Sign Up Form */}
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        <form className="mt-8 space-y-6" onSubmit={handleSubmit(onsubmit)}>
           <div className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="firstName" className="text-white">
-                  First name
+                  Full Name
                 </Label>
                 <Input
-                  id="firstName"
-                  name="firstName"
+                  {...register('name')}
                   type="text"
                   autoComplete="given-name"
                   required
-                  value={formData.firstName}
-                  onChange={handleChange}
                   className="mt-1 bg-gray-900/50 border-gray-700 text-white placeholder-gray-400 focus:border-white focus:ring-white"
-                  placeholder="First name"
+                  placeholder="Full Name"
                 />
               </div>
               <div>
                 <Label htmlFor="lastName" className="text-white">
-                  Last name
+                  Store name
                 </Label>
                 <Input
-                  id="lastName"
-                  name="lastName"
+                  {...register('store')}
                   type="text"
-                  autoComplete="family-name"
                   required
-                  value={formData.lastName}
-                  onChange={handleChange}
                   className="mt-1 bg-gray-900/50 border-gray-700 text-white placeholder-gray-400 focus:border-white focus:ring-white"
-                  placeholder="Last name"
+                  placeholder="Store name"
                 />
               </div>
             </div>
@@ -88,13 +101,10 @@ const Signup = () => {
                 Email address
               </Label>
               <Input
-                id="email"
-                name="email"
+                {...register('email')}
                 type="email"
                 autoComplete="email"
                 required
-                value={formData.email}
-                onChange={handleChange}
                 className="mt-1 bg-gray-900/50 border-gray-700 text-white placeholder-gray-400 focus:border-white focus:ring-white"
                 placeholder="Enter your email"
               />
@@ -105,13 +115,10 @@ const Signup = () => {
                 Password
               </Label>
               <Input
-                id="password"
-                name="password"
+                {...register('password')}
                 type="password"
                 autoComplete="new-password"
                 required
-                value={formData.password}
-                onChange={handleChange}
                 className="mt-1 bg-gray-900/50 border-gray-700 text-white placeholder-gray-400 focus:border-white focus:ring-white"
                 placeholder="Create a password"
               />
@@ -122,13 +129,10 @@ const Signup = () => {
                 Confirm password
               </Label>
               <Input
-                id="confirmPassword"
-                name="confirmPassword"
+                {...register('confirmPassword')}
                 type="password"
                 autoComplete="new-password"
                 required
-                value={formData.confirmPassword}
-                onChange={handleChange}
                 className="mt-1 bg-gray-900/50 border-gray-700 text-white placeholder-gray-400 focus:border-white focus:ring-white"
                 placeholder="Confirm your password"
               />
@@ -138,7 +142,7 @@ const Signup = () => {
           <div>
             <Button
               type="submit"
-              className="w-full bg-white text-black hover:bg-gray-200 font-semibold py-3 transition-all duration-300 transform hover:scale-105"
+              className="w-full bg-white text-black cursor-pointer hover:bg-gray-200 font-semibold py-3 transition-all duration-300 transform hover:scale-105"
             >
               Create account
             </Button>
@@ -149,7 +153,7 @@ const Signup = () => {
               Already have an account?{' '}
               <Link
                 href="/signin"
-                className="text-white hover:text-gray-300 font-semibold transition-colors duration-200"
+                className="text-white cursor-pointer hover:text-gray-300 font-semibold transition-colors duration-200"
               >
                 Sign in
               </Link>
