@@ -35,7 +35,7 @@ export function Profile() {
   useEffect(()=>{
   const fetchSeller = async()=>{
     if (!profileUpdated) {
-      const stored = localStorage.getItem('sellerProfile');
+      const stored = localStorage.getItem('userProfile');
       if (stored) {
         const seller = JSON.parse(stored);
         setProfile(seller);
@@ -45,14 +45,14 @@ export function Profile() {
     }
     const toastId = toast.loading('Loading...')
     try{
-      const response = await axios.get('/api/profile')
+      const response = await axios.get('/api/user/profile')
       if(!response.data?.success){
         throw new Error('Cannnot get seller details')
       }
       const seller = response.data?.userDetails
       setProfile(seller)
       setEditedProfile(seller);
-      localStorage.setItem('sellerProfile', JSON.stringify(seller))
+      localStorage.setItem('userProfile', JSON.stringify(seller))
       toast.dismiss(toastId)
     }catch(error){
       toast.error('Cant get Profile Details', {id: toastId})
@@ -130,7 +130,7 @@ export function Profile() {
                 <p className="text-slate-400">{profile?.store}</p>
                 <Badge variant="secondary" className="mt-2">
                   <Store className="h-3 w-3 mr-1" />
-                  Seller since {profile?.createdAt ? formatDate(profile.createdAt) : 'N/A'}
+                  Customer since {profile?.createdAt ? formatDate(profile.createdAt) : 'N/A'}
                 </Badge>
               </div>
             </div>
@@ -203,21 +203,6 @@ export function Profile() {
                 ) : (
                   <div className="p-3 bg-slate-700 rounded-md border border-slate-600">
                     <p className="text-white">{profile?.email}</p>
-                  </div>
-                )}
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="storeName" className="text-slate-300">Store Name</Label>
-                {isEditing ? (
-                  <Input
-                    id="store"
-                    {...register('store')}
-                    // onChange={(e) => handleInputChange('store', e.target.value)}
-                    className="bg-slate-700 border-slate-600 text-white"
-                  />
-                ) : (
-                  <div className="p-3 bg-slate-700 rounded-md border border-slate-600">
-                    <p className="text-white">{profile?.store}</p>
                   </div>
                 )}
               </div>

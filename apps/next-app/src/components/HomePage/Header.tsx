@@ -45,8 +45,9 @@ const Header = () => {
               <span>Sign In</span>
             </Link>
             <button className="flex items-center space-x-2 text-white hover:text-gray-300 transition-colors duration-200">
-              <LogOut size={18} />
-              <span>Sign Out</span>
+              <Link href={"/user/signin"}>
+                <span>User Signin</span>
+              </Link>
             </button>
           </div>
         </nav>

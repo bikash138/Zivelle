@@ -47,3 +47,14 @@ export const OrderSchema = z.object({
     quantity: z.number(),
     total: z.number().min(100)
 })
+
+
+export const UserSignUpSchema = z.object({
+    name: z.string().min(3),
+    email: z.string().email(),
+    password: z.string(),
+    confirmPassword: z.string(),
+}).refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+})

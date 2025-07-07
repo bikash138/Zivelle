@@ -6,6 +6,7 @@ import getUserId from "@/lib/getUserId"
 export async function POST(req: NextRequest){
     try{
         const userId = '7897a286-164c-4766-b031-74498767fbc4'
+        const customerId = '111-111-111-111'
         const body =await req.json()
         const parsedData = OrderSchema.safeParse(body)
         if(!parsedData.success){
@@ -19,6 +20,7 @@ export async function POST(req: NextRequest){
         const order = await prisma.order.create({
             data:{
                 sellerId: userId,
+                customerId: customerId,
                 itemId,
                 quantity,
                 total
