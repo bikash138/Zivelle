@@ -44,20 +44,22 @@ export function ListNewItem() {
     }
   })
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [resetThumbnail, setResetThumbnail] = useState(0)
 
   const onsubmit = async (data: formType) => {
     const toastId = toast.loading("Listing Item...")
     setIsSubmitting(true)
     try{
       console.log(data)
-      const response = await axios.post('/api/listNewItem', data)
+      const response = await axios.post('/api/seller/listNewItem', data)
        if(!response?.data?.success){
           throw new Error("Could not Add Product")
         }
       toast.success(response.data?.message, {id: toastId})
+      setResetThumbnail(prev => prev + 1);
       reset()
     }catch(error){
-      console.log("Something went while listing new Item", error)
+      console.log("Something went while listing new Item ", error)
       toast.error("Items Not Listed", {id: toastId})
     }
     setIsSubmitting(false)
@@ -77,7 +79,7 @@ export function ListNewItem() {
         <CardContent>
           <form onSubmit={handleSubmit(onsubmit)} className="space-y-6">
             {/* Image Upload */}
-            <UploadThumbnail errors={errors} setValue={setValue}/>
+            <UploadThumbnail errors={errors} setValue={setValue} resetThumbnail={resetThumbnail}/>
 
             {/* Item Title */}
             <div className="space-y-2">

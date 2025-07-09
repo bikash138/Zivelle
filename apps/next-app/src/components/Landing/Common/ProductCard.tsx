@@ -7,14 +7,15 @@ import { Badge } from '@/components/ui/badge';
 
 interface Product {
   id: number;
-  name: string;
+  title: string;
   price: number;
   originalPrice?: number;
-  image: string;
-  rating: number;
-  brand: string;
+  thumnail: string;
+  // rating: number;
+  // brand: string;
   category: string;
-  createdAt: string;
+  subCategory: string
+  // createdAt: string;
 }
 
 interface ProductCardProps {
@@ -93,8 +94,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode = 'grid' })
               className="w-32 h-32 overflow-hidden rounded-lg"
             >
               <img
-                src={product.image}
-                alt={product.name}
+                src={product.title}
+                alt={product.title}
                 className="w-full h-full object-cover"
               />
             </motion.div>
@@ -102,15 +103,17 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode = 'grid' })
           <div className="flex-1 space-y-3">
             <div>
               <Badge variant="secondary" className="bg-gradient-to-r from-orange-500 to-red-500 text-white border-0 mb-2">
-                {product.brand}
+                {/* {product.brand} */}
+                Zivelle
               </Badge>
               <Link href={`/product/${product.id}`}>
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white hover:text-blue-400 transition-colors">
-                  {product.name}
+                  {product.title}
                 </h3>
               </Link>
             </div>
-            <div className="flex items-center space-x-1">
+
+            {/* <div className="flex items-center space-x-1">
               {[...Array(5)].map((_, i) => (
                 <Star
                   key={i}
@@ -119,7 +122,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode = 'grid' })
                 />
               ))}
               <span className="text-sm text-gray-500 dark:text-gray-400 ml-2">({product.rating})</span>
-            </div>
+            </div> */}
+
             <div className="flex items-center space-x-3">
               <span className="text-xl font-bold text-gray-900 dark:text-white">${product.price}</span>
               {product.originalPrice && (
@@ -221,8 +225,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode = 'grid' })
             className="w-full h-64 overflow-hidden"
           >
             <img
-              src={product.image}
-              alt={product.name}
+              src={product.thumnail}
+              alt={product.title}
               className="w-full h-full object-cover transition-transform duration-300"
             />
           </motion.div>
@@ -244,16 +248,17 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode = 'grid' })
       <div className="p-4 space-y-3">
         <div>
           <Badge variant="secondary" className="bg-gradient-to-r from-orange-500 to-red-500 text-white border-0 mb-2">
-            {product.brand}
+            {/* {product.brand} */}
+            Zivelle
           </Badge>
           <Link href={`/product/${product.id}`}>
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white hover:text-blue-400 transition-colors line-clamp-2">
-              {product.name}
+              {product.title}
             </h3>
           </Link>
         </div>
         
-        <div className="flex items-center space-x-1">
+        {/* <div className="flex items-center space-x-1">
           {[...Array(5)].map((_, i) => (
             <Star
               key={i}
@@ -262,13 +267,16 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode = 'grid' })
             />
           ))}
           <span className="text-sm text-gray-500 dark:text-gray-400 ml-2">({product.rating})</span>
-        </div>
+        </div> */}
         
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <span className="text-xl font-bold text-gray-900 dark:text-white">${product.price}</span>
             {product.originalPrice && (
-              <span className="text-sm text-gray-500 dark:text-gray-500 line-through">${product.originalPrice}</span>
+              <span className="text-sm text-gray-500 dark:text-gray-500 line-through">
+                {/* ${product.originalPrice}  */}
+                $1000
+              </span>
             )}
           </div>
           <Button size="icon">

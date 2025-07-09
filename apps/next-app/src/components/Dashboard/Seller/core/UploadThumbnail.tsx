@@ -4,19 +4,19 @@ import { cn } from '@/lib/utils'
 import { Label } from '@radix-ui/react-label'
 import axios from 'axios'
 import { Loader2, Trash2 } from 'lucide-react'
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { FileRejection, useDropzone } from 'react-dropzone'
 import { toast } from 'sonner'
 import { UseFormSetValue } from "react-hook-form";
-import { set } from 'zod'
 
 type UploadThumbnailProps = {
   errors: any;
-  setValue: UseFormSetValue<any>; // or UseFormSetValue<formType> if you have the type
+  setValue: UseFormSetValue<any>; 
+  resetThumbnail: number
 };
 
 //@ts-ignore
-const UploadThumbnail = ({errors, setValue}) => {
+const UploadThumbnail = ({errors, setValue, resetThumbnail}) => {
 
     const [files, setFiles] = useState<Array<{
     id: string,
@@ -28,6 +28,11 @@ const UploadThumbnail = ({errors, setValue}) => {
     error: boolean,
     objectUrl?: string
   }>>([])
+
+  useEffect(() => {
+    setFiles([]);
+    setValue('thumbnail', '');
+  }, [resetThumbnail]);
 
   async function deleteFile(fileId: string){
     try{
@@ -51,7 +56,7 @@ const UploadThumbnail = ({errors, setValue}) => {
       const resonse = await  axios.delete('/api/s3/delete', { data })
       toast.success(resonse.data?.message)
       setFiles((prevFiles)=>prevFiles.filter((f)=>f.id !== fileId  ))
-      setValue('')
+      setValue('thumbnail', '')
     }catch(error){
       console.log(error)
       setFiles((prevFile)=>
@@ -173,38 +178,41 @@ const UploadThumbnail = ({errors, setValue}) => {
   })
 
   return (
-    <div className='space-y-2 space-x-4 flex'>
-        <div className='w-[50%] space-y-2'>
+    <div className='space-x-4 flex'>
+        <div className='w-[50%] space-y-4'>
         <Label htmlFor="image" className="text-slate-200">Product Thumnail</Label>
-        <Card className={cn(
-            'border-dashed border-slate-500 transition-colors duration-200 border-2 bg-transparent text-slate-400 p-2 h-44',
-            files.length >= 1 && 'opacity-50 pointer-events-none cursor-not-allowed'
-            )} {...getRootProps()}>
-            <CardContent className='h-full flex flex-col w-full justify-center items-center'>
-            <input {...getInputProps()} />
-            {
-            isDragActive ?
-                <p>Drop the files here ...</p> :
-                <div className='flex justify-center items-center flex-col gap-y-3'>
-                <p>Drag 'n' drop thumnail here</p>
-                <Button
-                    type="button"
-                    className="mt-2"
-                    onClick={e => {
-                    e.stopPropagation();
-                    open();
-                    }}
-                >
-                    Click to browse
-                </Button>
-                </div>
-            }
-            </CardContent>
-        </Card>
-        {errors.thumbnail && (
-            <p className="text-red-500 text-sm">{errors.thumbnail.message as string}</p>
-        )}
+            {/* DropZOone */}
+            <Card className={cn(
+                'border-dashed border-slate-500 transition-colors duration-200 border-2 bg-transparent text-slate-400 p-2 h-44',
+                files.length >= 1 && 'opacity-50 pointer-events-none cursor-not-allowed'
+                )} {...getRootProps()}>
+                <CardContent className='h-full flex flex-col w-full justify-center items-center'>
+                <input {...getInputProps()} />
+                {
+                isDragActive ?
+                    <p>Drop the files here ...</p> :
+                    <div className='flex justify-center items-center flex-col gap-y-3'>
+                    <p>Drag 'n' drop thumnail here</p>
+                    <Button
+                        type="button"
+                        className="mt-2"
+                        onClick={e => {
+                        e.stopPropagation();
+                        open();
+                        }}
+                    >
+                        Click to browse
+                    </Button>
+                    </div>
+                }
+                </CardContent>
+            </Card>
+            {errors.thumbnail && (
+                <p className="text-red-500 text-sm">{errors.thumbnail.message as string}</p>
+            )}
         </div>
+
+        {/* Image Preview */}
         <div className='mt-6 grid grid-cols-2 sm:grid-cols-1 gap-x-1'>
         {files.map((file) => (
             <div key={file.id} className="relative w-32 h-32 rounded overflow-hidden shadow-lg group">

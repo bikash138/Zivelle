@@ -21,9 +21,9 @@ export async function POST(req: Request){
         })
 
         const bucket = process.env.S3_BUCKET_NAME!;
-        const region = process.env.AWS_REGION!; // e.g., 'fly'
+        const region = process.env.AWS_REGION!; 
 
-        const permanentUrl = `https://${bucket}.${region}.storage.tigris.dev/${uniqueKey}`;
+        const permanentUrl = `https://${bucket}.fly.storage.tigris.dev/${uniqueKey}`;
 
         return NextResponse.json({ 
             preSignedUrl,
