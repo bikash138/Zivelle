@@ -30,7 +30,7 @@ const Signin = () => {
   const onsubmit = async (data: formType) => {
     const toastId = toast.loading('Signing in...')
     try{
-      const response = await axios.post('/api/signin', data)
+      const response = await axios.post('/api/seller/signin', data)
       if(!response.data?.success){
         toast.error(response.data?.message, {id: toastId})
         return
@@ -113,7 +113,7 @@ const Signin = () => {
             <p className="text-gray-400">
               Don&apos;t have an account?{' '}
               <Link
-                href="/signup"
+                href="/seller/signup"
                 className="text-white hover:text-gray-300 font-semibold transition-colors duration-200"
               >
                 Create a new account

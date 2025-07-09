@@ -2,6 +2,7 @@ import { ListItemSchema } from '@repo/zod/zodTypes'
 import { prisma } from '@repo/database/prisma'
 import { NextRequest, NextResponse } from 'next/server'
 import getUserId from "@/lib/getUserId"
+import path from 'path';
 
 export async function POST(req: NextRequest){
     try{
@@ -20,6 +21,7 @@ export async function POST(req: NextRequest){
             }, { status: 400 })
         }
         const{
+            thumbnail,
             title,
             description,
             price,
@@ -43,6 +45,7 @@ export async function POST(req: NextRequest){
         const newItem = await prisma.item.create({
             data:{
                 adminId: userId,
+                thumnail: thumbnail,
                 title,
                 description,
                 price,

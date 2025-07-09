@@ -24,23 +24,23 @@ const Header = () => {
 
           {/* Navigation Links */}
           <div className="flex items-center space-x-8">
-            <a href="#home" className="text-white hover:text-gray-300 transition-colors duration-200 font-medium">
+            <a href="/" className="text-white hover:text-gray-300 transition-colors duration-200 font-medium">
               Home
             </a>
-            <a href="#catalog" className="text-white hover:text-gray-300 transition-colors duration-200 font-medium">
+            <a href="/catalog" className="text-white hover:text-gray-300 transition-colors duration-200 font-medium">
               Catalog
             </a>
-            <a href="#about" className="text-white hover:text-gray-300 transition-colors duration-200 font-medium">
+            <a href="/about" className="text-white hover:text-gray-300 transition-colors duration-200 font-medium">
               About
             </a>
-            <a href="#contact" className="text-white hover:text-gray-300 transition-colors duration-200 font-medium">
+            <a href="/contact" className="text-white hover:text-gray-300 transition-colors duration-200 font-medium">
               Contact
             </a>
           </div>
 
           {/* Auth Buttons */}
           <div className="flex items-center space-x-6 ml-8">
-            <Link href="/signin" className="flex items-center space-x-2 text-white hover:text-gray-300 transition-colors duration-200">
+            <Link href="/seller/signin" className="flex items-center space-x-2 text-white hover:text-gray-300 transition-colors duration-200">
               <User size={18} />
               <span>Sign In</span>
             </Link>

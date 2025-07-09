@@ -45,7 +45,7 @@ export function Profile() {
     }
     const toastId = toast.loading('Loading...')
     try{
-      const response = await axios.get('/api/profile')
+      const response = await axios.get('/api/seller/profile')
       if(!response.data?.success){
         throw new Error('Cannnot get seller details')
       }

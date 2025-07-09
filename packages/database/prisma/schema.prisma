@@ -59,6 +59,7 @@ model Seller{
 model Item{
   id            Int        @id   @default(autoincrement())
   adminId       String
+  thumnail      String
   title         String
   description   String
   price         Int

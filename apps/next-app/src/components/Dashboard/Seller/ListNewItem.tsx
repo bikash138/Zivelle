@@ -15,6 +15,7 @@ import { sizes } from '@repo/zod/zodTypes';
 import axios from 'axios'
 import { toast } from "sonner"
 
+import UploadThumbnail from './core/UploadThumbnail';
 
 const sizeOptions = [...sizes];
 
@@ -27,10 +28,12 @@ export function ListNewItem() {
     handleSubmit,
     reset,
     control,
+    setValue,
     formState: { errors }
   } = useForm<formType>({
     resolver: zodResolver(ListItemSchema),
     defaultValues:{
+      thumbnail: '',
       title: '',
       description: '',
       price: 0,
@@ -40,47 +43,13 @@ export function ListNewItem() {
       size: ['M']
     }
   })
-  // const [formData, setFormData] = useState<NewItemForm>({
-  //   title: '',
-  //   description: '',
-  //   size: 'M',
-  //   category: 'Men',
-  //   price: 0,
-  //   sizes: [],
-  // });
-  // const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  // const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   const file = event.target.files?.[0];
-  //   if (file) {
-  //     if (file.size > 5 * 1024 * 1024) {
-  //       alert({
-  //         title: 'Error',
-  //         description: 'Image size should be less than 5MB',
-  //         variant: 'destructive'
-  //       });
-  //       return;
-  //     }
-
-  //     setFormData(prev => ({ ...prev, image: file }));
-  //     const reader = new FileReader();
-  //     reader.onload = (e) => {
-  //       setImagePreview(e.target?.result as string);
-  //     };
-  //     reader.readAsDataURL(file);
-  //   }
-  // };
-
-  // const removeImage = () => {
-  //   setFormData(prev => ({ ...prev, image: undefined }));
-  //   setImagePreview(null);
-  // };
 
   const onsubmit = async (data: formType) => {
     const toastId = toast.loading("Listing Item...")
     setIsSubmitting(true)
     try{
+      console.log(data)
       const response = await axios.post('/api/listNewItem', data)
        if(!response?.data?.success){
           throw new Error("Could not Add Product")
@@ -93,30 +62,6 @@ export function ListNewItem() {
     }
     setIsSubmitting(false)
   }
-
-  // const handleSubmit = async (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   setIsSubmitting(true);
-
-  //   // Simulate API call
-  //   await new Promise(resolve => setTimeout(resolve, 1000));
-
-  //   // toast({
-  //   //   title: 'Success!',
-  //   //   description: 'Item listed successfully'
-  //   // });
-
-  //   // Reset form
-  //   // setFormData({
-  //   //   title: '',
-  //   //   description: '',
-  //   //   size: 'M',
-  //   //   category: 'Men',
-  //   //   price: 0
-  //   // });
-  //   setImagePreview(null);
-  //   setIsSubmitting(false);
-  // };
 
   return (
     <div className="space-y-6">
@@ -132,44 +77,7 @@ export function ListNewItem() {
         <CardContent>
           <form onSubmit={handleSubmit(onsubmit)} className="space-y-6">
             {/* Image Upload */}
-            {/* <div className="space-y-2">
-              <Label htmlFor="image" className="text-slate-200">Product Image</Label>
-              <div className="relative border-2 border-dashed border-slate-600 rounded-lg p-6 text-center hover:border-orange-500 transition-colors">
-                {imagePreview ? (
-                  <div className="relative">
-                    <img
-                      src={imagePreview}
-                      alt="Preview"
-                      className="mx-auto max-h-64 rounded-lg"
-                    />
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      size="icon"
-                      className="absolute top-2 right-2"
-                      onClick={removeImage}
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="cursor-pointer" onClick={() => document.getElementById('image-upload')?.click()}>
-                    <ImageIcon className="mx-auto h-12 w-12 text-slate-500 mb-4" />
-                    <div className="space-y-2">
-                      <p className="text-slate-400">Drop your image here, or click to browse</p>
-                      <p className="text-sm text-slate-500">PNG, JPG up to 5MB</p>
-                    </div>
-                  </div>
-                )}
-                <input
-                  id="image-upload"
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                  className="hidden"
-                />
-              </div>
-            </div> */}
+            <UploadThumbnail errors={errors} setValue={setValue}/>
 
             {/* Item Title */}
             <div className="space-y-2">

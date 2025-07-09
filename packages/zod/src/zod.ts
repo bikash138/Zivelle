@@ -20,6 +20,7 @@ const categories = ["Men", "Women", "Kids"] as const
 const subCategories = ["Topwear", "Bottomwear", "Winterwear"] as const
 export const sizes = ["XS","S","M","L","XL","XXL"] as const
 export const ListItemSchema = z.object({
+    thumbnail: z.string().min(1, "Thumbnail is required"),
     title: z.string().max(30),
     description: z.string(),
     price: z.number().min(100),
