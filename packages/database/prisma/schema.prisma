@@ -59,6 +59,7 @@ model Seller{
 model Item{
   id            Int        @id   @default(autoincrement())
   adminId       String
+  thumnail      String
   title         String
   description   String
   price         Int
@@ -84,8 +85,21 @@ model Order{
   status      Status    @default(Pending)
   placedOn    DateTime  @default(now())
   sellerId    String
+  customerId  String
   item        Item      @relation(fields: [itemId], references: [id])
   seller      Seller    @relation(fields: [sellerId], references: [id])
+  customer    Customer    @relation(fields: [customerId], references: [id])
 }
   // customerId  String
   // customer    Customer  @relation((fields: [customerId], references: [id]))
+
+model Customer{
+  id        String    @id @default(uuid())
+  email     String    @unique
+  password  String
+  name      String
+  address   String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  orders    Order[]
+}

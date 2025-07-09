@@ -1,3 +1,4 @@
+'use client'
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,41 +7,45 @@ import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Edit, Save, X, User, Store, Mail, Calendar, DollarSign, Package } from 'lucide-react';
-// import { useToast } from '@/hooks/use-toast';
+import { Edit, Save, X, User, Store, Calendar, DollarSign, Package } from 'lucide-react';
 import type { SellerProfile } from '@/types';
 import axios from 'axios';
 import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
 
-// Mock data
-const mockProfile: SellerProfile = {
-  name: 'John Doe',
-  email: 'john.doe@example.com',
-  store: 'John\'s Fashion Store',
-  createdAt: '2023-06-15',
-};
+interface UpadatedDataForm{
+    name: string,
+    email: string,
+    store: string
+  }
 
 export function Profile() {
+  const [profile, setProfile] = useState<SellerProfile | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedProfile, setEditedProfile] = useState<SellerProfile | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const[profileUpdated, setProfileUpdated] = useState(false)
 
   const{
     register,
     handleSubmit,
     reset,
-  } = useForm()
+  } = useForm<UpadatedDataForm>()
 
   useEffect(()=>{
   const fetchSeller = async()=>{
-    const stored = localStorage.getItem('sellerProfile')
-    if(stored){
-      const seller = JSON.parse(stored)
-      setProfile(seller)
-      setEditedProfile(seller);
-      return
+    if (!profileUpdated) {
+      const stored = localStorage.getItem('sellerProfile');
+      if (stored) {
+        const seller = JSON.parse(stored);
+        setProfile(seller);
+        setEditedProfile(seller);
+        return;
+      }
     }
     const toastId = toast.loading('Loading...')
     try{
-      const response = await axios.get('/api/createSeller')
+      const response = await axios.get('/api/seller/profile')
       if(!response.data?.success){
         throw new Error('Cannnot get seller details')
       }
@@ -48,20 +53,14 @@ export function Profile() {
       setProfile(seller)
       setEditedProfile(seller);
       localStorage.setItem('sellerProfile', JSON.stringify(seller))
-      toast.success('Profile Details Fetched', {id: toastId})
+      toast.dismiss(toastId)
     }catch(error){
       toast.error('Cant get Profile Details', {id: toastId})
       console.log('Error while getting seller details', error)
     }
   }
   fetchSeller()
-},[])
-
-  // const { toast } = useToast();
-  const [profile, setProfile] = useState<SellerProfile | null>(null);
-  const [isEditing, setIsEditing] = useState(false);
-  const [editedProfile, setEditedProfile] = useState<SellerProfile | null>(null);
-  const [isSaving, setIsSaving] = useState(false);
+},[profileUpdated])
 
   function formatDate(isoString: string) {
     const date = new Date(isoString);
@@ -78,8 +77,9 @@ export function Profile() {
 
   const handleEdit = () => {
     setIsEditing(true);
-    //@ts-ignore
-    reset(profile);
+    if (profile) {
+      reset(profile);
+    }
   };
 
   const handleCancel = () => {
@@ -87,17 +87,17 @@ export function Profile() {
     setEditedProfile(profile);
   };
 
-  const handleSave = async (data:any) => {
+  const handleSave = async (data:UpadatedDataForm) => {
     setIsSaving(true);
-    console.log(data)
     const toastId = toast.loading('Updating...')
     try{
-      await axios.patch('/api/createSeller', {
+      await axios.patch('/api/profile', {
         name: data.name,
         email: data.email,
         store: data.store,
       });
       toast.success('Profile Updated Successfully', {id: toastId})
+      setProfileUpdated(prev => !prev);
     }catch(error){
       console.log("Can't update the profile", error)
       toast.error('Profile Not updated', {id: toastId})
@@ -106,8 +106,6 @@ export function Profile() {
     setIsEditing(false);
     setIsSaving(false);
   };
-
-  
 
   return (
     <div className="space-y-6">
