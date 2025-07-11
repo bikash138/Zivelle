@@ -1,6 +1,7 @@
 'use client'
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { setToken } from '@/redux/slices/authSlice';
 import {
   BadgeQuestionMark,
   ShoppingCart,
@@ -13,6 +14,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 const navigationItems = [
   {
@@ -36,6 +38,7 @@ const navigationItems = [
 ];
 
 export function UserSidebar() {
+  const dispatch = useDispatch()
   const pathname = usePathname()
   const router = useRouter()
   const activeSection = pathname.split('/').pop()
@@ -108,7 +111,9 @@ export function UserSidebar() {
           className=" mt-5 rounded-lg cursor-pointer bg-transparent hover:text-500 text-red-700 transition-all duration-150"
           onClick={async () => {
             await fetch("/api/logout", { method: "POST" });
-            localStorage.removeItem('sellerProfile')
+            dispatch(setToken(null))
+            localStorage.removeItem('userProfile')
+            localStorage.removeItem('token')
             router.push('/')
           }}
         >

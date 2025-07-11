@@ -1,5 +1,5 @@
 'use client'
-import React from 'react';
+import React, { useEffect } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { ArrowRight, Sparkles, Star, TrendingUp } from 'lucide-react';
@@ -10,6 +10,7 @@ import ProductCard from '@/components/Landing/Common/ProductCard';
 import { featuredProducts } from '@/data/products';
 import Footer from '@/components/Landing/Common/Footer';
 import Header from '@/components/Landing/Common/Header';
+
 
 const LandingPage = () => {
   const containerVariants = {

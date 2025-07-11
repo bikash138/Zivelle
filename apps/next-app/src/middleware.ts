@@ -10,7 +10,7 @@ export default async function middleware(req: NextRequest) {
       : "");
 
   if (!token) {
-    return NextResponse.redirect(new URL("/signin", req.url));
+    return NextResponse.redirect(new URL("/user/signin", req.url));
   }
 
   try {
@@ -29,10 +29,10 @@ export default async function middleware(req: NextRequest) {
     return NextResponse.next();
   } catch (error) {
     console.log("Something went wrong in middleware", error)
-    return NextResponse.redirect(new URL("/signin", req.url));
+    return NextResponse.redirect(new URL("/user/signin", req.url));
   }
 }
 
 export const config = {
-  matcher: ["/dashboard/seller/:path*"],
+  matcher: ["/dashboard/seller/:path*", "/dashboard/user/:path*", "/cart", "/favourites"]
 };

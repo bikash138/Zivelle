@@ -1,65 +1,33 @@
 'use client'
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, removeItem } from 'framer-motion';
 import { Minus, Plus, Trash2, ShoppingBag, ArrowLeft, Tag, Truck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { products } from '@/data/products';
+import { useDispatch, useSelector } from 'react-redux';
+import { removeFromCart } from '@/redux/slices/cartSlice';
 
-interface CartItem {
+interface CartProps {
   id: number;
-  product: typeof products[0];
-  quantity: number;
-  size: string;
-  color: string;
+  title: string;
+  price: number;
+  originalPrice?: number;
+  thumnail: string;
+  description: string
+  // rating: number;
+  // brand: string;
+  category: string;
+  subCategory: string
+//   createdAt: string;
 }
 
 const CartPage = () => {
-  const [cartItems, setCartItems] = useState<CartItem[]>([
-    {
-      id: 1,
-      product: products[0],
-      quantity: 2,
-      size: 'M',
-      color: 'Black'
-    },
-    {
-      id: 2,
-      product: products[1],
-      quantity: 1,
-      size: 'L',
-      color: 'Navy'
-    },
-    {
-      id: 3,
-      product: products[3],
-      quantity: 1,
-      size: '42',
-      color: 'Brown'
-    }
-  ]);
-
   const [promoCode, setPromoCode] = useState('');
   const [appliedPromo, setAppliedPromo] = useState('');
-
-  const updateQuantity = (id: number, newQuantity: number) => {
-    if (newQuantity === 0) {
-      removeItem(id);
-      return;
-    }
-    setCartItems(items =>
-      items.map(item =>
-        item.id === id ? { ...item, quantity: newQuantity } : item
-      )
-    );
-  };
-
-  const removeItem = (id: number) => {
-    setCartItems(items => items.filter(item => item.id !== id));
-  };
 
   const applyPromoCode = () => {
     if (promoCode.toLowerCase() === 'save20') {
@@ -68,48 +36,21 @@ const CartPage = () => {
     }
   };
 
-  const subtotal = cartItems.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
-  const discount = appliedPromo === 'SAVE20' ? subtotal * 0.2 : 0;
-  const shipping = subtotal > 100 ? 0 : 9.99;
-  const tax = (subtotal - discount) * 0.08;
-  const total = subtotal - discount + shipping + tax;
+  const dispatch = useDispatch()
+  //@ts-ignore
+  const cart = useSelector((state)=>state.cart.cart)
+  //@ts-ignore
+  const subTotal = useSelector((state)=>state.cart.total)
+  //@ts-ignore
+  // const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const discount = appliedPromo === 'SAVE20' ? subTotal * 0.2 : 0;
+  const shipping = subTotal > 500 ? 0 : 49;
+  const tax = (subTotal - discount) * 0.08;
+  const total = subTotal - discount + shipping + tax;
+  console.log(total)
 
-  if (cartItems.length === 0) {
+  if (cart.length === 0) {
     return (
-      // <motion.div 
-      //   initial={{ opacity: 0, y: 20 }}
-      //   animate={{ opacity: 1, y: 0 }}
-      //   className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16"
-      // >
-      //   <div className="text-center space-y-6">
-      //     <motion.div 
-      //       initial={{ scale: 0 }}
-      //       animate={{ scale: 1 }}
-      //       transition={{ delay: 0.2 }}
-      //       className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto"
-      //     >
-      //       <ShoppingBag size={40} className="text-gray-400" />
-      //     </motion.div>
-      //     <motion.div
-      //       initial={{ opacity: 0 }}
-      //       animate={{ opacity: 1 }}
-      //       transition={{ delay: 0.3 }}
-      //     >
-      //       <h1 className="text-2xl font-bold text-slate-900 mb-2">Your cart is empty</h1>
-      //       <p className="text-gray-600">Looks like you haven't added anything to your cart yet.</p>
-      //     </motion.div>
-      //     <motion.div
-      //       initial={{ opacity: 0 }}
-      //       animate={{ opacity: 1 }}
-      //       transition={{ delay: 0.4 }}
-      //     >
-      //       <Button asChild size="lg">
-      //         <Link href="/catalog">Continue Shopping</Link>
-      //       </Button>
-      //     </motion.div>
-      //   </div>
-      // </motion.div>
-
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -147,269 +88,6 @@ const CartPage = () => {
   }
 
   return (
-    // <motion.div 
-    //   initial={{ opacity: 0 }}
-    //   animate={{ opacity: 1 }}
-    //   className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
-    // >
-    //   {/* Header */}
-    //   <motion.div 
-    //     initial={{ opacity: 0, y: -20 }}
-    //     animate={{ opacity: 1, y: 0 }}
-    //     className="flex items-center space-x-4 mb-8"
-    //   >
-    //     <Button variant="ghost" size="icon" asChild>
-    //       <Link href="/catalog">
-    //         <ArrowLeft size={20} />
-    //       </Link>
-    //     </Button>
-    //     <div>
-    //       <h1 className="text-2xl font-bold text-slate-900">Shopping Cart</h1>
-    //       <p className="text-gray-600">{cartItems.length} items in your cart</p>
-    //     </div>
-    //   </motion.div>
-
-    //   <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-    //     {/* Cart Items */}
-    //     <div className="lg:col-span-2 space-y-4">
-    //       <AnimatePresence>
-    //         {cartItems.map((item, index) => (
-    //           <motion.div
-    //             key={item.id}
-    //             initial={{ opacity: 0, x: -20 }}
-    //             animate={{ opacity: 1, x: 0 }}
-    //             exit={{ opacity: 0, x: -20 }}
-    //             transition={{ delay: index * 0.1 }}
-    //             layout
-    //           >
-    //             <Card className="overflow-hidden">
-    //               <CardContent className="p-6">
-    //                 <div className="flex gap-6">
-    //                   <Link href={`/product/${item.product.id}`} className="flex-shrink-0">
-    //                     <motion.div
-    //                       whileHover={{ scale: 1.05 }}
-    //                       className="w-32 h-32 overflow-hidden rounded-lg"
-    //                     >
-    //                       <img
-    //                         src={item.product.image}
-    //                         alt={item.product.name}
-    //                         className="w-full h-full object-cover"
-    //                       />
-    //                     </motion.div>
-    //                   </Link>
-                      
-    //                   <div className="flex-1 space-y-3">
-    //                     <div>
-    //                       <Link href={`/product/${item.product.id}`}>
-    //                         <h3 className="font-semibold text-slate-900 hover:text-slate-700 transition-colors">
-    //                           {item.product.name}
-    //                         </h3>
-    //                       </Link>
-    //                       <p className="text-sm text-gray-600">{item.product.brand}</p>
-    //                     </div>
-                        
-    //                     <div className="flex items-center space-x-4 text-sm text-gray-600">
-    //                       <Badge variant="outline">Size: {item.size}</Badge>
-    //                       <Badge variant="outline">Color: {item.color}</Badge>
-    //                     </div>
-                        
-    //                     <div className="flex items-center justify-between">
-    //                       <div className="flex items-center space-x-3">
-    //                         <Button
-    //                           variant="outline"
-    //                           size="icon"
-    //                           onClick={() => updateQuantity(item.id, item.quantity - 1)}
-    //                           className="h-8 w-8"
-    //                         >
-    //                           <Minus size={14} />
-    //                         </Button>
-    //                         <span className="w-8 text-center font-medium">{item.quantity}</span>
-    //                         <Button
-    //                           variant="outline"
-    //                           size="icon"
-    //                           onClick={() => updateQuantity(item.id, item.quantity + 1)}
-    //                           className="h-8 w-8"
-    //                         >
-    //                           <Plus size={14} />
-    //                         </Button>
-    //                       </div>
-                          
-    //                       <div className="flex items-center space-x-4">
-    //                         <span className="font-semibold text-slate-900">
-    //                           ${(item.product.price * item.quantity).toFixed(2)}
-    //                         </span>
-    //                         <Button
-    //                           variant="ghost"
-    //                           size="icon"
-    //                           onClick={() => removeItem(item.id)}
-    //                           className="text-gray-400 hover:text-red-500 h-8 w-8"
-    //                         >
-    //                           <Trash2 size={16} />
-    //                         </Button>
-    //                       </div>
-    //                     </div>
-    //                   </div>
-    //                 </div>
-    //               </CardContent>
-    //             </Card>
-    //           </motion.div>
-    //         ))}
-    //       </AnimatePresence>
-    //     </div>
-
-    //     {/* Order Summary */}
-    //     <motion.div 
-    //       initial={{ opacity: 0, x: 20 }}
-    //       animate={{ opacity: 1, x: 0 }}
-    //       transition={{ delay: 0.3 }}
-    //       className="space-y-6"
-    //     >
-    //       {/* Promo Code */}
-    //       <Card>
-    //         <CardHeader>
-    //           <CardTitle className="flex items-center">
-    //             <Tag size={20} className="mr-2" />
-    //             Promo Code
-    //           </CardTitle>
-    //         </CardHeader>
-    //         <CardContent>
-    //           {appliedPromo ? (
-    //             <motion.div 
-    //               initial={{ scale: 0.9, opacity: 0 }}
-    //               animate={{ scale: 1, opacity: 1 }}
-    //               className="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-lg"
-    //             >
-    //               <Badge variant="secondary" className="bg-green-100 text-green-800">
-    //                 {appliedPromo} Applied
-    //               </Badge>
-    //               <Button
-    //                 variant="ghost"
-    //                 size="sm"
-    //                 onClick={() => setAppliedPromo('')}
-    //                 className="text-green-600 hover:text-green-800"
-    //               >
-    //                 Remove
-    //               </Button>
-    //             </motion.div>
-    //           ) : (
-    //             <div className="flex space-x-2">
-    //               <Input
-    //                 placeholder="Enter promo code"
-    //                 value={promoCode}
-    //                 onChange={(e) => setPromoCode(e.target.value)}
-    //                 className="flex-1"
-    //               />
-    //               <Button onClick={applyPromoCode}>Apply</Button>
-    //             </div>
-    //           )}
-    //           <p className="text-xs text-gray-500 mt-2">Try "SAVE20" for 20% off</p>
-    //         </CardContent>
-    //       </Card>
-
-    //       {/* Order Summary */}
-    //       <Card>
-    //         <CardHeader>
-    //           <CardTitle>Order Summary</CardTitle>
-    //         </CardHeader>
-    //         <CardContent>
-    //           <div className="space-y-3">
-    //             <div className="flex justify-between">
-    //               <span className="text-gray-600">Subtotal</span>
-    //               <span className="font-medium">${subtotal.toFixed(2)}</span>
-    //             </div>
-                
-    //             <AnimatePresence>
-    //               {discount > 0 && (
-    //                 <motion.div 
-    //                   initial={{ opacity: 0, height: 0 }}
-    //                   animate={{ opacity: 1, height: 'auto' }}
-    //                   exit={{ opacity: 0, height: 0 }}
-    //                   className="flex justify-between text-green-600"
-    //                 >
-    //                   <span>Discount ({appliedPromo})</span>
-    //                   <span>-${discount.toFixed(2)}</span>
-    //                 </motion.div>
-    //               )}
-    //             </AnimatePresence>
-                
-    //             <div className="flex justify-between">
-    //               <span className="text-gray-600">Shipping</span>
-    //               <span className="font-medium">
-    //                 {shipping === 0 ? 'Free' : `$${shipping.toFixed(2)}`}
-    //               </span>
-    //             </div>
-                
-    //             <div className="flex justify-between">
-    //               <span className="text-gray-600">Tax</span>
-    //               <span className="font-medium">${tax.toFixed(2)}</span>
-    //             </div>
-                
-    //             <div className="border-t pt-3">
-    //               <div className="flex justify-between">
-    //                 <span className="text-lg font-semibold text-slate-900">Total</span>
-    //                 <span className="text-lg font-semibold text-slate-900">${total.toFixed(2)}</span>
-    //               </div>
-    //             </div>
-    //           </div>
-
-    //           {shipping > 0 && (
-    //             <motion.div 
-    //               initial={{ opacity: 0, y: 10 }}
-    //               animate={{ opacity: 1, y: 0 }}
-    //               className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg"
-    //             >
-    //               <div className="flex items-center space-x-2 text-blue-800">
-    //                 <Truck size={16} />
-    //                 <span className="text-sm">
-    //                   Add ${(100 - subtotal).toFixed(2)} more for free shipping
-    //                 </span>
-    //               </div>
-    //             </motion.div>
-    //           )}
-
-    //           <div className="space-y-3 mt-6">
-    //             <Button className="w-full" size="lg">
-    //               Proceed to Checkout
-    //             </Button>
-                
-    //             <Button variant="outline" className="w-full" asChild>
-    //               <Link href="/catalog">Continue Shopping</Link>
-    //             </Button>
-    //           </div>
-    //         </CardContent>
-    //       </Card>
-
-    //       {/* Security Features */}
-    //       <Card>
-    //         <CardHeader>
-    //           <CardTitle>Why shop with us?</CardTitle>
-    //         </CardHeader>
-    //         <CardContent>
-    //           <div className="space-y-3 text-sm">
-    //             {[
-    //               'Secure payment processing',
-    //               '30-day return policy',
-    //               'Free shipping over $100',
-    //               '24/7 customer support'
-    //             ].map((feature, index) => (
-    //               <motion.div 
-    //                 key={feature}
-    //                 initial={{ opacity: 0, x: -10 }}
-    //                 animate={{ opacity: 1, x: 0 }}
-    //                 transition={{ delay: 0.5 + index * 0.1 }}
-    //                 className="flex items-center space-x-3"
-    //               >
-    //                 <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-    //                 <span className="text-gray-600">{feature}</span>
-    //               </motion.div>
-    //             ))}
-    //           </div>
-    //         </CardContent>
-    //       </Card>
-    //     </motion.div>
-    //   </div>
-    // </motion.div>
-
     <motion.div 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -428,7 +106,7 @@ const CartPage = () => {
         </Button>
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Shopping Cart</h1>
-          <p className="text-gray-600 dark:text-gray-400">{cartItems.length} items in your cart</p>
+          <p className="text-gray-600 dark:text-gray-400">{cart.length} items in your cart</p>
         </div>
       </motion.div>
 
@@ -436,7 +114,7 @@ const CartPage = () => {
         {/* Cart Items */}
         <div className="lg:col-span-2 space-y-4">
           <AnimatePresence>
-            {cartItems.map((item, index) => (
+            {cart.map((item,index) => (
               <motion.div
                 key={item.id}
                 initial={{ opacity: 0, x: -20 }}
@@ -448,14 +126,14 @@ const CartPage = () => {
                 <Card className="glass border border-white/10">
                   <CardContent className="p-6">
                     <div className="flex gap-6">
-                      <Link href={`/product/${item.product.id}`} className="flex-shrink-0">
+                      <Link href={`/product/${item.id}`} className="flex-shrink-0">
                         <motion.div
                           whileHover={{ scale: 1.05 }}
                           className="w-32 h-32 overflow-hidden rounded-lg"
                         >
                           <img
-                            src={item.product.image}
-                            alt={item.product.name}
+                            src={item.thumnail}
+                            alt={item.title}
                             className="w-full h-full object-cover"
                           />
                         </motion.div>
@@ -463,21 +141,24 @@ const CartPage = () => {
                       
                       <div className="flex-1 space-y-3">
                         <div>
-                          <Link href={`/product/${item.product.id}`}>
+                          <Link href={`/product/${item?.id}`}>
                             <h3 className="font-semibold text-gray-900 dark:text-white hover:text-blue-400 transition-colors">
-                              {item.product.name}
+                              {item.title}
                             </h3>
                           </Link>
-                          <p className="text-sm text-gray-600 dark:text-gray-400">{item.product.brand}</p>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">
+                            {/* {item.product.brand} */}
+                            Zivelle
+                            </p>
                         </div>
                         
                         <div className="flex items-center space-x-4 text-sm">
-                          <Badge variant="outline" className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300">Size: {item.size}</Badge>
-                          <Badge variant="outline" className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300">Color: {item.color}</Badge>
+                          <Badge variant="outline" className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300">Size:</Badge>
+                          <Badge variant="outline" className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300">Color:</Badge>
                         </div>
                         
                         <div className="flex items-center justify-between">
-                          <div className="flex items-center space-x-3">
+                          {/* <div className="flex items-center space-x-3">
                             <Button
                               variant="outline"
                               size="icon"
@@ -496,22 +177,24 @@ const CartPage = () => {
                             >
                               <Plus size={14} />
                             </Button>
-                          </div>
+                          </div> */}
                           
                           <div className="flex items-center space-x-4">
                             <span className="font-semibold text-gray-900 dark:text-white">
-                              ${(item.product.price * item.quantity).toFixed(2)}
+                              ${item.price.toFixed(2)}
                             </span>
                             <Button
                               variant="ghost"
                               size="icon"
-                              onClick={() => removeItem(item.id)}
+                              //@ts-ignore
+                              onClick={() => dispatch(removeFromCart(item))}
                               className="text-gray-500 dark:text-gray-400 hover:text-red-400 h-8 w-8 hover:bg-red-500/10"
                             >
                               <Trash2 size={16} />
                             </Button>
                           </div>
                         </div>
+                        
                       </div>
                     </div>
                   </CardContent>
@@ -581,7 +264,7 @@ const CartPage = () => {
               <div className="space-y-3">
                 <div className="flex justify-between">
                   <span className="text-gray-600 dark:text-gray-400">Subtotal</span>
-                  <span className="font-medium text-gray-900 dark:text-white">${subtotal.toFixed(2)}</span>
+                  <span className="font-medium text-gray-900 dark:text-white">${subTotal.toFixed(2)}</span>
                 </div>
                 
                 <AnimatePresence>
@@ -629,7 +312,7 @@ const CartPage = () => {
                   <div className="flex items-center space-x-2 text-blue-600 dark:text-blue-400">
                     <Truck size={16} />
                     <span className="text-sm">
-                      Add ${(100 - subtotal).toFixed(2)} more for free shipping
+                      Add ${(500 - subTotal).toFixed(2)} more for free shipping
                     </span>
                   </div>
                 </motion.div>

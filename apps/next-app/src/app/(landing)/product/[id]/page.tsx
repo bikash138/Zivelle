@@ -15,7 +15,6 @@ export default async function ProductRoute({ params }: { params: { id: string } 
         price: true,
         category: true,
         subCategory: true,
-        createdAt: true,
     }
   });
 

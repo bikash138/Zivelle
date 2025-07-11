@@ -5,6 +5,8 @@ import { motion } from 'framer-motion';
 import ProductCard from '@/components/Landing/Common/ProductCard';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { addToCart } from '@/redux/slices/cartSlice';
+import { useDispatch } from 'react-redux';
 
 interface Product {
   id: number;
@@ -26,6 +28,7 @@ interface ProductProps {
 
 const Product = ({ product }: ProductProps) => {
 //   const product = products.find(p => p.id === parseInt(id || '1'));
+  const dispatch = useDispatch()
   const [selectedSize, setSelectedSize] = useState('M');
   const [selectedColor, setSelectedColor] = useState('Black');
   const [quantity, setQuantity] = useState(1);
@@ -204,7 +207,9 @@ const Product = ({ product }: ProductProps) => {
 
             {/* Actions */}
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              <Button className="flex-1 bg-slate-900 hover:bg-slate-800 text-white dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-200 py-3 px-6 font-semibold flex items-center justify-center space-x-2">
+              <Button className="flex-1 bg-slate-900 hover:bg-slate-800 text-white dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-200 py-3 px-6 font-semibold flex items-center justify-center space-x-2"
+                onClick={()=>dispatch(addToCart(product))}
+              >
                 <ShoppingCart size={20} />
                 <span>Add to Cart</span>
               </Button>
