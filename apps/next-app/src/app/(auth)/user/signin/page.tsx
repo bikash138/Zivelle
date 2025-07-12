@@ -10,11 +10,15 @@ import { SignInSchema } from '@repo/zod/zodTypes';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
+import { useDispatch } from 'react-redux';
+import { setUser } from '@/redux/slices/profileSlice';
+import { setToken } from '@/redux/slices/authSlice';
 
 type formType = z.infer<typeof SignInSchema>;
 
 const Signin = () => {
   const router = useRouter()
+  const dispatch = useDispatch()
   const{
       register,
       handleSubmit,
@@ -35,9 +39,12 @@ const Signin = () => {
         toast.error(response.data?.message, {id: toastId})
         return
       }
+      localStorage.setItem("token", response.data?.token)
+      dispatch(setToken(response.data?.token))
       toast.success(response.data?.message, {id: toastId})
+      dispatch(setUser({...response.data?.user}))
       reset()
-      router.push("/dashboard/user/profile")
+      router.push("/")
     }catch(error){
       console.log("Something went wrong while SignIn", error)
       toast.error('SignIn Failed', {id: toastId})

@@ -12,6 +12,7 @@ import type { SellerProfile } from '@/types';
 import axios from 'axios';
 import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
+import { useSelector } from 'react-redux';
 
 interface UpadatedDataForm{
     name: string,
@@ -20,6 +21,8 @@ interface UpadatedDataForm{
   }
 
 export function Profile() {
+  //@ts-ignore
+  const user = useSelector((state)=>state.profile.user)
   const [profile, setProfile] = useState<SellerProfile | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editedProfile, setEditedProfile] = useState<SellerProfile | null>(null);
@@ -33,13 +36,11 @@ export function Profile() {
   } = useForm<UpadatedDataForm>()
 
   useEffect(()=>{
-  const fetchSeller = async()=>{
+  const fetchUser = async()=>{
     if (!profileUpdated) {
-      const stored = localStorage.getItem('userProfile');
-      if (stored) {
-        const seller = JSON.parse(stored);
-        setProfile(seller);
-        setEditedProfile(seller);
+      if (user) {
+        setProfile(user);
+        setEditedProfile(user);
         return;
       }
     }
@@ -59,7 +60,7 @@ export function Profile() {
       console.log('Error while getting seller details', error)
     }
   }
-  fetchSeller()
+  fetchUser()
 },[profileUpdated])
 
   function formatDate(isoString: string) {

@@ -23,6 +23,7 @@ export const ListItemSchema = z.object({
     thumbnail: z.string().min(1, "Thumbnail is required"),
     title: z.string().max(30),
     description: z.string(),
+    originalPrice: z.number(),
     price: z.number().min(100),
     category: z.enum(categories),
     subCategory: z.enum(subCategories),

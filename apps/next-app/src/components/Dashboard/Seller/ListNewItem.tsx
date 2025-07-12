@@ -36,6 +36,7 @@ export function ListNewItem() {
       thumbnail: '',
       title: '',
       description: '',
+      originalPrice: 0,
       price: 0,
       category: 'Men',
       subCategory: 'Topwear',
@@ -113,19 +114,35 @@ export function ListNewItem() {
             </div>
 
             {/* Price */}
-            <div className="space-y-2">
-              <Label htmlFor="price" className="text-slate-200">Price ($)</Label>
-              <Input
-                id="price"
-                type="number"
-                {...register('price', { valueAsNumber: true })}
-                placeholder="499"
-                className="bg-slate-700 border-slate-600 text-white placeholder:text-slate-400"
-                required
-              />
-              {errors.price && (
-                  <p className="text-red-500 text-sm">{errors.price?.message as string}</p>
+            <div className='flex space-x-2 w-full space-y-2'>
+              <div className="space-y-2 w-[50%]">
+                <Label htmlFor="price" className="text-slate-200">Price (₹)</Label>
+                <Input
+                  id="price"
+                  type="number"
+                  {...register('price', { valueAsNumber: true })}
+                  placeholder="499"
+                  className="bg-slate-700 border-slate-600 text-white placeholder:text-slate-400"
+                  required
+                />
+                {errors.price && (
+                    <p className="text-red-500 text-sm">{errors.price?.message as string}</p>
+                  )}
+              </div>
+              <div className="space-y-2 w-[50%]">
+                <Label htmlFor="price" className="text-slate-200">Original Price (₹)</Label>
+                <Input
+                  id="price"
+                  type="number"
+                  {...register('originalPrice', { valueAsNumber: true })}
+                  placeholder="999"
+                  className="bg-slate-700 border-slate-600 text-white placeholder:text-slate-400"
+                  required
+                />
+                {errors.originalPrice && (
+                  <p className="text-red-500 text-sm">{errors.originalPrice?.message as string}</p>
                 )}
+              </div>
             </div>
           
             {/* Stock */}

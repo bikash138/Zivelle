@@ -24,7 +24,7 @@ export async function POST(req: NextRequest){
         const user = await prisma.customer.findFirst({
             where:{
                 email
-            }
+            },
         });
 
         //If not found return error
@@ -53,6 +53,12 @@ export async function POST(req: NextRequest){
             };
             const response = NextResponse.json({
                 success: true,
+                token,
+                user: {
+                    name: user.name,
+                    email: user.email,
+                    createdAt: user.createdAt
+                },
                 message: "User Login Success"
             }, { status: 200 });
             response.cookies.set("token", token, {

@@ -1,5 +1,5 @@
 'use client'
-import React from 'react';
+import React, { useEffect } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { ArrowRight, Sparkles, Star, TrendingUp } from 'lucide-react';
@@ -10,6 +10,7 @@ import ProductCard from '@/components/Landing/Common/ProductCard';
 import { featuredProducts } from '@/data/products';
 import Footer from '@/components/Landing/Common/Footer';
 import Header from '@/components/Landing/Common/Header';
+
 
 const LandingPage = () => {
   const containerVariants = {
@@ -256,7 +257,7 @@ const LandingPage = () => {
           viewport={{ once: true }}
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
         >
-          {featuredProducts.slice(0, 8).map((product, index) => (
+          {featuredProducts.slice(0, 8).map((product) => (
             <motion.div key={product.id} variants={itemVariants}>
               <ProductCard product={product} />
             </motion.div>
