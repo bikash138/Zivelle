@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import getUserId from "@/lib/getUserId"
 import {razorpayInstance} from '@repo/payments/razorpay'
+import { prisma } from "@repo/database/prisma";
 
 export async function POST(req:NextRequest) {
     try{
@@ -8,7 +9,8 @@ export async function POST(req:NextRequest) {
         if(error){
             return error
         }
-        const { items, totalAmount } = await req.json()
+        const body = await req.json()
+        const totalAmount = body.totalAmount
         const options = {
             amount: Math.round(Number((+totalAmount).toFixed(2)) * 100),
             currency: "INR",
@@ -20,6 +22,15 @@ export async function POST(req:NextRequest) {
             const razorpay = razorpayInstance();
             const paymentResponse = await razorpay.orders.create(options);
             console.log(paymentResponse)
+            await prisma.order.create({
+                data: {
+                    total: totalAmount,
+                    orderStatus: "Pending", 
+                    paymentStatus: "Pending",
+                    customerId: userId,
+                    razorpayOrderId: paymentResponse.id
+                }
+            });
             return NextResponse.json({
                 success:true,
                 data: paymentResponse

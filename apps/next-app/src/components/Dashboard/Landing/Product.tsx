@@ -11,6 +11,7 @@ import { toast } from 'sonner';
 
 interface Product {
   id: number;
+  adminId: string;
   title: string;
   price: number;
   originalPrice: number;

@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Edit, Save, X, User, Store, Calendar, DollarSign, Package } from 'lucide-react';
+import { Edit, Save, X, User, Store, Calendar, DollarSign, Package, Loader } from 'lucide-react';
 import type { SellerProfile } from '@/types';
 import axios from 'axios';
 import { toast } from 'sonner';
@@ -135,43 +135,46 @@ export function Profile() {
                 </Badge>
               </div>
             </div>
-            {!isEditing ? (
-              <Button onClick={handleEdit} className="cursor-pointer bg-orange-600 hover:bg-orange-700">
-                <Edit className="h-4 w-4 mr-2" />
-                Edit Profile
-              </Button>
-            ) : (
-              <div className="flex space-x-2">
-                <Button
-                  onClick={handleSubmit(handleSave)}
-                  disabled={isSaving}
-                  className="cursor-pointer bg-green-600 hover:bg-green-700"
-                >
-                  <Save className="h-4 w-4 mr-2" />
-                  {isSaving ? 'Saving...' : 'Save'}
-                </Button>
-                <Button
-                  onClick={handleCancel}
-                  variant="outline"
-                  className="cursor-pointer border-slate-600 text-slate-300"
-                >
-                  <X className="h-4 w-4 mr-2" />
-                  Cancel
-                </Button>
-              </div>
-            )}
+            
           </div>
         </CardHeader>
       </Card>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-1 gap-6">
         {/* Profile Information */}
         <Card className="bg-slate-800 border-slate-700">
           <CardHeader>
-            <CardTitle className="text-white flex items-center">
-              <User className="h-5 w-5 mr-2" />
-              Profile Information
+            <CardTitle className="text-white flex items-center justify-between">
+              <div className="text-white flex items-center mr-3">
+                <User className="h-5 w-5 mr-2" />
+                <p>Profile</p>
+              </div>
+              <div className="min-w-[100px] flex items-center justify-end">
+                {!isEditing ? (
+                  <Button onClick={handleEdit} className="hover:text-orange-400 cursor-pointer h-10">
+                    <Edit className="h-4 w-4" />
+                  </Button>
+                ) : (
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      onClick={handleSubmit(handleSave)}
+                      disabled={isSaving}
+                      className="cursor-pointer bg-green-600 hover:bg-green-700 h-10"
+                    >
+                      {isSaving ? <Loader /> : <Save />}
+                    </Button>
+                    <Button
+                      onClick={handleCancel}
+                      variant="outline"
+                      className="cursor-pointer border-slate-600 text-slate-700 bg-gray-300 h-10"
+                    >
+                      <X />
+                    </Button>
+                  </div>
+                )}
+                </div>
             </CardTitle>
+            
           </CardHeader>
           <CardContent className="space-y-4">
 
@@ -183,10 +186,10 @@ export function Profile() {
                     id="name"
                     {...register('name')}
                     // onChange={(e) => handleInputChange('name', e.target.value)}
-                    className="bg-slate-700 border-slate-600 text-white"
+                    className="bg-slate-700 border-slate-600 text-white h-10 px-3 py-2 rounded-md"
                   />
                 ) : (
-                  <div className="p-3 bg-slate-700 rounded-md border border-slate-600">
+                  <div className="bg-slate-700 border border-slate-600 text-white h-10 px-3 py-2 rounded-md flex items-center">
                     <p className="text-white">{profile?.name}</p>
                   </div>
                 )}
@@ -199,10 +202,10 @@ export function Profile() {
                     {...register('email')}
                     type="email"
                     // onChange={(e) => handleInputChange('email', e.target.value)}
-                    className="bg-slate-700 border-slate-600 text-white"
+                    className="bg-slate-700 border-slate-600 text-white h-10 px-3 py-2 rounded-md"
                   />
                 ) : (
-                  <div className="p-3 bg-slate-700 rounded-md border border-slate-600">
+                  <div className="p-3 bg-slate-700 border border-slate-600 text-white h-10 px-3 py-2 rounded-md flex items-center">
                     <p className="text-white">{profile?.email}</p>
                   </div>
                 )}
@@ -212,7 +215,7 @@ export function Profile() {
 
             <div className="space-y-2">
               <Label className="text-slate-300">Member Since</Label>
-              <div className="p-3 bg-slate-700 rounded-md border border-slate-600">
+              <div className="bg-slate-700 border border-slate-600 text-white h-10 px-3 py-2 rounded-md flex items-center">
                 <p className="text-white flex items-center">
                   <Calendar className="h-4 w-4 mr-2 text-slate-400" />
                   {profile?.createdAt ? formatDate(profile.createdAt) : 'N/A'}
@@ -223,7 +226,7 @@ export function Profile() {
         </Card>
 
         {/* Account Statistics */}
-        <Card className="bg-slate-800 border-slate-700">
+        {/* <Card className="bg-slate-800 border-slate-700">
           <CardHeader>
             <CardTitle className="text-white flex items-center">
               <DollarSign className="h-5 w-5 mr-2" />
@@ -271,7 +274,7 @@ export function Profile() {
               </div>
             </div>
           </CardContent>
-        </Card>
+        </Card> */}
       </div>
     </div>
   );

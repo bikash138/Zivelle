@@ -9,6 +9,7 @@ export default async function ProductRoute({ params }: { params: { id: string } 
     },
     select:{
         id: true,
+        adminId: true,
         thumbnail: true,
         title: true,
         description: true,

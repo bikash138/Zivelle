@@ -10,19 +10,34 @@ export default async function OrdersRoute() {
     if(error){
         return error
     }
-    const allOrders = await prisma.order.findMany({
+    const allOrders = await prisma.orderItem.findMany({
         where: {
             sellerId: userId
         },
         select:{
-            id: true,
+            orderId: true,
+            itemId: true,
             quantity: true,
-            total: true,
-            status: true,
-            placedOn: true,
+            size: true,
+            price: true,
             item:{
                 select:{
-                    title: true
+                    title: true,
+                    thumbnail: true
+                }
+            },
+            order:{
+                select:{
+                    placedOn: true,
+                    orderStatus: true,
+                    paymentStatus: true,
+                    customer:{
+                        select:{
+                            name: true,
+                            email: true,
+                            address: true
+                        }
+                    }
                 }
             }
         }

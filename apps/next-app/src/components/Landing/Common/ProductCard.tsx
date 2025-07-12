@@ -13,8 +13,8 @@ interface Product {
   thumbnail: string;
   // rating: number;
   // brand: string;
-  category: string;
-  subCategory: string
+  // category: string;
+  // subCategory: string
   // createdAt: string;
 }
 

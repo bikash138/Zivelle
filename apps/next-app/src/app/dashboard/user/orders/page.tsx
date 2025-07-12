@@ -1,4 +1,4 @@
-import {Orders} from '@/components/Dashboard/Seller/Orders';
+import {Orders} from '@/components/Dashboard/Customer/Orders';
 import getUserIdToken from '@/lib/getUserIdToken';
 import { prisma } from '@repo/database/prisma';
 import { cookies } from 'next/headers';
@@ -12,17 +12,17 @@ export default async function OrdersRoute() {
     }
     const allOrders = await prisma.order.findMany({
         where: {
-            sellerId: userId
-        },
-        select:{
-            id: true,
-            quantity: true,
-            total: true,
-            status: true,
-            placedOn: true,
-            item:{
-                select:{
-                    title: true
+            customerId: userId
+        }, 
+        include:{
+            items:{
+                include:{
+                    item:{
+                        select:{
+                            thumbnail: true,
+                            title: true
+                        }
+                    }
                 }
             }
         }

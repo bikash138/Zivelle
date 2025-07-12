@@ -11,16 +11,27 @@ import { toast } from 'sonner';
 import { formatDate } from '@/lib/formatDate';
 import { Copy } from 'lucide-react';
 
- interface OrderType{
-    id: string
-    quantity: number,
-    total: number,
-    placedOn: Date,
-    status: string,
-    item: {
-      title: string
-    }
-  }
+ export interface OrderType {
+  orderId: string;
+  itemId: number;
+  quantity: number;
+  size: string; // or Size if you have a Size enum/type
+  price: number;
+  item: {
+    title: string;
+    thumbnail: string;
+  };
+  order: {
+    placedOn: Date;
+    orderStatus: string;
+    paymentStatus: string;
+    customer?: {
+      name: string;
+      email: string;
+      address: string | null;
+    };
+  };
+}
   interface OrdersProps {
     initialOrders: OrderType[];
   }
@@ -34,38 +45,6 @@ export function Orders({ initialOrders }: OrdersProps) {
   const [sortBy, setSortBy] = useState<string>('placedOn');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
-  // const fetchOrders = async () => {
-    // const toastId = toast.loading("Loading...")
-    // try{
-    //   const response = await axios.get('/api/orders')
-    //   if (!response.data?.success) {
-    //     toast.error("Fetching Ordered Items Failed");
-    //     return; 
-    //   }
-    //   setOrders(response.data?.allOrders)
-    //   toast.dismiss(toastId)
-    // }catch(error){
-    //   console.log("Something went wrong while fetching orders", error)
-    //   toast.error("Something went wrong while fetching orders")
-    // }
-  // }
-  // const { data, error, isLoading } = useQuery({
-  //   queryKey: ['orders'],
-  //   queryFn: fetchOrders,
-  //   refetchInterval: 30000,  // 30 seconds
-  //   staleTime: 10000,        // 10 seconds
-  //   //@ts-ignore
-  //   cacheTime: 300000,       // 5 minutes
-  // });
-
-  
-  // if (isLoading) return <div>Loading orders...</div>;
-  // if (error) return <div>Error: {error.message}</div>;
-  // if(data) console.log(data)
-
-  // useEffect(()=>{
-  //   fetchOrders()
-  // },[])
 
   useEffect(()=>{
     setFilteredOrders(orders)
@@ -103,13 +82,13 @@ export function Orders({ initialOrders }: OrdersProps) {
 
     if (search) {
       filtered = filtered.filter(order =>
-        order.id.toLowerCase().includes(search.toLowerCase()) ||
+        order.orderId.toLowerCase().includes(search.toLowerCase()) ||
         order.item.title.toLowerCase().includes(search.toLowerCase())
       );
     }
 
     if (status !== 'all') {
-      filtered = filtered.filter(order => order.status === status);
+      filtered = filtered.filter(order => order.order.orderStatus === status);
     }
 
     // Sort orders
@@ -118,20 +97,20 @@ export function Orders({ initialOrders }: OrdersProps) {
       let bValue: string | number | Date;
 
       if (sort === 'id') {
-        aValue = a.id;
-        bValue = b.id;
+        aValue = a.orderId;
+        bValue = b.orderId;
       } else if (sort === 'total') {
-        aValue = a.total;
-        bValue = b.total;
+        aValue = a.order.orderStatus;
+        bValue = b.order.orderStatus;
       } else if (sort === 'placedOn') {
-        aValue = new Date(a.placedOn);
-        bValue = new Date(b.placedOn);
+        aValue = new Date(a.order.placedOn);
+        bValue = new Date(b.order.placedOn);
       } else if (sort === 'quantity') {
         aValue = a.quantity;
         bValue = b.quantity;
       } else if (sort === 'status') {
-        aValue = a.status;
-        bValue = b.status;
+        aValue = a.order.orderStatus;
+        bValue = b.order.orderStatus;
       } else if (sort === 'item') {
         aValue = a.item.title;
         bValue = b.item.title;
@@ -206,7 +185,7 @@ export function Orders({ initialOrders }: OrdersProps) {
               <div>
                 <p className="text-sm text-slate-400">Pending</p>
                 <p className="text-2xl font-bold text-yellow-400">
-                  {orders.filter(o => o.status === 'Pending').length}
+                  {orders.filter(o => o.order.orderStatus === 'Pending').length}
                 </p>
               </div>
               <Package className="h-8 w-8 text-yellow-400" />
@@ -219,7 +198,7 @@ export function Orders({ initialOrders }: OrdersProps) {
               <div>
                 <p className="text-sm text-slate-400">Shipped</p>
                 <p className="text-2xl font-bold text-blue-400">
-                  {orders.filter(o => o.status === 'Shipped').length}
+                  {orders.filter(o => o.order.orderStatus === 'Shipped').length}
                 </p>
               </div>
               <Package className="h-8 w-8 text-blue-400" />
@@ -232,7 +211,7 @@ export function Orders({ initialOrders }: OrdersProps) {
               <div>
                 <p className="text-sm text-slate-400">Revenue</p>
                 <p className="text-2xl font-bold text-green-400">
-                  ${orders.reduce((sum, order) => sum + order.total, 0).toFixed(2)}
+                  ${orders.reduce((sum, order) => sum + order.price, 0).toFixed(2)}
                 </p>
               </div>
               <Package className="h-8 w-8 text-green-400" />
@@ -313,12 +292,12 @@ export function Orders({ initialOrders }: OrdersProps) {
                 {filteredOrders.map((order, index) => (
                   <TableRow key={index} className="border-slate-700 hover:bg-slate-700/50">
                     <TableCell className="font-medium text-white flex items-center gap-2">
-                      <span>{trimOrderId(order.id)}</span>
+                      <span>{trimOrderId(order.orderId)}</span>
                       <Button
                         variant="ghost"
                         size="icon"
                         className="cursor-pointer h-6 w-6 p-0 text-slate-400 hover:bg-gray-900 hover:text-orange-400"
-                        onClick={() => handleCopy(order.id)}
+                        onClick={() => handleCopy(order.orderId)}
                         title="Copy Order ID"
                       >
                         <Copy className="h-4 w-4" />
@@ -331,16 +310,16 @@ export function Orders({ initialOrders }: OrdersProps) {
                       </div>
                     </TableCell>
                     <TableCell className="text-slate-200">{order?.quantity}</TableCell>
-                    <TableCell className="text-slate-200">${order?.total}</TableCell>
+                    <TableCell className="text-slate-200">${order?.price}</TableCell>
                     <TableCell>
                       <Badge 
-                        variant={getStatusBadgeVariant(order.status)} 
-                        className={`text-xs ${getStatusColor(order.status)}`}
+                        variant={getStatusBadgeVariant(order.order.orderStatus)} 
+                        className={`text-xs ${getStatusColor(order.order.orderStatus)}`}
                       >
-                        {order.status}
+                        {order.order.orderStatus}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-slate-200">{formatDate(String(order?.placedOn))}</TableCell>
+                    <TableCell className="text-slate-200">{formatDate(String(order?.order.placedOn))}</TableCell>
                     <TableCell>
                       <Button
                         variant="ghost"

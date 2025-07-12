@@ -80,7 +80,7 @@ const Header = () => {
 
           {/* Right side actions */}
           {isAuthenticated ? (
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-3">
               <motion.button 
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
@@ -96,7 +96,7 @@ const Header = () => {
               >
                 <Search size={20} />
               </motion.button>
-              <Link 
+              {/* <Link 
                 href="/favourites" 
                 className={`p-2 transition-colors relative rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 ${
                   pathname === '/favourites' 
@@ -110,7 +110,7 @@ const Header = () => {
                     2
                   </span>
                 </motion.div>
-              </Link>
+              </Link> */}
               <Link 
                 href="/cart" 
                 className={`p-2 transition-colors relative rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 ${

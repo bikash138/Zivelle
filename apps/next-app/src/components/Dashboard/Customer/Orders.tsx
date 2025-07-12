@@ -11,16 +11,22 @@ import { toast } from 'sonner';
 import { formatDate } from '@/lib/formatDate';
 import { Copy } from 'lucide-react';
 
- interface OrderType{
-    id: string
-    quantity: number,
-    total: number,
-    placedOn: Date,
-    status: string,
+interface OrderType {
+  placedOn: Date
+  total: number
+  id: string;
+  orderStatus: string
+  paymentStatus: string
+  customerId: string;
+  razorpayOrderId: string;
+  razorpayPaymentId: string | null;
+  items: {
     item: {
-      title: string
-    }
+      thumbnail: string;
+      title: string;
+    };
   }
+}
   interface OrdersProps {
     initialOrders: OrderType[];
   }
@@ -34,38 +40,6 @@ export function Orders({ initialOrders }: OrdersProps) {
   const [sortBy, setSortBy] = useState<string>('placedOn');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
-  // const fetchOrders = async () => {
-    // const toastId = toast.loading("Loading...")
-    // try{
-  //   const response = await axios.get('/api/orders')
-    //   if (!response.data?.success) {
-    //     toast.error("Fetching Ordered Items Failed");
-    //     return; 
-    //   }
-    //   setOrders(response.data?.allOrders)
-    //   toast.dismiss(toastId)
-    // }catch(error){
-    //   console.log("Something went wrong while fetching orders", error)
-    //   toast.error("Something went wrong while fetching orders")
-    // }
-  // }
-  // const { data, error, isLoading } = useQuery({
-  //   queryKey: ['orders'],
-  //   queryFn: fetchOrders,
-  //   refetchInterval: 30000,  // 30 seconds
-  //   staleTime: 10000,        // 10 seconds
-  //   //@ts-ignore
-  //   cacheTime: 300000,       // 5 minutes
-  // });
-
-  
-  // if (isLoading) return <div>Loading orders...</div>;
-  // if (error) return <div>Error: {error.message}</div>;
-  // if(data) console.log(data)
-
-  // useEffect(()=>{
-  //   fetchOrders()
-  // },[])
 
   useEffect(()=>{
     setFilteredOrders(orders)
@@ -101,15 +75,15 @@ export function Orders({ initialOrders }: OrdersProps) {
   const filterAndSortOrders = (search: string, status: string, sort: string, order: 'asc' | 'desc') => {
     let filtered = orders;
 
-    if (search) {
-      filtered = filtered.filter(order =>
-        order.id.toLowerCase().includes(search.toLowerCase()) ||
-        order.item.title.toLowerCase().includes(search.toLowerCase())
-      );
-    }
+    // if (search) {
+    //   filtered = filtered.filter(order =>
+    //     order.id.toLowerCase().includes(search.toLowerCase()) ||
+    //     order.item.title.toLowerCase().includes(search.toLowerCase())
+    //   );
+    // }
 
     if (status !== 'all') {
-      filtered = filtered.filter(order => order.status === status);
+      filtered = filtered.filter(order => order.orderStatus === status);
     }
 
     // Sort orders
@@ -127,14 +101,11 @@ export function Orders({ initialOrders }: OrdersProps) {
         aValue = new Date(a.placedOn);
         bValue = new Date(b.placedOn);
       } else if (sort === 'quantity') {
-        aValue = a.quantity;
-        bValue = b.quantity;
+        aValue = a.total;
+        bValue = b.total;
       } else if (sort === 'status') {
-        aValue = a.status;
-        bValue = b.status;
-      } else if (sort === 'item') {
-        aValue = a.item.title;
-        bValue = b.item.title;
+        aValue = a.orderStatus;
+        bValue = b.orderStatus;
       } else {
         aValue = '';
         bValue = '';
@@ -180,6 +151,28 @@ export function Orders({ initialOrders }: OrdersProps) {
     }
   };
 
+  const getPaymentStatusBadge = (status: string) => {
+    switch (status) {
+      case 'Pending':
+        return 'outline';
+      case 'Success':
+        return 'default';
+      case 'Failed':
+        return 'destructive';
+    }
+  };
+
+  const getPaymentStatusColor = (status: string) => {
+    switch (status) {
+      case 'Pending':
+        return 'text-yellow-400';
+      case 'Success':
+        return 'text-green-400';
+      case 'Cancelled':
+        return 'text-red-400';
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div>
@@ -188,7 +181,7 @@ export function Orders({ initialOrders }: OrdersProps) {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card className="bg-slate-800 border-slate-700">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
@@ -206,7 +199,7 @@ export function Orders({ initialOrders }: OrdersProps) {
               <div>
                 <p className="text-sm text-slate-400">Pending</p>
                 <p className="text-2xl font-bold text-yellow-400">
-                  {orders.filter(o => o.status === 'Pending').length}
+                  {orders.filter(o => o.orderStatus === 'Pending').length}
                 </p>
               </div>
               <Package className="h-8 w-8 text-yellow-400" />
@@ -219,7 +212,7 @@ export function Orders({ initialOrders }: OrdersProps) {
               <div>
                 <p className="text-sm text-slate-400">Shipped</p>
                 <p className="text-2xl font-bold text-blue-400">
-                  {orders.filter(o => o.status === 'Shipped').length}
+                  {orders.filter(o => o.orderStatus === 'Shipped').length}
                 </p>
               </div>
               <Package className="h-8 w-8 text-blue-400" />
@@ -230,9 +223,9 @@ export function Orders({ initialOrders }: OrdersProps) {
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-slate-400">Revenue</p>
+                <p className="text-sm text-slate-400">Total Spent</p>
                 <p className="text-2xl font-bold text-green-400">
-                  ${orders.reduce((sum, order) => sum + order.total, 0).toFixed(2)}
+                  ₹{orders.reduce((sum, order) => sum + order.total, 0).toFixed(2)}
                 </p>
               </div>
               <Package className="h-8 w-8 text-green-400" />
@@ -268,35 +261,20 @@ export function Orders({ initialOrders }: OrdersProps) {
             </Select>
           </div>
         </CardHeader>
+
         <CardContent>
           <div className="rounded-md border border-slate-700">
             <Table>
               <TableHeader>
                 <TableRow className="border-slate-700">
                   <TableHead className="text-slate-300">
-                    <Button
-                      variant="ghost"
-                      onClick={() => handleSort('id')}
-                      className="text-slate-300 hover:text-white hover:bg-gray-700 cursor-pointer p-0 font-medium"
-                    >
-                      Order ID
-                      <ArrowUpDown className="ml-1 h-4 w-4" />
-                    </Button>
+                      Order 
                   </TableHead>
-                  <TableHead className="text-slate-300">Item</TableHead>
-                  <TableHead className="text-slate-300">Quantity</TableHead>
-                  <TableHead className="text-slate-300">
-                    <Button
-                      variant="ghost"
-                      onClick={() => handleSort('total')}
-                      className="cursor-pointer text-slate-300 hover:text-white hover:bg-gray-700 p-0 font-medium"
-                    >
-                      Total
-                      <ArrowUpDown className="ml-1 h-4 w-4" />
-                    </Button>
-                  </TableHead>
+                  <TableHead className="hidden sm:table-cell text-slate-300">Delivery Time</TableHead>
+                  <TableHead className="hidden md:table-cell text-slate-300">Cart Value</TableHead>
                   <TableHead className="text-slate-300">Status</TableHead>
-                  <TableHead className="text-slate-300">
+                  <TableHead className="hidden sm:table-cell text-slate-300">Payment</TableHead>
+                  <TableHead className="hidden md:table-cell text-slate-300">
                     <Button
                       variant="ghost"
                       onClick={() => handleSort('placedOn')}
@@ -312,35 +290,61 @@ export function Orders({ initialOrders }: OrdersProps) {
               <TableBody>
                 {filteredOrders.map((order, index) => (
                   <TableRow key={index} className="border-slate-700 hover:bg-slate-700/50">
+                    {/* Thumbnails: always visible */}
                     <TableCell className="font-medium text-white flex items-center gap-2">
-                      <span>{trimOrderId(order.id)}</span>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="cursor-pointer h-6 w-6 p-0 text-slate-400 hover:bg-gray-900 hover:text-orange-400"
-                        onClick={() => handleCopy(order.id)}
-                        title="Copy Order ID"
-                      >
-                        <Copy className="h-4 w-4" />
-                      </Button>
-                    </TableCell>
-                    <TableCell>
-                      <div>
-                        <div className="font-medium text-white">{order?.item.title}</div>
-                        {/* <div className="text-sm text-slate-400">{order.buyerEmail}</div> */}
+                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 max-w-[120px] sm:max-w-[180px] md:max-w-[240px]">
+                        {order.items.map((orderItem, idx) => (
+                          <img
+                            key={idx}
+                            src={orderItem.item.thumbnail}
+                            alt={orderItem.item.title}
+                            className="w-10 h-10 object-cover rounded"
+                          />
+                        ))}
                       </div>
                     </TableCell>
-                    <TableCell className="text-slate-200">{order?.quantity}</TableCell>
-                    <TableCell className="text-slate-200">${order?.total}</TableCell>
+
+                    {/* Delivery Time: hidden on xs, visible on sm+ */}
+                    <TableCell className="hidden sm:table-cell">
+                      <div className="font-medium text-white">
+                        {order.paymentStatus === 'Success'
+                          ? <>Expected Delivery: {formatDate(new Date(new Date(order.placedOn).setDate(new Date(order.placedOn).getDate() + 7)).toISOString())}</>
+                          : <>Payment Not Confirmed</>
+                        }
+                      </div>
+                    </TableCell>
+
+                    {/* Cart Value: hidden on xs, visible on md+ */}
+                    <TableCell className="hidden md:table-cell text-slate-200">
+                      ₹{order?.total}
+                    </TableCell>
+
+                    {/* Status: always visible */}
                     <TableCell>
                       <Badge 
-                        variant={getStatusBadgeVariant(order.status)} 
-                        className={`text-xs ${getStatusColor(order.status)}`}
+                        variant={getStatusBadgeVariant(order.orderStatus)} 
+                        className={`text-xs ${getStatusColor(order.orderStatus)}`}
                       >
-                        {order.status}
+                        {order.orderStatus}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-slate-200">{formatDate(String(order?.placedOn))}</TableCell>
+
+                    {/* Payment: hidden on xs, visible on sm+ */}
+                    <TableCell className="hidden sm:table-cell">
+                      <Badge 
+                        variant={getPaymentStatusBadge(order.paymentStatus)} 
+                        className={`text-xs ${getPaymentStatusColor(order.paymentStatus)}`}
+                      >
+                        {order.paymentStatus}
+                      </Badge>
+                    </TableCell>
+
+                    {/* Date: hidden on xs, visible on md+ */}
+                    <TableCell className="hidden md:table-cell text-slate-200">
+                      {formatDate(String(order?.placedOn))}
+                    </TableCell>
+
+                    {/* Actions: always visible */}
                     <TableCell>
                       <Button
                         variant="ghost"
