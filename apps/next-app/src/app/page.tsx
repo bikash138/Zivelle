@@ -257,7 +257,7 @@ const LandingPage = () => {
           viewport={{ once: true }}
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
         >
-          {featuredProducts.slice(0, 8).map((product, index) => (
+          {featuredProducts.slice(0, 8).map((product) => (
             <motion.div key={product.id} variants={itemVariants}>
               <ProductCard product={product} />
             </motion.div>

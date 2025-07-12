@@ -2,37 +2,47 @@
 import React, { useState } from 'react';
 import { Heart, ShoppingCart, Star, Truck, Shield, RotateCcw, Minus, Plus } from 'lucide-react';
 import { motion } from 'framer-motion';
-import ProductCard from '@/components/Landing/Common/ProductCard';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { addToCart } from '@/redux/slices/cartSlice';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '@/redux/reducer';
+import { toast } from 'sonner';
 
 interface Product {
   id: number;
   title: string;
   price: number;
-  originalPrice?: number;
-  thumnail: string;
+  originalPrice: number;
+  thumbnail: string;
   description: string
+  size: string[]
   // rating: number;
   // brand: string;
   category: string;
   subCategory: string
-//   createdAt: string;
 }
 
 interface ProductProps {
-  product: Product; // Replace 'any' with 'Product' if your product object matches the Product interface
+  product: Product; 
 }
 
 const Product = ({ product }: ProductProps) => {
-//   const product = products.find(p => p.id === parseInt(id || '1'));
   const dispatch = useDispatch()
-  const [selectedSize, setSelectedSize] = useState('M');
-  const [selectedColor, setSelectedColor] = useState('Black');
+  const token = useSelector((state: RootState)=>state.auth.token)
   const [quantity, setQuantity] = useState(1);
+  const [selectedSize, setSelectedSize] = useState("M")
   const [selectedImage, setSelectedImage] = useState(0);
+
+  function handleAddToCart(){
+    if(token){
+      dispatch(addToCart({
+        product, quantity, selectedSize
+      }))
+    }else{
+      toast.error('Please signin to continue')
+    }
+  }
 
   if (!product) {
     return <div>Product not found</div>;
@@ -43,7 +53,7 @@ const Product = ({ product }: ProductProps) => {
 //   const relatedProducts = products.filter(p => p.category === product.category && p.id !== product.id).slice(0, 4);
 
   const images = [
-    product.thumnail,
+    product.thumbnail,
   ];
 
   return (
@@ -122,9 +132,9 @@ const Product = ({ product }: ProductProps) => {
             </div> */}
 
             <div className="flex items-center space-x-4">
-              <span className="text-3xl font-bold text-black">${product.price}</span>
+              <span className="text-3xl font-bold text-black">₹{product.price}</span>
               {product.originalPrice && (
-                <span className="text-xl text-gray-900 line-through">${product.originalPrice}</span>
+                <span className="text-xl text-gray-900 line-through">₹{product.originalPrice}</span>
               )}
               {product.originalPrice && (
                 <Badge className="bg-gradient-to-r from-red-500 to-pink-500 text-white border-0">
@@ -136,15 +146,14 @@ const Product = ({ product }: ProductProps) => {
 
           <div className="space-y-4">
             <p className="text-slate-700">
-              Crafted from premium materials, this versatile piece combines comfort with style. 
-              Perfect for both casual and semi-formal occasions, featuring a modern cut and attention to detail.
+              {product.description}
             </p>
 
             {/* Size Selection */}
             <div>
               <h3 className="text-sm font-medium text-white mb-3">Size</h3>
               <div className="grid grid-cols-6 gap-2">
-                {sizes.map((size) => (
+                {product.size.map((size) => (
                   <motion.button
                     key={size}
                     whileHover={{ scale: 1.05 }}
@@ -163,7 +172,7 @@ const Product = ({ product }: ProductProps) => {
             </div>
 
             {/* Color Selection */}
-            <div>
+            {/* <div>
               <h3 className="text-sm font-medium text-white mb-3">Color</h3>
               <div className="flex space-x-2">
                 {colors.map((color) => (
@@ -179,10 +188,10 @@ const Product = ({ product }: ProductProps) => {
                   />
                 ))}
               </div>
-            </div>
+            </div> */}
 
             {/* Quantity */}
-            <div>
+            {/* <div>
               <h3 className="text-sm font-medium text-white mb-3">Quantity</h3>
               <div className="flex items-center space-x-3">
                 <Button
@@ -203,12 +212,12 @@ const Product = ({ product }: ProductProps) => {
                   <Plus size={16} />
                 </Button>
               </div>
-            </div>
+            </div> */}
 
             {/* Actions */}
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              <Button className="flex-1 bg-slate-900 hover:bg-slate-800 text-white dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-200 py-3 px-6 font-semibold flex items-center justify-center space-x-2"
-                onClick={()=>dispatch(addToCart(product))}
+              <Button className="cursor-pointer flex-1 bg-slate-900 hover:bg-slate-800 text-white dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-200 py-3 px-6 font-semibold flex items-center justify-center space-x-2"
+                onClick={handleAddToCart}
               >
                 <ShoppingCart size={20} />
                 <span>Add to Cart</span>

@@ -3,7 +3,12 @@ import { toast } from "sonner"
 
 type CartItem = {
   id: number;
+  title: string;
+  description: string;
+  thumbnail: string
   price: number;
+  quantity: number;
+  selectedSize: string
 };
 
 interface CartState {
@@ -28,8 +33,8 @@ const cartSlice = createSlice({
       state.totalItems = action.payload.totalItems;
     },
     addToCart: (state, action) => {
-      const product = action.payload
-      const index = state.cart.findIndex((item) => item.id === product.id)
+      const {product, selectedSize, quantity} = action.payload
+      const index = state.cart.findIndex((item) => item.id === product.id && item.selectedSize)
 
       if (index >= 0) {
         // If the item is already in the cart, do not modify the quantity
@@ -37,10 +42,11 @@ const cartSlice = createSlice({
         return
       }
       // If the course is not in the cart, add it to the cart
-      state.cart.push(product)
+      state.cart.push({...product, quantity, selectedSize})
+      console.log({...product, quantity, selectedSize})
       // Update the total quantity and price
-      state.totalItems++
-      state.total += product.price
+      state.totalItems += quantity
+      state.total += product.price * quantity
       // Update to localstorage
       localStorage.setItem("cart", JSON.stringify(state.cart))
       localStorage.setItem("total", JSON.stringify(state.total))

@@ -114,6 +114,9 @@ export function UserSidebar() {
             dispatch(setToken(null))
             localStorage.removeItem('userProfile')
             localStorage.removeItem('token')
+            localStorage.removeItem('cart')
+            localStorage.removeItem('totalItems')
+            localStorage.removeItem('total')
             router.push('/')
           }}
         >

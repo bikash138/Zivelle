@@ -5,10 +5,11 @@ export default async function CatalogRoute() {
    const items = await prisma.item.findMany({
     select:{
       id: true,
-      thumnail: true,
+      thumbnail: true,
       title: true,
       description: true,
       price: true,
+      originalPrice: true,
       category: true,
       subCategory: true
     }

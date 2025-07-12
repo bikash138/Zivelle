@@ -9,11 +9,13 @@ export default async function ProductRoute({ params }: { params: { id: string } 
     },
     select:{
         id: true,
-        thumnail: true,
+        thumbnail: true,
         title: true,
         description: true,
+        originalPrice: true,
         price: true,
         category: true,
+        size: true,
         subCategory: true,
     }
   });

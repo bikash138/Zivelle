@@ -9,8 +9,8 @@ interface Product {
   id: number;
   title: string;
   price: number;
-  originalPrice?: number;
-  thumnail: string;
+  originalPrice: number;
+  thumbnail: string;
   // rating: number;
   // brand: string;
   category: string;
@@ -225,7 +225,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode = 'grid' })
             className="w-full h-64 overflow-hidden"
           >
             <img
-              src={product.thumnail}
+              src={product.thumbnail}
               alt={product.title}
               className="w-full h-full object-cover transition-transform duration-300"
             />
@@ -271,11 +271,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, viewMode = 'grid' })
         
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <span className="text-xl font-bold text-gray-900 dark:text-white">${product.price}</span>
+            <span className="text-xl font-bold text-gray-900 dark:text-white">₹{product.price}</span>
             {product.originalPrice && (
               <span className="text-sm text-gray-500 dark:text-gray-500 line-through">
-                {/* ${product.originalPrice}  */}
-                $1000
+                ₹{product.originalPrice} 
               </span>
             )}
           </div>

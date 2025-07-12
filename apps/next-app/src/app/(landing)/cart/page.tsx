@@ -1,15 +1,22 @@
 'use client'
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { motion, AnimatePresence, removeItem } from 'framer-motion';
-import { Minus, Plus, Trash2, ShoppingBag, ArrowLeft, Tag, Truck } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import {Trash2, ShoppingBag, ArrowLeft, Tag, Truck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { products } from '@/data/products';
 import { useDispatch, useSelector } from 'react-redux';
-import { removeFromCart } from '@/redux/slices/cartSlice';
+import { removeFromCart, resetCart } from '@/redux/slices/cartSlice';
+import { RootState } from '@/redux/reducer';
+
+// Add Razorpay type to the Window interface
+declare global {
+  interface Window {
+    Razorpay: any;
+  }
+}
 
 interface CartProps {
   id: number;
@@ -36,13 +43,57 @@ const CartPage = () => {
     }
   };
 
+  const handleCheckout = async () => {
+  // Call your API to create the order
+  const res = await fetch('/api/user/orders', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      items: cart,
+      totalAmount: total,
+    }),
+  });
+  const data = await res.json();
+
+  if (data.success) {
+    const options = {
+      key: "rzp_test_WYcFPIFUgHXrUC",
+      amount: data.data.amount,
+      currency: data.data.currency,
+      order_id: data.data.id,
+      //@ts-ignore
+      handler: function (response) {
+        console.log("Razorpay response:", response);
+        (async () => {
+          const verifyRes = await fetch('/api/verify-payment', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_signature: response.razorpay_signature,
+            }),
+          });
+          const verifyData = await verifyRes.json();
+          if (verifyData.success) {
+            dispatch(resetCart())
+            alert("Payment successful and verified!");
+          } else {
+            alert("Payment verification failed!");
+          }
+        })();
+      },
+    };
+    const rzp = new window.Razorpay(options);
+    rzp.open();
+  } else {
+    console.log("Payment can't be done")
+  }
+};
+
   const dispatch = useDispatch()
-  //@ts-ignore
-  const cart = useSelector((state)=>state.cart.cart)
-  //@ts-ignore
-  const subTotal = useSelector((state)=>state.cart.total)
-  //@ts-ignore
-  // const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const cart = useSelector((state: RootState)=>state.cart.cart)
+  const subTotal = useSelector((state: RootState)=>state.cart.total)
   const discount = appliedPromo === 'SAVE20' ? subTotal * 0.2 : 0;
   const shipping = subTotal > 500 ? 0 : 49;
   const tax = (subTotal - discount) * 0.08;
@@ -132,7 +183,7 @@ const CartPage = () => {
                           className="w-32 h-32 overflow-hidden rounded-lg"
                         >
                           <img
-                            src={item.thumnail}
+                            src={item.thumbnail}
                             alt={item.title}
                             className="w-full h-full object-cover"
                           />
@@ -153,8 +204,8 @@ const CartPage = () => {
                         </div>
                         
                         <div className="flex items-center space-x-4 text-sm">
-                          <Badge variant="outline" className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300">Size:</Badge>
-                          <Badge variant="outline" className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300">Color:</Badge>
+                          <Badge variant="outline" className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300">Size:{item.selectedSize}</Badge>
+                          {/* <Badge variant="outline" className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300">Color:</Badge> */}
                         </div>
                         
                         <div className="flex items-center justify-between">
@@ -181,12 +232,11 @@ const CartPage = () => {
                           
                           <div className="flex items-center space-x-4">
                             <span className="font-semibold text-gray-900 dark:text-white">
-                              ${item.price.toFixed(2)}
+                              ₹{item.price.toFixed(2)}
                             </span>
                             <Button
                               variant="ghost"
                               size="icon"
-                              //@ts-ignore
                               onClick={() => dispatch(removeFromCart(item))}
                               className="text-gray-500 dark:text-gray-400 hover:text-red-400 h-8 w-8 hover:bg-red-500/10"
                             >
@@ -264,7 +314,7 @@ const CartPage = () => {
               <div className="space-y-3">
                 <div className="flex justify-between">
                   <span className="text-gray-600 dark:text-gray-400">Subtotal</span>
-                  <span className="font-medium text-gray-900 dark:text-white">${subTotal.toFixed(2)}</span>
+                  <span className="font-medium text-gray-900 dark:text-white">₹{subTotal.toFixed(2)}</span>
                 </div>
                 
                 <AnimatePresence>
@@ -276,7 +326,7 @@ const CartPage = () => {
                       className="flex justify-between text-green-600 dark:text-green-400"
                     >
                       <span>Discount ({appliedPromo})</span>
-                      <span>-${discount.toFixed(2)}</span>
+                      <span>-₹{discount.toFixed(2)}</span>
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -284,20 +334,20 @@ const CartPage = () => {
                 <div className="flex justify-between">
                   <span className="text-gray-600 dark:text-gray-400">Shipping</span>
                   <span className="font-medium text-gray-900 dark:text-white">
-                    {shipping === 0 ? 'Free' : `$${shipping.toFixed(2)}`}
+                    {shipping === 0 ? 'Free' : `₹${shipping.toFixed(2)}`}
                   </span>
                 </div>
                 
                 <div className="flex justify-between">
                   <span className="text-gray-600 dark:text-gray-400">Tax</span>
-                  <span className="font-medium text-gray-900 dark:text-white">${tax.toFixed(2)}</span>
+                  <span className="font-medium text-gray-900 dark:text-white">₹{tax.toFixed(2)}</span>
                 </div>
                 
                 <div className="border-t border-gray-700 pt-3">
                   <div className="border-t border-gray-200 dark:border-gray-700 pt-3">
                     <div className="flex justify-between">
                       <span className="text-lg font-semibold text-gray-900 dark:text-white">Total</span>
-                      <span className="text-lg font-semibold text-gray-900 dark:text-white">${total.toFixed(2)}</span>
+                      <span className="text-lg font-semibold text-gray-900 dark:text-white">₹{total.toFixed(2)}</span>
                     </div>
                   </div>
                 </div>
@@ -312,14 +362,14 @@ const CartPage = () => {
                   <div className="flex items-center space-x-2 text-blue-600 dark:text-blue-400">
                     <Truck size={16} />
                     <span className="text-sm">
-                      Add ${(500 - subTotal).toFixed(2)} more for free shipping
+                      Add ₹{(500 - subTotal).toFixed(2)} more for free shipping
                     </span>
                   </div>
                 </motion.div>
               )}
 
               <div className="space-y-3 mt-6">
-                <Button className="w-full bg-slate-900 hover:bg-slate-800 text-white dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-200" size="lg">
+                <Button onClick={handleCheckout} className="w-full bg-slate-900 hover:bg-slate-800 text-white dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-200" size="lg">
                   Proceed to Checkout
                 </Button>
                 
@@ -340,7 +390,7 @@ const CartPage = () => {
                 {[
                   'Secure payment processing',
                   '30-day return policy',
-                  'Free shipping over $100',
+                  'Free shipping over ₹100',
                   '24/7 customer support'
                 ].map((feature, index) => (
                   <motion.div 

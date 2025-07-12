@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner"
 import Providers from "./Providers";
+import Script from "next/script";
 
 
 const geistSans = Geist({
@@ -31,8 +32,9 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Providers>
+          <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="afterInteractive" />
           {children}
-          <Toaster/>
+          <Toaster />
         </Providers>
       </body>
     </html>

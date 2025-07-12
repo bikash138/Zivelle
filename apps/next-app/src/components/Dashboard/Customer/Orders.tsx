@@ -37,7 +37,7 @@ export function Orders({ initialOrders }: OrdersProps) {
   // const fetchOrders = async () => {
     // const toastId = toast.loading("Loading...")
     // try{
-    //   const response = await axios.get('/api/orders')
+  //   const response = await axios.get('/api/orders')
     //   if (!response.data?.success) {
     //     toast.error("Fetching Ordered Items Failed");
     //     return; 

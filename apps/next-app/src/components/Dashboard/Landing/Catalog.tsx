@@ -1,4 +1,3 @@
-
 'use client'
 import React, { useState } from 'react';
 import { ChevronDown, Filter, Grid, List, Search } from 'lucide-react';
@@ -10,8 +9,8 @@ interface Product {
   id: number;
   title: string;
   price: number;
-  originalPrice?: number;
-  thumnail: string;
+  originalPrice: number;
+  thumbnail: string;
   // rating: number;
   // brand: string;
   category: string;
@@ -34,10 +33,13 @@ const Catalog: React.FC<CatalogProps> = ({ items } :CatalogProps) => {
 
   const categories = [
     { id: 'all', name: 'All Categories', count: products.length },
-    { id: 'clothing', name: 'Clothing', count: products.filter(p => p.category === 'clothing').length },
-    { id: 'shoes', name: 'Shoes', count: products.filter(p => p.category === 'shoes').length },
-    { id: 'accessories', name: 'Accessories', count: products.filter(p => p.category === 'accessories').length },
+    { id: 'men', name: 'Men', count: products.filter(p => p.category === 'Men').length },
+    { id: 'women', name: 'Women', count: products.filter(p => p.category === 'Women').length },
+    { id: 'kids', name: 'Kids', count: products.filter(p => p.category === 'Kids').length },
   ];
+
+  // Shuffle the items array
+  const shuffledItems = [...items].sort(() => Math.random() - 0.5);
 
   const handleSort = (value: string) => {
     setSortBy(value);
@@ -242,7 +244,7 @@ const Catalog: React.FC<CatalogProps> = ({ items } :CatalogProps) => {
                 : 'grid-cols-1'
             }`}
           >
-            {items.map((product, index) => (
+            {shuffledItems.map((product, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, y: 20 }}

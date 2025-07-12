@@ -2,7 +2,6 @@ import { ListItemSchema } from '@repo/zod/zodTypes'
 import { prisma } from '@repo/database/prisma'
 import { NextRequest, NextResponse } from 'next/server'
 import getUserId from "@/lib/getUserId"
-import path from 'path';
 
 export async function POST(req: NextRequest){
     try{
@@ -24,6 +23,7 @@ export async function POST(req: NextRequest){
             thumbnail,
             title,
             description,
+            originalPrice,
             price,
             category,
             subCategory,
@@ -31,23 +31,14 @@ export async function POST(req: NextRequest){
             size  
         } = parsedData.data
 
-        //Get thumnail image from request body
-        // const thumbnail = req.files.productThumbnail
-
-        //Upload thumbnail to clodinary
-        // const thumbnailImage = await uploadImageToCloudinary(
-        //     thumbnail,
-        //     process.env.FOLDER_NAME
-        // )
-        // console.log(thumbnailImage)
-
         //Create a new Product Listing with given details
         const newItem = await prisma.item.create({
             data:{
                 adminId: userId,
-                thumnail: thumbnail,
+                thumbnail: thumbnail,
                 title,
                 description,
+                originalPrice,
                 price,
                 category,
                 subCategory,
@@ -55,16 +46,6 @@ export async function POST(req: NextRequest){
                 size
             }
         })
-
-        // const itemsSizes = await prisma.itemSize.create({
-        //     data: size.map(s => (
-        //         {
-        //             itemId: newItem.id,
-        //             size: s.size,
-        //             stock: s.stock
-        //         }
-        //     ))
-        // })
 
         //Return the new item and a success message
         return NextResponse.json({
