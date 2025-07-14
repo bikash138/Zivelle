@@ -24,7 +24,6 @@
     "@radix-ui/react-slot": "^1.2.3",
     "@reduxjs/toolkit": "^2.8.2",
     "@repo/database": "workspace:*",
-    "@repo/payments": "workspace:*",
     "@repo/zod": "workspace:*",
     "@tanstack/react-query": "^5.81.5",
     "@tanstack/react-query-devtools": "^4.40.0",

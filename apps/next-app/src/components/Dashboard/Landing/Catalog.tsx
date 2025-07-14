@@ -1,5 +1,5 @@
 'use client'
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { Suspense, useCallback, useEffect, useState } from 'react';
 import { ChevronDown, Filter, Grid, List, Search, SlidersHorizontal } from 'lucide-react';
 import ProductCard from '@/components/Landing/Common/ProductCard';
 import { motion } from 'framer-motion';
@@ -24,7 +24,7 @@ interface CatalogProps {
   items: Product[];
 }
 
-const Catalog: React.FC<CatalogProps> = ({ items } :CatalogProps) => {
+const CatalogContent: React.FC<CatalogProps> = ({ items } :CatalogProps) => {
   const searchParams = useSearchParams();
   const initialCategory = searchParams.get('category') || 'All';
   const [filteredProducts, setFilteredProducts] = useState(items);
@@ -349,5 +349,11 @@ const Catalog: React.FC<CatalogProps> = ({ items } :CatalogProps) => {
     </>
   );
 };
+
+const Catalog: React.FC<CatalogProps> = (props) => (
+  <Suspense fallback={<ResponsiveSkeletonLoader />}>
+    <CatalogContent {...props} />
+  </Suspense>
+);
 
 export default Catalog;

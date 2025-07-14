@@ -6,7 +6,6 @@ import { ArrowRight, Sparkles, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import ProductCard from '@/components/Landing/Common/ProductCard';
-import { featuredProducts } from '@/data/products';
 import Image from 'next/image';
 import Kids from '@/assets/Kids.png'
 import Women from '@/assets/Women.png'
@@ -21,7 +20,6 @@ export interface ProductsProps {
     originalPrice: number;
   }[];
 }
-
 
 const LandingPage = ({products} :ProductsProps) => {
     const containerVariants = {
@@ -142,7 +140,7 @@ const LandingPage = ({products} :ProductsProps) => {
               </div>
               
               <div className="space-y-3">
-                {featuredProducts.slice(0, 3).map((product, index) => (
+                {products.slice(0, 3).map((product, index) => (
                   <motion.div
                     key={product.id}
                     initial={{ opacity: 0, x: 20 }}
@@ -151,22 +149,25 @@ const LandingPage = ({products} :ProductsProps) => {
                     whileHover={{ scale: 1.02 }}
                     className="flex items-center space-x-3 p-3 glass-light rounded-lg hover:bg-white/20 transition-all cursor-pointer"
                   >
-                    <Image 
-                      src={product.image} 
-                      alt={product.name}
-                      className="w-12 h-12 object-cover rounded-lg"
-                    />
+                    <div className='w-12 h-12 relative'>
+                      <Image 
+                        src={product.thumbnail} 
+                        alt={product.title}
+                        fill
+                        className="object-cover rounded-lg"
+                      />
+                    </div>
                     <div className="flex-1 min-w-0">
-                      <h4 className="font-medium text-sm truncate text-gray-900 dark:text-white">{product.name}</h4>
+                      <h4 className="font-medium text-sm truncate text-gray-900 dark:text-white">{product.title}</h4>
                       <div className="flex items-center space-x-2">
                         <span className="text-orange-400 font-semibold">${product.price}</span>
                         <span className="text-gray-400 line-through text-sm">${product.originalPrice}</span>
                       </div>
                     </div>
-                    <div className="flex items-center space-x-1">
+                    {/* <div className="flex items-center space-x-1">
                       <Star className="text-yellow-400 fill-current" size={12} />
                       <span className="text-xs text-gray-600 dark:text-gray-300">{product.rating}</span>
-                    </div>
+                    </div> */}
                   </motion.div>
                 ))}
               </div>

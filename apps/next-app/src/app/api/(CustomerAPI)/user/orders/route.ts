@@ -1,7 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import getUserId from "@/lib/getUserId"
-import {razorpayInstance} from '@repo/payments/razorpay'
 import { prisma } from "@repo/database/prisma";
+import Razorpay from 'razorpay'
+
+ const razorpayInstance = () =>
+  new Razorpay({
+    key_id: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+    key_secret: process.env.RAZORPAY_KEY_SECRET
+  });
 
 export async function POST(req:NextRequest) {
     try{

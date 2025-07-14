@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Tag, Truck } from 'lucide-react';
+import { ArrowLeft, Loader2, Tag, Truck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -31,6 +31,7 @@ const CartPage = () => {
   const shipping = subTotal > 500 ? 0 : 49;
   const tax = (subTotal - discount) * 0.08;
   const total = subTotal - discount + shipping + tax;
+  const [isProcessing, setIsProcessing] = useState(false)
   
   const applyPromoCode = () => {
     if (promoCode.toLowerCase() === 'save20') {
@@ -40,6 +41,8 @@ const CartPage = () => {
   };
 
   const handleCheckout = async () => {
+    if(isProcessing) return
+    setIsProcessing(true)
     try {
       const response = await axios.post('/api/user/orders', {
         items: cart,
@@ -51,7 +54,7 @@ const CartPage = () => {
 
       if (data.success) {
       const options = {
-        key: "",
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_WYcFPIFUgHXrUC',
         amount: data.data.amount,
         currency: data.data.currency,
         order_id: data.data.id,
@@ -87,6 +90,8 @@ const CartPage = () => {
     }
     } catch (error) {
       console.error(error);
+    } finally{
+      setIsProcessing(false)
     }
   };
   
@@ -246,8 +251,11 @@ const CartPage = () => {
               )}
 
               <div className="space-y-3 mt-6">
-                <Button onClick={handleCheckout} className="w-full bg-slate-900 hover:bg-slate-800 text-white dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-200" size="lg">
-                  Proceed to Checkout
+                <Button 
+                  disabled={isProcessing}
+                  onClick={handleCheckout} 
+                  className="w-full bg-slate-900 hover:bg-slate-800 text-white dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-200" size="lg">
+                  {isProcessing ? <Loader2/> : "Proceed to Checkout"}
                 </Button>
                 
                 <Button variant="outline" className="w-full" asChild>
