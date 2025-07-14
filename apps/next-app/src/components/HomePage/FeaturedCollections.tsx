@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button';
+import Image from 'next/image';
 
 const FeaturedCollections = () => {
   const collections = [
@@ -43,10 +44,12 @@ const FeaturedCollections = () => {
               key={collection.id} 
               className="group relative overflow-hidden rounded-lg bg-gray-800/50 backdrop-blur-sm border border-gray-700 hover:border-gray-600 transition-all duration-500 transform hover:scale-105"
             >
-              <div className="aspect-w-4 aspect-h-3 overflow-hidden">
-                <img
+              <div className="aspect-w-4 aspect-h-3 overflow-hidden relative">
+                <Image
                   src={collection.image}
                   alt={collection.title}
+                  fill
+                  priority
                   className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-700"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>

@@ -2,11 +2,18 @@ import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import { prisma } from "@repo/database/prisma";
 
+type Item = {
+  id: string;
+  adminId: string;
+  quantity: number;
+  price: number;
+  selectedSize: string;
+};
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature, items } = body
-    console.log(body)
     const secret = ''
     const generated_signature = crypto
       .createHmac("sha256", secret)
@@ -21,9 +28,8 @@ export async function POST(req: NextRequest) {
         data:{
           paymentStatus: "Success",
           razorpayPaymentId: razorpay_payment_id,
-          //@ts-ignore
           items: {
-            create: items.map((item: any) => ({
+            create: items.map((item: Item) => ({
                 itemId: item.id, 
                 sellerId: item.adminId,
                 quantity: item.quantity, 

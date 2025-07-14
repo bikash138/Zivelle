@@ -7,16 +7,19 @@ import { Loader2, Trash2 } from 'lucide-react'
 import React, { useCallback, useEffect, useState } from 'react'
 import { FileRejection, useDropzone } from 'react-dropzone'
 import { toast } from 'sonner'
-import { UseFormSetValue } from "react-hook-form";
+import { FieldErrors, UseFormSetValue } from "react-hook-form";
+import { z } from 'zod'
+import { ListItemSchema } from '@repo/zod/zodTypes'
+import Image from 'next/image'
+type formType = z.infer<typeof ListItemSchema>;
 
 type UploadThumbnailProps = {
-  errors: any;
-  setValue: UseFormSetValue<any>; 
+  errors: FieldErrors<formType>;
+  setValue: UseFormSetValue<formType>; 
   resetThumbnail: number
 };
 
-//@ts-ignore
-const UploadThumbnail = ({errors, setValue, resetThumbnail}) => {
+const UploadThumbnail = ({errors, setValue, resetThumbnail}: UploadThumbnailProps) => {
 
     const [files, setFiles] = useState<Array<{
     id: string,
@@ -26,13 +29,13 @@ const UploadThumbnail = ({errors, setValue, resetThumbnail}) => {
     key?: string,
     isDeleting: boolean,
     error: boolean,
-    objectUrl?: string
+    objectUrl: string
   }>>([])
 
   useEffect(() => {
     setFiles([]);
     setValue('thumbnail', '');
-  }, [resetThumbnail]);
+  }, [resetThumbnail, setValue]);
 
   async function deleteFile(fileId: string){
     try{
@@ -67,67 +70,67 @@ const UploadThumbnail = ({errors, setValue, resetThumbnail}) => {
       toast.error('Failed to Delete File')
     }
   }
-
-  async function uploadFile(file: File){
-    setFiles((prevFile)=>
-      prevFile.map((f)=>
-        f.file === file ? {...f, uploading: true}  : f
-      )
+const uploadFile = useCallback(async (file: File) => {
+  setFiles((prevFile)=>
+    prevFile.map((f)=>
+      f.file === file ? {...f, uploading: true}  : f
     )
-    try{
-      const data = {
-        fileName: file.name,
-        contentType: file.type,
-        size: file.size
-      }
-      const response = await axios.post('/api/s3/upload', data)
-      if(!response){
-        toast.error('Failed to get preSignedUrl')
-        setFiles((prevFile)=>
-          prevFile.map((f)=>
-            f.file === file 
-            ? {...f, uploading: false, progress: 0, error: true}
-            : f
-          )
-        )
-        return
-      }
-      const {preSignedUrl, uniqueKey, permanentUrl} = response.data
-      await axios.put(preSignedUrl, file, {
-        headers: {
-          'Content-Type': file.type
-        },
-        onUploadProgress: (progressEvent) => {
-          if(progressEvent.total){
-            const percent = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-            setFiles((prevFile)=>
-              prevFile.map((f)=>
-                f.file === file 
-                ? {...f, uploading: true, progress: percent}
-                : f
-              )
-            );
-          }
-        }
-      })
-      console.log(permanentUrl)
-      setFiles((prevFile) =>
-        prevFile.map((f) =>
-          f.file === file
-            ? { ...f, uploading: false, progress: 100, key: uniqueKey,error: false }
-            : f
-      ))
-      setValue('thumbnail', permanentUrl);
-      toast.success('Thumnail Uploaded')
-    }catch(error){
-      setFiles((prevFile) =>
-        prevFile.map((f) =>
-          f.file === file ? { ...f, uploading: false, error: true, progress:0  } : f
-        )
-      );
-      toast.error('Upload failed');
+  )
+  try{
+    const data = {
+      fileName: file.name,
+      contentType: file.type,
+      size: file.size
     }
+    const response = await axios.post('/api/s3/upload', data)
+    if(!response){
+      toast.error('Failed to get preSignedUrl')
+      setFiles((prevFile)=>
+        prevFile.map((f)=>
+          f.file === file 
+          ? {...f, uploading: false, progress: 0, error: true}
+          : f
+        )
+      )
+      return
+    }
+    const {preSignedUrl, uniqueKey, permanentUrl} = response.data
+    await axios.put(preSignedUrl, file, {
+      headers: {
+        'Content-Type': file.type
+      },
+      onUploadProgress: (progressEvent) => {
+        if(progressEvent.total){
+          const percent = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          setFiles((prevFile)=>
+            prevFile.map((f)=>
+              f.file === file 
+              ? {...f, uploading: true, progress: percent}
+              : f
+            )
+          );
+        }
+      }
+    })
+    setFiles((prevFile) =>
+      prevFile.map((f) =>
+        f.file === file
+          ? { ...f, uploading: false, progress: 100, key: uniqueKey,error: false }
+          : f
+    ))
+    setValue('thumbnail', permanentUrl);
+    toast.success('Thumbnail Uploaded')
+  }catch(error){
+    console.log(error)
+    setFiles((prevFile) =>
+      prevFile.map((f) =>
+        f.file === file ? { ...f, uploading: false, error: true, progress:0  } : f
+      )
+    );
+    toast.error('Upload failed');
   }
+}, [setFiles, setValue]);
+  
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if(acceptedFiles.length > 0){
@@ -145,7 +148,7 @@ const UploadThumbnail = ({errors, setValue, resetThumbnail}) => {
       ])
       acceptedFiles.forEach(uploadFile)
     }
-  }, [])
+  }, [uploadFile])
 
   const onDropRejected = useCallback((fileRejections: FileRejection[]) => {
     if(fileRejections.length > 0){
@@ -162,7 +165,6 @@ const UploadThumbnail = ({errors, setValue, resetThumbnail}) => {
         toast.error('File size cannot be above 5mb')
       }
     }
-    toast.error
   }, [])
 
   const {getRootProps, getInputProps, isDragActive, open} = useDropzone({
@@ -192,7 +194,7 @@ const UploadThumbnail = ({errors, setValue, resetThumbnail}) => {
                 isDragActive ?
                     <p>Drop the files here ...</p> :
                     <div className='flex justify-center items-center flex-col gap-y-3'>
-                    <p>Drag 'n' drop thumnail here</p>
+                    <p>Drag &aps;n&aps; drop thumnail here</p>
                     <Button
                         type="button"
                         className="mt-2"
@@ -216,9 +218,10 @@ const UploadThumbnail = ({errors, setValue, resetThumbnail}) => {
         <div className='mt-6 grid grid-cols-2 sm:grid-cols-1 gap-x-1'>
         {files.map((file) => (
             <div key={file.id} className="relative w-32 h-32 rounded overflow-hidden shadow-lg group">
-            <img
+            <Image
                 src={file.objectUrl}
                 alt={file.file.name}
+                fill
                 className="w-full h-full object-cover rounded"
             />
             {/* Overlay for progress and delete */}

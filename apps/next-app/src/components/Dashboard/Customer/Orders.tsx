@@ -7,54 +7,23 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Search, Eye, Package, ArrowUpDown } from 'lucide-react';
-import { toast } from 'sonner';
 import { formatDate } from '@/lib/formatDate';
-import { Copy } from 'lucide-react';
+import { OrderedItems } from '@/types';
+import Image from 'next/image';
 
-interface OrderType {
-  placedOn: Date
-  total: number
-  id: string;
-  orderStatus: string
-  paymentStatus: string
-  customerId: string;
-  razorpayOrderId: string;
-  razorpayPaymentId: string | null;
-  items: {
-    item: {
-      thumbnail: string;
-      title: string;
-    };
-  }
-}
-  interface OrdersProps {
-    initialOrders: OrderType[];
-  }
+export function Orders({ initialOrders }: {initialOrders : OrderedItems[]}) {
 
-export function Orders({ initialOrders }: OrdersProps) {
-
-  const[orders] = useState<OrderType[]>(initialOrders)
-  const [filteredOrders, setFilteredOrders] = useState<OrderType[]>(orders);
+  const[orders] = useState<OrderedItems[]>(initialOrders)
+  const [filteredOrders, setFilteredOrders] = useState<OrderedItems[]>(orders);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [sortBy, setSortBy] = useState<string>('placedOn');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
-
   useEffect(()=>{
     setFilteredOrders(orders)
   },[orders])
   
-  const handleCopy = (text: string) => {
-    navigator.clipboard.writeText(text);
-    toast.success('Order ID copied!');
-  };
-
-  const trimOrderId = (id: string) => {
-    if (id.length <= 8) return id;
-    return `${id.slice(0, 4)}...${id.slice(-4)}`;
-  };
-
   const handleSearch = (term: string) => {
     setSearchTerm(term);
     filterAndSortOrders(term, statusFilter, sortBy, sortOrder);
@@ -74,13 +43,6 @@ export function Orders({ initialOrders }: OrdersProps) {
 
   const filterAndSortOrders = (search: string, status: string, sort: string, order: 'asc' | 'desc') => {
     let filtered = orders;
-
-    // if (search) {
-    //   filtered = filtered.filter(order =>
-    //     order.id.toLowerCase().includes(search.toLowerCase()) ||
-    //     order.item.title.toLowerCase().includes(search.toLowerCase())
-    //   );
-    // }
 
     if (status !== 'all') {
       filtered = filtered.filter(order => order.orderStatus === status);
@@ -291,15 +253,18 @@ export function Orders({ initialOrders }: OrdersProps) {
                 {filteredOrders.map((order, index) => (
                   <TableRow key={index} className="border-slate-700 hover:bg-slate-700/50">
                     {/* Thumbnails: always visible */}
-                    <TableCell className="font-medium text-white flex items-center gap-2">
-                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 max-w-[120px] sm:max-w-[180px] md:max-w-[240px]">
+                    <TableCell className="font-medium text-white flex items-center">
+                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-2 gap-2 max-w-[120px] sm:max-w-[180px] md:max-w-[240px]">
                         {order.items.map((orderItem, idx) => (
-                          <img
-                            key={idx}
-                            src={orderItem.item.thumbnail}
-                            alt={orderItem.item.title}
-                            className="w-10 h-10 object-cover rounded"
-                          />
+                          <div key={idx} className='relative w-10 h-10'>
+                            <Image
+                              key={idx}
+                              src={orderItem.item.thumbnail}
+                              alt={orderItem.item.title}
+                              fill
+                              className="object-cover rounded"
+                            />
+                          </div>
                         ))}
                       </div>
                     </TableCell>

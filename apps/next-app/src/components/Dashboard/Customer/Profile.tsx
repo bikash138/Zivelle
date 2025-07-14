@@ -6,13 +6,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import { Edit, Save, X, User, Store, Calendar, DollarSign, Package, Loader } from 'lucide-react';
+import { Edit, Save, X, User, Store, Calendar, Loader } from 'lucide-react';
 import type { SellerProfile } from '@/types';
 import axios from 'axios';
 import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
 import { useSelector } from 'react-redux';
+import { RootState } from '@/redux/reducer';
 
 interface UpadatedDataForm{
     name: string,
@@ -21,8 +21,7 @@ interface UpadatedDataForm{
   }
 
 export function Profile() {
-  //@ts-ignore
-  const user = useSelector((state)=>state.profile.user)
+  const user = useSelector((state: RootState)=>state.profile.user)
   const [profile, setProfile] = useState<SellerProfile | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editedProfile, setEditedProfile] = useState<SellerProfile | null>(null);
@@ -61,7 +60,7 @@ export function Profile() {
     }
   }
   fetchUser()
-},[profileUpdated])
+},[profileUpdated, user])
 
   function formatDate(isoString: string) {
     const date = new Date(isoString);

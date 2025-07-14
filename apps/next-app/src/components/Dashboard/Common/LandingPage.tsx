@@ -2,12 +2,15 @@
 import React from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { ArrowRight, Sparkles, Star, TrendingUp } from 'lucide-react';
+import { ArrowRight, Sparkles, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import ProductCard from '@/components/Landing/Common/ProductCard';
 import { featuredProducts } from '@/data/products';
+import Image from 'next/image';
+import Kids from '@/assets/Kids.png'
+import Women from '@/assets/Women.png'
+import Men from '@/assets/Men.png'
 
 export interface ProductsProps {
   products: {
@@ -132,7 +135,7 @@ const LandingPage = ({products} :ProductsProps) => {
               className="glass rounded-2xl p-6 space-y-4 border border-white/20"
             >
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Today's Deals</h3>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Today&apos;s Deals</h3>
                 <Badge className="bg-gradient-to-r from-red-500 to-pink-500 text-white border-0">
                   Save up to 70%
                 </Badge>
@@ -148,7 +151,7 @@ const LandingPage = ({products} :ProductsProps) => {
                     whileHover={{ scale: 1.02 }}
                     className="flex items-center space-x-3 p-3 glass-light rounded-lg hover:bg-white/20 transition-all cursor-pointer"
                   >
-                    <img 
+                    <Image 
                       src={product.image} 
                       alt={product.name}
                       className="w-12 h-12 object-cover rounded-lg"
@@ -176,7 +179,7 @@ const LandingPage = ({products} :ProductsProps) => {
         </div>
       </section>
 
-      {/* Featured Categories */}
+      {/* Shop By Category */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div 
           initial={{ opacity: 0, y: 30 }}
@@ -202,18 +205,21 @@ const LandingPage = ({products} :ProductsProps) => {
           {[
             {
               title: "Women's Fashion",
-              image: "https://images.pexels.com/photos/985635/pexels-photo-985635.jpeg?auto=compress&cs=tinysrgb&w=500",
-              items: "2,500+ Items"
+              image: Women,
+              items: "2,500+ Items",
+              category: "Women"
             },
             {
               title: "Men's Collection",
-              image: "https://images.pexels.com/photos/1043473/pexels-photo-1043473.jpeg?auto=compress&cs=tinysrgb&w=500",
-              items: "1,800+ Items"
+              image: Men,
+              items: "1,800+ Items",
+              category: "Men"
             },
             {
-              title: "Accessories",
-              image: "https://images.pexels.com/photos/1927259/pexels-photo-1927259.jpeg?auto=compress&cs=tinysrgb&w=500",
-              items: "900+ Items"
+              title: "Kids",
+              image: Kids,
+              items: "900+ Items",
+              category: "Kids"
             }
           ].map((category, index) => (
             <motion.div
@@ -222,8 +228,8 @@ const LandingPage = ({products} :ProductsProps) => {
               whileHover={{ scale: 1.05, y: -5 }}
               className="group relative overflow-hidden rounded-2xl aspect-[4/3] cursor-pointer"
             >
-              <Link href="/catalog">
-                <img
+              <Link href={{ pathname: '/catalog', query: { category: category.category } }}>
+                <Image
                   src={category.image}
                   alt={category.title}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
@@ -262,9 +268,9 @@ const LandingPage = ({products} :ProductsProps) => {
           viewport={{ once: true }}
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
         >
-          {products.slice(0, 8).map((product, index) => (
+          {products.slice(0, 8).map((product) => (
             <motion.div key={product.id} variants={itemVariants}>
-              <ProductCard product={product} />
+              <ProductCard product={product} index={product.id}/>
             </motion.div>
           ))}
         </motion.div>

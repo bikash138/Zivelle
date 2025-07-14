@@ -15,7 +15,7 @@ import { Copy } from 'lucide-react';
   orderId: string;
   itemId: number;
   quantity: number;
-  size: string; // or Size if you have a Size enum/type
+  size: string;
   price: number;
   item: {
     title: string;

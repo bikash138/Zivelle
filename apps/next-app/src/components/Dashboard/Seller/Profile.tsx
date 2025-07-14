@@ -61,7 +61,7 @@ export function Profile() {
     }
   }
   fetchSeller()
-},[profileUpdated])
+},[ profileUpdated, user])
 
   function formatDate(isoString: string) {
     const date = new Date(isoString);

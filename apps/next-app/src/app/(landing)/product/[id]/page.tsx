@@ -2,22 +2,24 @@ import Product from '@/components/Dashboard/Landing/Product';
 import { prisma } from '@repo/database/prisma'; 
 import { notFound } from 'next/navigation';
 
-export default async function ProductRoute({ params }: { params: { id: string } }) {
+export default async function ProductRoute({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = await params;
+  const id = Number(resolvedParams.id);
+  if (isNaN(id)) return notFound();
+
   const product = await prisma.item.findUnique({
-    where: { 
-        id: Number(params.id) 
-    },
-    select:{
-        id: true,
-        adminId: true,
-        thumbnail: true,
-        title: true,
-        description: true,
-        originalPrice: true,
-        price: true,
-        category: true,
-        size: true,
-        subCategory: true,
+    where: { id },
+    select: {
+      id: true,
+      adminId: true,
+      thumbnail: true,
+      title: true,
+      description: true,
+      originalPrice: true,
+      price: true,
+      category: true,
+      size: true,
+      subCategory: true,
     }
   });
 

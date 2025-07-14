@@ -3,12 +3,11 @@ import React, { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion'
-import { Search, ShoppingCart, User, Menu, X, Heart, Sun, Moon } from 'lucide-react';
+import { Search, ShoppingCart, User, Menu, X, Sun, Moon } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { Button } from '@/components/ui/button';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import  {useRouter}  from 'next/navigation';
-import { setToken } from '@/redux/slices/authSlice';
 import { RootState } from '@/redux/reducer';
 
 const Header = () => {
@@ -18,7 +17,8 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname()
   const router = useRouter()
-  //@ts-ignore
+  // eslint-disable-next-line
+  //@ts-expect-error
   const { theme, toggleTheme } = useTheme();
 
   const navLinks = [
@@ -31,7 +31,7 @@ const Header = () => {
 
   useEffect(() => {
     router.prefetch('/catalog');
-  }, []);
+  }, [router]);
 
   return (
     <motion.header

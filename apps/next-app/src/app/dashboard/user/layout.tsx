@@ -1,5 +1,4 @@
 import NavBar from "@/components/Dashboard/Common/NavBar"
-import { UserSidebar } from "@/components/Dashboard/Common/UserSidebar"
 
 const SellerLayout = ({ children }: { children: React.ReactNode }) => {
   return (

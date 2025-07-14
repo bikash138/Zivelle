@@ -51,7 +51,7 @@ const Footer = () => {
               Quick Links
             </h3>
             <ul className="space-y-2">
-              {['About Us', 'Contact', 'Size Guide', 'Shipping Info', 'Returns'].map((link, index) => (
+              {['About Us', 'Contact', 'Size Guide', 'Shipping Info', 'Returns'].map((link) => (
                 <motion.li key={link} whileHover={{ x: 5 }}>
                   <a href="#" className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors text-sm">
                     {link}
@@ -72,7 +72,7 @@ const Footer = () => {
               Customer Service
             </h3>
             <ul className="space-y-2">
-              {['Help Center', 'Track Order', 'Privacy Policy', 'Terms of Service', 'FAQ'].map((link, index) => (
+              {['Help Center', 'Track Order', 'Privacy Policy', 'Terms of Service', 'FAQ'].map((link) => (
                 <motion.li key={link} whileHover={{ x: 5 }}>
                   <a href="#" className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors text-sm">
                     {link}

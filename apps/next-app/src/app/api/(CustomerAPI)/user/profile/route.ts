@@ -41,7 +41,7 @@ export async function PATCH(req: NextRequest) {
     }
     
     const body = await req.json()
-    const { name, email, store } = body 
+    const { name, email } = body 
 
     await prisma.customer.update({
       where:{

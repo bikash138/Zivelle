@@ -54,14 +54,16 @@ const NavBar: React.FC = () => {
   ];
 
   const handleLogout = async () => {
-        await fetch("/api/logout", { method: "POST" });
-        dispatch(setToken(null))
-        localStorage.removeItem('userProfile')
-        localStorage.removeItem('token')
-        localStorage.removeItem('cart')
-        localStorage.removeItem('totalItems')
-        localStorage.removeItem('total')
-        router.push('/')
+    setIsLoggingOut(true)
+    await fetch("/api/logout", { method: "POST" });
+    dispatch(setToken(null))
+    localStorage.removeItem('userProfile')
+    localStorage.removeItem('token')
+    localStorage.removeItem('cart')
+    localStorage.removeItem('totalItems')
+    localStorage.removeItem('total')
+    setIsLoggingOut(false)
+    router.push('/')
   }
 
   return (

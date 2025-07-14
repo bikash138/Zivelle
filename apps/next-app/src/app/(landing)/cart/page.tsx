@@ -2,40 +2,36 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import {Trash2, ShoppingBag, ArrowLeft, Tag, Truck } from 'lucide-react';
+import { ArrowLeft, Tag, Truck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { useDispatch, useSelector } from 'react-redux';
-import { removeFromCart, resetCart } from '@/redux/slices/cartSlice';
+import { resetCart } from '@/redux/slices/cartSlice';
 import { RootState } from '@/redux/reducer';
+import axios from 'axios';
+import {RazorpayPaymentResponse, Razorpay} from '@/types/razorpay'
+import EmptyCart from '@/components/core/EmptyCart';
+import CartCard from '@/components/core/CartCard';
 
-// Add Razorpay type to the Window interface
 declare global {
   interface Window {
-    Razorpay: any;
+    Razorpay: typeof Razorpay;
   }
-}
-
-interface CartProps {
-  id: number;
-  title: string;
-  price: number;
-  originalPrice?: number;
-  thumnail: string;
-  description: string
-  // rating: number;
-  // brand: string;
-  category: string;
-  subCategory: string
-//   createdAt: string;
 }
 
 const CartPage = () => {
   const [promoCode, setPromoCode] = useState('');
   const [appliedPromo, setAppliedPromo] = useState('');
-
+  const dispatch = useDispatch()
+  const cart = useSelector((state: RootState)=>state.cart.cart)
+  const subTotal = useSelector((state: RootState)=>state.cart.total)
+  const discount = appliedPromo === 'SAVE20' ? subTotal * 0.2 : 0;
+  const shipping = subTotal > 500 ? 0 : 49;
+  const tax = (subTotal - discount) * 0.08;
+  const total = subTotal - discount + shipping + tax;
+  
   const applyPromoCode = () => {
     if (promoCode.toLowerCase() === 'save20') {
       setAppliedPromo('SAVE20');
@@ -44,98 +40,61 @@ const CartPage = () => {
   };
 
   const handleCheckout = async () => {
-  // Call your API to create the order
-  const res = await fetch('/api/user/orders', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      items: cart,
-      totalAmount: total,
-    }),
-  });
-  const data = await res.json();
+    try {
+      const response = await axios.post('/api/user/orders', {
+        items: cart,
+        totalAmount: total,
+      }, {
+        headers: { 'Content-Type': 'application/json' }
+      });
+      const data = response.data;
 
-  if (data.success) {
-    const options = {
-      key: "rzp_test_WYcFPIFUgHXrUC",
-      amount: data.data.amount,
-      currency: data.data.currency,
-      order_id: data.data.id,
-      //@ts-ignore
-      handler: function (response) {
-        console.log("Razorpay response:", response);
-        (async () => {
-          const verifyRes = await fetch('/api/verify-payment', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_order_id: response.razorpay_order_id,
-              razorpay_signature: response.razorpay_signature,
-              items: cart
-            }),
-          });
-          const verifyData = await verifyRes.json();
-          if (verifyData.success) {
-            dispatch(resetCart())
-            alert("Payment successful and verified!");
-          } else {
-            alert("Payment verification failed!");
-          }
-        })();
-      },
-    };
-    const rzp = new window.Razorpay(options);
-    rzp.open();
-  } else {
-    console.log("Payment can't be done")
-  }
-};
-
-  const dispatch = useDispatch()
-  const cart = useSelector((state: RootState)=>state.cart.cart)
-  const subTotal = useSelector((state: RootState)=>state.cart.total)
-  const discount = appliedPromo === 'SAVE20' ? subTotal * 0.2 : 0;
-  const shipping = subTotal > 500 ? 0 : 49;
-  const tax = (subTotal - discount) * 0.08;
-  const total = subTotal - discount + shipping + tax;
-  console.log(total)
-
+      if (data.success) {
+      const options = {
+        key: "",
+        amount: data.data.amount,
+        currency: data.data.currency,
+        order_id: data.data.id,
+        handler: function (response:RazorpayPaymentResponse ) {
+          (async () => {
+            try {
+              const verifyRes = await axios.post('/api/verify-payment', {
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_signature: response.razorpay_signature,
+                items: cart
+              }, {
+                headers: { 'Content-Type': 'application/json' }
+              });
+              const verifyData = verifyRes.data;
+              if (verifyData.success) {
+                dispatch(resetCart())
+                alert("Payment successful and verified!");
+              } else {
+                alert("Payment verification failed!");
+              }
+            } catch (error) {
+              console.log(error)
+              alert("Payment verification failed!");
+            }
+          })();
+        },
+      };
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+    } else {
+      console.log("Payment can't be done")
+    }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  
   if (cart.length === 0) {
     return (
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16"
-      >
-        <div className="text-center space-y-6">
-          <motion.div 
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ delay: 0.2 }}
-            className="w-24 h-24 glass rounded-full flex items-center justify-center mx-auto border border-white/20"
-          >
-            <ShoppingBag size={40} className="text-gray-400" />
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-          >
-            <h1 className="text-2xl font-bold text-white mb-2">Your cart is empty</h1>
-            <p className="text-gray-400">Looks like you haven't added anything to your cart yet.</p>
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.4 }}
-          >
-            <Button asChild size="lg" className="bg-slate-900 hover:bg-slate-800 text-white dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-200">
-              <Link href="/catalog">Continue Shopping</Link>
-            </Button>
-          </motion.div>
-        </div>
-      </motion.div>
+      <>
+        <EmptyCart/>
+      </>
     );
   }
 
@@ -166,91 +125,8 @@ const CartPage = () => {
         {/* Cart Items */}
         <div className="lg:col-span-2 space-y-4">
           <AnimatePresence>
-            {cart.map((item,index) => (
-              <motion.div
-                key={item.id}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ delay: index * 0.1 }}
-                layout
-              >
-                <Card className="glass border border-white/10">
-                  <CardContent className="p-6">
-                    <div className="flex gap-6">
-                      <Link href={`/product/${item.id}`} className="flex-shrink-0">
-                        <motion.div
-                          whileHover={{ scale: 1.05 }}
-                          className="w-32 h-32 overflow-hidden rounded-lg"
-                        >
-                          <img
-                            src={item.thumbnail}
-                            alt={item.title}
-                            className="w-full h-full object-cover"
-                          />
-                        </motion.div>
-                      </Link>
-                      
-                      <div className="flex-1 space-y-3">
-                        <div>
-                          <Link href={`/product/${item?.id}`}>
-                            <h3 className="font-semibold text-gray-900 dark:text-white hover:text-blue-400 transition-colors">
-                              {item.title}
-                            </h3>
-                          </Link>
-                          <p className="text-sm text-gray-600 dark:text-gray-400">
-                            {/* {item.product.brand} */}
-                            Zivelle
-                            </p>
-                        </div>
-                        
-                        <div className="flex items-center space-x-4 text-sm">
-                          <Badge variant="outline" className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300">Size:{item.selectedSize}</Badge>
-                          {/* <Badge variant="outline" className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300">Color:</Badge> */}
-                        </div>
-                        
-                        <div className="flex items-center justify-between">
-                          {/* <div className="flex items-center space-x-3">
-                            <Button
-                              variant="outline"
-                              size="icon"
-                              onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                              className="h-8 w-8 border-gray-600 hover:bg-white/10"
-                            >
-                              <Minus size={14} />
-                            </Button>
-                            <span className="w-8 text-center font-medium text-white">{item.quantity}</span>
-                            <span className="w-8 text-center font-medium text-gray-900 dark:text-white">{item.quantity}</span>
-                            <Button
-                              variant="outline"
-                              size="icon"
-                              onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                              className="h-8 w-8 border-gray-600 hover:bg-white/10"
-                            >
-                              <Plus size={14} />
-                            </Button>
-                          </div> */}
-                          
-                          <div className="flex items-center space-x-4">
-                            <span className="font-semibold text-gray-900 dark:text-white">
-                              ₹{item.price.toFixed(2)}
-                            </span>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              onClick={() => dispatch(removeFromCart(item))}
-                              className="text-gray-500 dark:text-gray-400 hover:text-red-400 h-8 w-8 hover:bg-red-500/10"
-                            >
-                              <Trash2 size={16} />
-                            </Button>
-                          </div>
-                        </div>
-                        
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
+            {cart.map((cartItem) => (
+              <CartCard key={cartItem.id} cartItem={cartItem} />
             ))}
           </AnimatePresence>
         </div>
@@ -302,7 +178,7 @@ const CartPage = () => {
                   </Button>
                 </div>
               )}
-              <p className="text-xs text-gray-600 dark:text-gray-500 mt-2">Try "SAVE20" for 20% off</p>
+              <p className="text-xs text-gray-600 dark:text-gray-500 mt-2">Try &quot;SAVE20&quot; for 20% off</p>
             </CardContent>
           </Card>
 
@@ -315,7 +191,7 @@ const CartPage = () => {
               <div className="space-y-3">
                 <div className="flex justify-between">
                   <span className="text-gray-600 dark:text-gray-400">Subtotal</span>
-                  <span className="font-medium text-gray-900 dark:text-white">₹{subTotal.toFixed(2)}</span>
+                  <span className="font-medium text-gray-900 dark:text-white">₹{subTotal?.toFixed(2)}</span>
                 </div>
                 
                 <AnimatePresence>

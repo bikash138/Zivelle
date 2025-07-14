@@ -1,8 +1,7 @@
 import React from 'react';
 import Footer from '@/components/Landing/Common/Footer';
 import Header from '@/components/Landing/Common/Header';
-import { prisma } from '@repo/database/prisma'; // Adjust path as needed
-import ProductCard from '@/components/Landing/Common/ProductCard'; // Adjust path as needed
+import { prisma } from '@repo/database/prisma';
 import LandingPage from '@/components/Dashboard/Common/LandingPage';
 
 export default async function page() {
@@ -18,7 +17,6 @@ export default async function page() {
       originalPrice: true
     },
   });
-  console.log(products)
 
   return (
     <>

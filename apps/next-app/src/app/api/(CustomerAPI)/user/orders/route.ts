@@ -16,12 +16,10 @@ export async function POST(req:NextRequest) {
             currency: "INR",
             receipt: `receipt-${Date.now()}`,
         }
-        console.log(options)
         try{
             //Initiate the payment using Razorpay
             const razorpay = razorpayInstance();
             const paymentResponse = await razorpay.orders.create(options);
-            console.log(paymentResponse)
             await prisma.order.create({
                 data: {
                     total: totalAmount,

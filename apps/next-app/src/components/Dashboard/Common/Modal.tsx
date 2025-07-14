@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { AlertTriangle, CheckCircle, X } from 'lucide-react';
+import { AlertTriangle, CheckCircle } from 'lucide-react';
 import {
   Dialog,
   DialogContent,

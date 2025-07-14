@@ -1,6 +1,6 @@
 'use client'
-import React, { useState } from 'react';
-import { Heart, ShoppingCart, Star, Truck, Shield, RotateCcw, Minus, Plus } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Heart, ShoppingCart, Truck, Shield, RotateCcw } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -8,54 +8,46 @@ import { addToCart } from '@/redux/slices/cartSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/redux/reducer';
 import { toast } from 'sonner';
+import { ProductProps } from '@/types/index'
+import { ResponsiveProductPageSkeleton } from '@/components/Loaders/ProductPageLoader';
+import Image from 'next/image';
 
-interface Product {
-  id: number;
-  adminId: string;
-  title: string;
-  price: number;
-  originalPrice: number;
-  thumbnail: string;
-  description: string
-  size: string[]
-  // rating: number;
-  // brand: string;
-  category: string;
-  subCategory: string
-}
-
-interface ProductProps {
-  product: Product; 
-}
-
-const Product = ({ product }: ProductProps) => {
+const Product = ({ product }: { product: ProductProps}) => {
   const dispatch = useDispatch()
   const token = useSelector((state: RootState)=>state.auth.token)
-  const [quantity, setQuantity] = useState(1);
-  const [selectedSize, setSelectedSize] = useState("M")
+  const [selectedSize, setSelectedSize] = useState("")
   const [selectedImage, setSelectedImage] = useState(0);
+  const [isLoading, setIsLoading] = useState(true)
+  const quantity = 1
+  const images = [
+    product.thumbnail,
+  ];
 
   function handleAddToCart(){
+    if(!selectedSize){
+      toast.error('Please select a size')
+      return
+    }
     if(token){
       dispatch(addToCart({
-        product, quantity, selectedSize
+        product, selectedSize, quantity
       }))
     }else{
       toast.error('Please signin to continue')
     }
   }
 
+  useEffect(()=>{
+    setIsLoading(false)
+  },[])
+
+  if(isLoading){
+    return <ResponsiveProductPageSkeleton/>
+  }
+
   if (!product) {
     return <div>Product not found</div>;
   }
-
-  const sizes = ['XS', 'S', 'M', 'L', 'XL', '2XL'];
-  const colors = ['Black', 'White', 'Gray', 'Navy', 'Brown'];
-//   const relatedProducts = products.filter(p => p.category === product.category && p.id !== product.id).slice(0, 4);
-
-  const images = [
-    product.thumbnail,
-  ];
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -85,11 +77,13 @@ const Product = ({ product }: ProductProps) => {
                 onClick={() => setSelectedImage(index)}
                 className={`aspect-square glass rounded-lg overflow-hidden border-2 transition-colors ${
                   selectedImage === index ? 'border-blue-500' : 'border-white/20 hover:border-white/40'
-                }`}
+                } relative`}
               >
-                <img
+                <Image
                   src={image}
                   alt={`${product.title} ${index + 1}`}
+                  fill
+                  priority
                   className="w-full h-full object-cover"
                 />
               </motion.button>
@@ -219,6 +213,7 @@ const Product = ({ product }: ProductProps) => {
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
               <Button className="cursor-pointer flex-1 bg-slate-900 hover:bg-slate-800 text-white dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-200 py-3 px-6 font-semibold flex items-center justify-center space-x-2"
                 onClick={handleAddToCart}
+                disabled={!selectedSize}
               >
                 <ShoppingCart size={20} />
                 <span>Add to Cart</span>
