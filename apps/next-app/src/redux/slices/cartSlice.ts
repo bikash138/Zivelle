@@ -1,15 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit"
 import { toast } from "sonner"
+import { CartItem } from "@/types";
 
-type CartItem = {
-  id: number;
-  title: string;
-  description: string;
-  thumbnail: string
-  price: number;
-  quantity: number;
-  selectedSize: string
-};
 
 interface CartState {
   cart: CartItem[];
@@ -43,7 +35,6 @@ const cartSlice = createSlice({
       }
       // If the course is not in the cart, add it to the cart
       state.cart.push({...product, quantity, selectedSize})
-      console.log({...product, quantity, selectedSize})
       // Update the total quantity and price
       state.totalItems += quantity
       state.total += product.price * quantity
@@ -51,19 +42,15 @@ const cartSlice = createSlice({
       localStorage.setItem("cart", JSON.stringify(state.cart))
       localStorage.setItem("total", JSON.stringify(state.total))
       localStorage.setItem("totalItems", JSON.stringify(state.totalItems))
-      // show toast
       toast.success("Added to cart")
     },
     removeFromCart: (state, action) => {
       const product = action.payload
-      console.log(product)
-      //@ts-ignore
       const index = state.cart.findIndex((item) => item.id === product.id)
 
       if (index >= 0) {
         // If the course is found in the cart, remove it
         state.totalItems--
-        //@ts-ignore
         state.total -= state.cart[index].price
         state.cart.splice(index, 1)
         // Update to localstorage

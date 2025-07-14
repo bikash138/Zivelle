@@ -35,12 +35,17 @@ enum ListStatus {
   Sold
 }
 
-enum Status {
+enum OrderStatus {
   Confirmed
   Shipped
   Delivered
   Pending
   Cancelled
+}
+enum PaymentStatus {
+  Pending
+  Success
+  Failed
 }
 
 model Seller{
@@ -53,7 +58,7 @@ model Seller{
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   items     Item[]
-  orders    Order[]
+  orders    OrderItem[]
 }
 
 model Item{
@@ -65,7 +70,7 @@ model Item{
   originalPrice Int
   price         Int
   size          Size[]
-  orders        Order[]          
+  orders        OrderItem[]          
   category      Category 
   subCategory   SubCategory
   status        ListStatus  @default(Draft)
@@ -79,17 +84,28 @@ model Item{
 }
 
 model Order{
-  id          String    @id    @default(uuid())
-  itemId      Int
-  quantity    Int
-  total       Float
-  status      Status    @default(Pending)
-  placedOn    DateTime  @default(now())
-  sellerId    String
-  customerId  String
-  item        Item      @relation(fields: [itemId], references: [id])
-  seller      Seller    @relation(fields: [sellerId], references: [id])
-  customer    Customer    @relation(fields: [customerId], references: [id])
+  id                String           @id    @default(uuid())
+  total             Float
+  orderStatus       OrderStatus      @default(Pending)
+  paymentStatus     PaymentStatus    @default(Pending)
+  placedOn          DateTime         @default(now())
+  customerId        String
+  razorpayOrderId   String           @unique
+  razorpayPaymentId String?
+  customer          Customer          @relation(fields: [customerId], references: [id])
+  items             OrderItem[]
+}
+model OrderItem {
+  id        Int      @id @default(autoincrement())
+  orderId   String
+  sellerId  String
+  itemId    Int
+  quantity  Int       @default(1)
+  price     Int      
+  size      Size    
+  order     Order    @relation(fields: [orderId], references: [id])
+  item      Item     @relation(fields: [itemId], references: [id])
+  seller    Seller   @relation(fields: [sellerId], references: [id])
 }
   // customerId  String
   // customer    Customer  @relation((fields: [customerId], references: [id]))

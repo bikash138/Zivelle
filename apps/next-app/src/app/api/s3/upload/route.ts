@@ -30,6 +30,7 @@ export async function POST(req: Request){
             permanentUrl
         }, {status: 200})
     }catch(error){
+        console.log(error)
         return NextResponse.json({
             success: false,
             message: "Somethin went wrong while uploading the file"

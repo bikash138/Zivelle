@@ -1,5 +1,5 @@
 import { prisma } from "@repo/database/prisma";
-import { SignUpSchema, UserSignUpSchema } from "@repo/zod/zodTypes";
+import { UserSignUpSchema } from "@repo/zod/zodTypes";
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from 'bcrypt'
 

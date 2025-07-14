@@ -22,6 +22,7 @@ export async function DELETE(req: Request){
             message: "File Deleted Successfully"
         }, {status: 200})
     }catch(error){
+        console.log(error)
         return NextResponse.json({
             success: false,
             message: "Something went wrong while deleting the file"

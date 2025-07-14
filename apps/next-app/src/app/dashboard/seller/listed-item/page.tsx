@@ -11,12 +11,14 @@ export default async function OrdersRoute() {
     if(error){
       return error
     }
-    console.log(userId)
     const allListedItems = await prisma.item.findMany({
       where:{
           adminId: userId
       },
     })
-    //@ts-ignore
-  return <ListedItems initialListedItems={allListedItems} />;
+    const listedItemsWithStringDates = allListedItems.map(item => ({
+      ...item,
+      createdAt: item.createdAt.toISOString(),
+    }));
+  return <ListedItems initialListedItems={listedItemsWithStringDates} />;
 }

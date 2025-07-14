@@ -3,13 +3,14 @@ import React, { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion'
-import { Search, ShoppingCart, User, Menu, X, Heart, Sun, Moon } from 'lucide-react';
+import { Search, ShoppingCart, User, Menu, X, Sun, Moon } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { Button } from '@/components/ui/button';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import  {useRouter}  from 'next/navigation';
-import { setToken } from '@/redux/slices/authSlice';
 import { RootState } from '@/redux/reducer';
+import Image from 'next/image';
+import Logo from '@/assets/Logo.png'
 
 const Header = () => {
   const token = useSelector((state: RootState)=> state.auth.token)
@@ -18,7 +19,8 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname()
   const router = useRouter()
-  //@ts-ignore
+  // eslint-disable-next-line
+  //@ts-expect-error
   const { theme, toggleTheme } = useTheme();
 
   const navLinks = [
@@ -31,7 +33,7 @@ const Header = () => {
 
   useEffect(() => {
     router.prefetch('/catalog');
-  }, []);
+  }, [router]);
 
   return (
     <motion.header
@@ -45,11 +47,16 @@ const Header = () => {
           <Link href="/" className="flex items-center space-x-2">
             <motion.div 
               whileHover={{ scale: 1.05 }}
-              className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center shadow-lg"
+              className="w-10 h-10 relative rounded-lg flex items-center justify-center"
             >
-              <span className="text-white font-bold text-sm">Z</span>
+              <Image
+                src={Logo}
+                alt='logo'
+                priority
+                fill
+              />
             </motion.div>
-            <span className="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+            <span className=" text-3xl font-bold bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text text-transparent">
               Zivelle
             </span>
           </Link>
@@ -80,12 +87,12 @@ const Header = () => {
 
           {/* Right side actions */}
           {isAuthenticated ? (
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-3">
               <motion.button 
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={toggleTheme}
-                className="p-2 text-gray-700 dark:text-gray-300 hover:text-blue-400 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-white/10"
+                className="p-2 hidden md:block lg:block text-gray-700 dark:text-gray-300 hover:text-blue-400 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-white/10"
               >
                 {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
               </motion.button>
@@ -95,8 +102,9 @@ const Header = () => {
                 className="p-2 text-gray-700 dark:text-gray-300 hover:text-blue-400 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-white/10"
               >
                 <Search size={20} />
+                {/* <AnimatedSearchBar/> */}
               </motion.button>
-              <Link 
+              {/* <Link 
                 href="/favourites" 
                 className={`p-2 transition-colors relative rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 ${
                   pathname === '/favourites' 
@@ -110,7 +118,7 @@ const Header = () => {
                     2
                   </span>
                 </motion.div>
-              </Link>
+              </Link> */}
               <Link 
                 href="/cart" 
                 className={`p-2 transition-colors relative rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 ${
@@ -126,7 +134,7 @@ const Header = () => {
                   </span>
                 </motion.div>
               </Link>
-            <Link href='/dashboard/user/profile'>
+            <Link href='/dashboard/user/profile' className='hidden md:block lg:block'>
               <motion.button 
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
@@ -215,18 +223,18 @@ const Header = () => {
               ))}
               <div className="flex space-x-4 pt-4 border-t border-gray-200 dark:border-white/10">
                 <Link 
-                  href={isAuthenticated ? "/favourites" : "/user/signup"}
+                  href={isAuthenticated ? "/dashboard/user/profile" : "/user/signup"}
                   className="text-gray-700 dark:text-gray-300 hover:text-red-400 transition-colors"
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  {isAuthenticated ? "Favourites" : "Create Account"}
+                  {isAuthenticated ? "Profile" : "Create Account"}
                 </Link>
                 <Link 
                   href={isAuthenticated ? "/cart" : "/user/signin"}
                   className="text-gray-700 dark:text-gray-300 hover:text-blue-400 transition-colors"
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  {isAuthenticated ? "Favourites" : "Signin"}
+                  {isAuthenticated ? "Cart" : "Signin"}
                 </Link>
                 <button 
                   onClick={toggleTheme}

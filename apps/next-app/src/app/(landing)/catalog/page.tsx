@@ -8,10 +8,12 @@ export default async function CatalogRoute() {
       thumbnail: true,
       title: true,
       description: true,
+      size: true,
       price: true,
       originalPrice: true,
       category: true,
-      subCategory: true
+      subCategory: true,
+      createdAt: true
     }
    })
 
