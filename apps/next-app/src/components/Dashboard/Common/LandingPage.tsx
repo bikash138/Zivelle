@@ -10,6 +10,10 @@ import Image from 'next/image';
 import Kids from '@/assets/Kids.png'
 import Women from '@/assets/Women.png'
 import Men from '@/assets/Men.png'
+import c1 from '@/assets/c1.png'
+import c2 from '@/assets/c2.png'
+import c3 from '@/assets/c3.png'
+import c4 from '@/assets/c4.png'
 
 export interface ProductsProps {
   products: {
@@ -66,7 +70,7 @@ const LandingPage = ({products} :ProductsProps) => {
                   className="flex items-center space-x-2 text-orange-400"
                 >
                   <Sparkles size={20} />
-                  <span className="text-sm font-medium">New Collection 2024</span>
+                  <span className="text-sm font-medium">New Collection 2025</span>
                 </motion.div>
                 <motion.h1 
                   initial={{ opacity: 0, y: 30 }}
@@ -160,8 +164,8 @@ const LandingPage = ({products} :ProductsProps) => {
                     <div className="flex-1 min-w-0">
                       <h4 className="font-medium text-sm truncate text-gray-900 dark:text-white">{product.title}</h4>
                       <div className="flex items-center space-x-2">
-                        <span className="text-orange-400 font-semibold">${product.price}</span>
-                        <span className="text-gray-400 line-through text-sm">${product.originalPrice}</span>
+                        <span className="text-orange-400 font-semibold">₹{product.price}</span>
+                        <span className="text-gray-400 line-through text-sm">₹{product.originalPrice}</span>
                       </div>
                     </div>
                     {/* <div className="flex items-center space-x-1">
@@ -339,32 +343,40 @@ const LandingPage = ({products} :ProductsProps) => {
               className="grid grid-cols-2 gap-4"
             >
               <div className="space-y-4">
-                <motion.img
-                  whileHover={{ scale: 1.05 }}
-                  src="https://images.pexels.com/photos/1926769/pexels-photo-1926769.jpeg?auto=compress&cs=tinysrgb&w=400"
-                  alt="Summer fashion"
-                  className="w-full h-48 object-cover rounded-lg"
-                />
-                <motion.img
-                  whileHover={{ scale: 1.05 }}
-                  src="https://images.pexels.com/photos/1884584/pexels-photo-1884584.jpeg?auto=compress&cs=tinysrgb&w=400"
-                  alt="Summer fashion"
-                  className="w-full h-32 object-cover rounded-lg"
-                />
+                <motion.div whileHover={{ scale: 1.05 }}>
+                  <Image
+                    src={c3}
+                    alt="Summer fashion"
+                    className="w-full h-48 object-cover rounded-lg"
+                    style={{ width: '100%', height: '12rem', objectFit: 'cover', borderRadius: '0.5rem' }}
+                  />
+                </motion.div>
+                <motion.div whileHover={{ scale: 1.05 }}>
+                  <Image
+                    src={c1}
+                    alt="Summer fashion"
+                    className="w-full h-48 object-cover rounded-lg"
+                    style={{ width: '100%', height: '12rem', objectFit: 'cover', borderRadius: '0.5rem' }}
+                  />
+                </motion.div>
               </div>
               <div className="space-y-4 mt-8">
-                <motion.img
-                  whileHover={{ scale: 1.05 }}
-                  src="https://images.pexels.com/photos/1536619/pexels-photo-1536619.jpeg?auto=compress&cs=tinysrgb&w=400"
-                  alt="Summer fashion"
-                  className="w-full h-32 object-cover rounded-lg"
-                />
-                <motion.img
-                  whileHover={{ scale: 1.05 }}
-                  src="https://images.pexels.com/photos/1043474/pexels-photo-1043474.jpeg?auto=compress&cs=tinysrgb&w=400"
-                  alt="Summer fashion"
-                  className="w-full h-48 object-cover rounded-lg"
-                />
+                <motion.div whileHover={{ scale: 1.05 }}>
+                  <Image
+                    src={c4}
+                    alt="Summer fashion"
+                    className="w-full h-48 object-cover rounded-lg"
+                    style={{ width: '100%', height: '12rem', objectFit: 'cover', borderRadius: '0.5rem' }}
+                  />
+                </motion.div>
+                <motion.div whileHover={{ scale: 1.05 }}>
+                  <Image
+                    src={c2}
+                    alt="Summer fashion"
+                    className="w-full h-48 object-cover rounded-lg"
+                    style={{ width: '100%', height: '12rem', objectFit: 'cover', borderRadius: '0.5rem' }}
+                  />
+                </motion.div>
               </div>
             </motion.div>
           </div>

@@ -1,0 +1,16 @@
+FROM node:22-alpine
+
+WORKDIR /app
+
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json .npmrc ./
+COPY apps ./apps
+COPY packages ./packages
+COPY .env .env
+
+RUN npm install -g pnpm
+
+RUN pnpm install --frozen-lockfile
+
+RUN pnpm --filter=@repo/database exec prisma generate
+
+RUN pnpm build
