@@ -1,8 +1,18 @@
-// eslint-disable
 import { ListedItems } from '@/components/Dashboard/Seller/ListedItems';
 import { prisma } from '@repo/database/prisma';
 import getUserIdToken from "@/lib/getUserIdToken"
 import { cookies } from 'next/headers';
+
+interface Product {
+  title: string
+  description: string
+  price: number
+  category: 'Men' | 'Women' | 'Kids'
+  stock: number
+  status: string
+  isAvailable: boolean
+  createdAt: Date
+}
 
 export default async function OrdersRoute() {
     const cookieStore = await cookies()
@@ -11,7 +21,7 @@ export default async function OrdersRoute() {
     if(error){
       return error
     }
-    const allListedItems = await prisma.item.findMany({
+    const allListedItems: Product[]  = await prisma.item.findMany({
       where:{
           adminId: userId
       },

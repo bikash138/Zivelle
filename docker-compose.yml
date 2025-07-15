@@ -1,0 +1,8 @@
+services:
+  app:
+    build: .
+    command: pnpm --filter=next-app start
+    env_file:
+      - .env
+    ports:
+      - "80:3000"
