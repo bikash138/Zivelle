@@ -56,7 +56,7 @@ const Header = () => {
                 fill
               />
             </motion.div>
-            <span className=" text-3xl font-bold bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text text-transparent">
+            <span className="text-3xl font-bold bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text text-transparent">
               Zivelle
             </span>
           </Link>

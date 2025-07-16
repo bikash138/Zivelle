@@ -1,0 +1,50 @@
+name: Deploy Zivelle to EC2
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    name: Deploy to EC2 on push to main
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 📥 Checkout repository
+      uses: actions/checkout@v3
+
+    - name: 🔐 Setup SSH key
+      run: |
+        mkdir -p ~/.ssh
+        printf "%s" "${{ secrets.EC2_KEY }}" > ~/.ssh/id_ed25519
+        chmod 600 ~/.ssh/id_ed25519
+        ssh-keyscan -p ${{ secrets.EC2_PORT }} ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+
+    - name: 🚀 SSH into EC2 and deploy
+      run: |
+        ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
+          cd /home/ubuntu/Zivelle
+
+          echo "🔄 Fetching latest code safely..."
+          git fetch origin main
+          git reset --hard origin/main
+
+          echo "📄 Creating .env files..."
+          printf "%s" "${{ secrets.ENV_FILE }}" > .env
+          echo "${{ secrets.ENV_DB }}" > ./packages/database/.env
+
+          # 👇 Try to build first, without stopping current app
+          docker-compose build
+
+          # ✅ Only stop and restart if build succeeded
+          if [ $? -eq 0 ]; then
+            echo "✅ Build succeeded! Restarting app..."
+            docker-compose down
+            docker-compose up -d
+            echo "✅ Deployment complete!"
+          else
+            echo "❌ Build failed! Keeping old app running."
+            docker-compose logs
+            exit 1
+          fi
+        EOF
