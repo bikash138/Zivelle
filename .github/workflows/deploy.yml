@@ -19,6 +19,12 @@ jobs:
         printf "%s" "${{ secrets.EC2_KEY }}" > ~/.ssh/id_ed25519
         chmod 600 ~/.ssh/id_ed25519
         ssh-keyscan -p ${{ secrets.EC2_PORT }} ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+    
+    - name: 🐛 Debug SSH Key
+      run: |
+        ls -la ~/.ssh
+        head -n 5 ~/.ssh/id_ed25519
+        file ~/.ssh/id_ed25519
 
     - name: 🚀 SSH into EC2 and deploy
       run: |
