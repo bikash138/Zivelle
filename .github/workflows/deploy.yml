@@ -16,7 +16,7 @@ jobs:
     - name: 🔐 Setup SSH key
       run: |
         mkdir -p ~/.ssh
-        printf "%s" "${{ secrets.EC2_KEY }}" > ~/.ssh/id_ed25519
+        echo "${{ secrets.EC2_KEY }}" > ~/.ssh/id_ed25519
         chmod 600 ~/.ssh/id_ed25519
         ssh-keyscan -p ${{ secrets.EC2_PORT }} ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
     
@@ -28,6 +28,7 @@ jobs:
 
     - name: 🚀 SSH into EC2 and deploy
       run: |
+        cat ~/.ssh/id_ed25519
         ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no ubuntu@13.235.28.177 << 'EOF'
         cd /home/ubuntu/Zivelle
 
