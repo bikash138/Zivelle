@@ -39,18 +39,18 @@ jobs:
         printf "%s" "${{ secrets.ENV_FILE }}" > .env
         echo "${{ secrets.ENV_DB }}" > ./packages/database/.env
 
-        # 👇 Try to build first, without stopping current app
-        sudo docker-compose build
+        echo "👇 Try to build first, without stopping current app"
+        sudo docker compose build
 
         # ✅ Only stop and restart if build succeeded
         if [ $? -eq 0 ]; then
           echo "✅ Build succeeded! Restarting app..."
-          sudo docker-compose down
-          sudo docker-compose up -d
+          sudo docker compose down
+          sudo docker compose up -d
           echo "✅ Deployment complete!"
         else
           echo "❌ Build failed! Keeping old app running."
-          sudo docker-compose logs
+          sudo docker compose logs
           exit 1
         fi
         EOF
