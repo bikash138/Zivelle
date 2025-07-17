@@ -28,8 +28,7 @@ jobs:
 
     - name: 🚀 SSH into EC2 and deploy
       run: |
-        cat ~/.ssh/id_ed25519
-        ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no ubuntu@13.235.28.177 << 'EOF'
+        ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
         cd /home/ubuntu/Zivelle
 
         echo "🔄 Fetching latest code safely..."
@@ -41,17 +40,17 @@ jobs:
         echo "${{ secrets.ENV_DB }}" > ./packages/database/.env
 
         # 👇 Try to build first, without stopping current app
-        docker-compose build
+        sudo docker-compose build
 
         # ✅ Only stop and restart if build succeeded
         if [ $? -eq 0 ]; then
           echo "✅ Build succeeded! Restarting app..."
-          docker-compose down
-          docker-compose up -d
+          sudo docker-compose down
+          sudo docker-compose up -d
           echo "✅ Deployment complete!"
         else
           echo "❌ Build failed! Keeping old app running."
-          docker-compose logs
+          sudo docker-compose logs
           exit 1
         fi
         EOF
