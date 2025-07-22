@@ -63,8 +63,8 @@ export interface OrderedItems {
   placedOn: Date
   total: number
   id: string;
-  orderStatus: string
-  paymentStatus: string
+  orderStatus: 'Pending' | 'Confirmed' | 'Shipped' | 'Delivered' | 'Cancelled'
+  paymentStatus: 'Success' | 'Failed' | 'Pending'
   customerId: string;
   razorpayOrderId: string;
   razorpayPaymentId: string | null;
@@ -74,4 +74,17 @@ export interface OrderedItems {
       title: string;
     };
   }[]
+}
+
+
+export interface ModalOrderData {
+  id: string;
+  title: string;
+  thumbnail: string;
+  price: number;
+  size: string;
+  customerName: string;
+  customerAddress: string | null;
+  itemStatus: 'Pending' | 'Confirmed' | 'Shipped' | 'Cancelled' | 'Delivered';
+  placedOn: string;
 }

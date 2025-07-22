@@ -15,11 +15,13 @@ export default async function OrdersRoute() {
             sellerId: userId
         },
         select:{
+            id: true,
             orderId: true,
             itemId: true,
             quantity: true,
             size: true,
             price: true,
+            itemStatus: true,
             item:{
                 select:{
                     title: true,
@@ -29,7 +31,6 @@ export default async function OrdersRoute() {
             order:{
                 select:{
                     placedOn: true,
-                    orderStatus: true,
                     paymentStatus: true,
                     customer:{
                         select:{

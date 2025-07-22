@@ -42,7 +42,7 @@ const Signup = () => {
       }
       toast.success(response.data?.message, {id: toastId})
       reset()
-      router.push("/user/signin")
+      router.push("/auth/user/signin")
     }catch(error){
       console.log("Something went wrong while SigningUp", error)
       toast.error('SignUp Failed', {id: toastId})
@@ -70,7 +70,6 @@ const Signup = () => {
         {/* Sign Up Form */}
         <form className="mt-8 space-y-6" onSubmit={handleSubmit(onsubmit)}>
           <div className="space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="firstName" className="text-white">
                   Full Name
@@ -84,7 +83,6 @@ const Signup = () => {
                   placeholder="Full Name"
                 />
               </div>
-            </div>
             
             <div>
               <Label htmlFor="email" className="text-white">
@@ -142,7 +140,7 @@ const Signup = () => {
             <p className="text-gray-400">
               Already have an account?{' '}
               <Link
-                href="/user/signin"
+                href="/auth/user/signin"
                 className="text-white cursor-pointer hover:text-gray-300 font-semibold transition-colors duration-200"
               >
                 Sign in

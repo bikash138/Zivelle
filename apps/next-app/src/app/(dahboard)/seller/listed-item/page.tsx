@@ -5,6 +5,7 @@ import { cookies } from 'next/headers';
 
 interface Product {
   title: string
+  thumbnail: string
   description: string
   price: number
   category: 'Men' | 'Women' | 'Kids'

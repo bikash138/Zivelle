@@ -14,8 +14,10 @@ import { z } from 'zod';
 import { sizes } from '@repo/zod/zodTypes';
 import axios from 'axios'
 import { toast } from "sonner"
+import { motion } from 'framer-motion'
 
 import UploadThumbnail from './core/UploadThumbnail';
+import { Plus } from 'lucide-react';
 
 const sizeOptions = [...sizes];
 
@@ -45,7 +47,7 @@ export function ListNewItem() {
     }
   })
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [resetThumbnail, setResetThumbnail] = useState(0)
+  const [resetThumbnail, setResetThumbnail] = useState(0);
 
   const onsubmit = async (data: formType) => {
     const toastId = toast.loading("Listing Item...")
@@ -67,208 +69,233 @@ export function ListNewItem() {
   }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold text-white mb-2">List New Item</h2>
-        <p className="text-slate-400">Add a new item to your store</p>
-      </div>
+    <>
+      <div className="space-y-8">
+        <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="mb-6"
+      >
+        <div className="relative">
+          <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-black">
+            List New Item
+          </h1>
+          <div className="h-1 w-16 bg-orange-500 mt-2 rounded-full"></div>
+        </div>
+        <p className="text-gray-600 mt-4 max-w-lg">
+          Create a new listing by filling out the details below.
+        </p>
+      </motion.div>
 
-      <Card className="bg-slate-800 border-slate-700">
-        <CardHeader>
-          <CardTitle className="text-white">Item Details</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit(onsubmit)} className="space-y-6">
-            {/* Image Upload */}
-            <UploadThumbnail errors={errors} setValue={setValue} resetThumbnail={resetThumbnail}/>
-
-            {/* Item Title */}
-            <div className="space-y-2">
-              <Label htmlFor="title" className="text-slate-200">Item Title</Label>
-              <Input
-                id="title"
-                {...register('title')}
-                placeholder="Enter item title"
-                className="bg-slate-700 border-slate-600 text-white placeholder:text-slate-400"
-                required
-              />
-              {errors.title && (
-                  <p className="text-red-500 text-sm">{errors.title?.message as string}</p>
-                )}
-            </div>
-
-            {/* Item Description */}
-            <div className="space-y-2">
-              <Label htmlFor="description" className="text-slate-200">Description</Label>
-              <Textarea
-                id="description"
-                {...register('description')}
-                placeholder="Describe your item..."
-                rows={4}
-                className="bg-slate-700 border-slate-600 text-white placeholder:text-slate-400"
-                required
-              />
-              {errors.description && (
-                  <p className="text-red-500 text-sm">{errors.description?.message as string}</p>
-                )}
-            </div>
-
-            {/* Price */}
-            <div className='flex space-x-2 w-full space-y-2'>
-              <div className="space-y-2 w-[50%]">
-                <Label htmlFor="price" className="text-slate-200">Price (₹)</Label>
-                <Input
-                  id="price"
-                  type="number"
-                  {...register('price', { valueAsNumber: true })}
-                  placeholder="499"
-                  className="bg-slate-700 border-slate-600 text-white placeholder:text-slate-400"
-                  required
-                />
-                {errors.price && (
-                    <p className="text-red-500 text-sm">{errors.price?.message as string}</p>
-                  )}
-              </div>
-              <div className="space-y-2 w-[50%]">
-                <Label htmlFor="price" className="text-slate-200">Original Price (₹)</Label>
-                <Input
-                  id="price"
-                  type="number"
-                  {...register('originalPrice', { valueAsNumber: true })}
-                  placeholder="999"
-                  className="bg-slate-700 border-slate-600 text-white placeholder:text-slate-400"
-                  required
-                />
-                {errors.originalPrice && (
-                  <p className="text-red-500 text-sm">{errors.originalPrice?.message as string}</p>
-                )}
-              </div>
-            </div>
-          
-            {/* Stock */}
-            <div className="space-y-2">
-              <Label htmlFor="price" className="text-slate-200">Stock (pcs)</Label>
-              <Input
-                id="stock"
-                type="number"
-                {...register('stock', { valueAsNumber: true })}
-                placeholder="10"
-                className="bg-slate-700 border-slate-600 text-white placeholder:text-slate-400"
-                required
-              />
-              {errors.stock && (
-                  <p className="text-red-500 text-sm">{errors.stock?.message as string}</p>
-                )}
-            </div>
-            
-
-            <div className="grid grid-cols-1 gap-6">
-
-              {/* Size Selection (col 1) */}
-              <div className="space-y-2">
-                <Label className="text-slate-200">Sizes</Label>
-                <Controller
-                  name='size'
-                  control={control}
-                  defaultValue={['M']}
-                  render={({ field })=>(
-                    <div className="flex flex-wrap gap-2">
-                      {sizeOptions.map((size) => (
-                        <label key={size} className="flex items-center space-x-2 text-white">
-                          <Checkbox
-                            checked={field.value?.includes(size)}
-                            onCheckedChange={(checked)=>{
-                              if(checked){
-                                field.onChange([...(field.value || []), size])
-                              }else{
-                                field.onChange((field.value || []).filter((s) => s !== size));
-                              }
-                            }}
-                            className='cursor-pointer'
-                          />
-                          <span>{size}</span>
-                        </label>
-                      ))}
-                    </div>
-                  )}
-                />
-                {errors.size && (
-                  <p className="text-red-500 text-sm">{errors.size.message as string}</p>
-                )}
-              </div>
-
-              {/* Merge Category and Sub Category (col 2 and 3) */}
-              <div className="col-span-2 flex flex-col md:flex-row gap-4 w-full lg:2-1/3 md:w-1/3">
-
-                {/* Category Selection */}
-                <div className="space-y-2 flex-1">
-                  <Label className="text-slate-200">Category</Label>
-                  <Controller
-                    name='category'
-                    control={control}
-                    defaultValue="Men"
-                    render={({ field }) => (
-                      <Select
-                        value={field.value}
-                        onValueChange={field.onChange}
-                      >
-                        <SelectTrigger className="cursor-pointer bg-slate-700 border-slate-600 text-white">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent className="bg-slate-700 border-slate-600">
-                          <SelectItem value="Men" className="text-white">Men</SelectItem>
-                          <SelectItem value="Women" className="text-white">Women</SelectItem>
-                          <SelectItem value="Kids" className="text-white">Kids</SelectItem>
-                        </SelectContent>
-                    </Select>
-                    )}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+        >
+          <Card>
+            <CardHeader>
+              <CardTitle>Item Details</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <form onSubmit={handleSubmit(onsubmit)} className="space-y-6">
+                {/* Product Thumbnail */}
+                <div className="space-y-2">
+                  <Label htmlFor="thumbnail">Product Thumbnail</Label>
+                  <UploadThumbnail 
+                    errors={errors} 
+                    setValue={setValue} 
+                    resetThumbnail={resetThumbnail}
                   />
-                  {errors.category && (
-                    <p className="text-red-500 text-sm">{errors.category?.message as string}</p>
+                </div>
+
+                {/* Item Title */}
+                <div className="space-y-2">
+                  <Label htmlFor="title">Item Title</Label>
+                  <Input
+                    id="title"
+                    {...register('title')}
+                    placeholder="Enter item title"
+                    required
+                  />
+                  {errors.title && (
+                      <p className="text-red-500 text-sm">{errors.title?.message as string}</p>
                   )}
                 </div>
 
-                {/* Sub Category Selection */}
-                <div className="space-y-2 flex-1">
-                  <Label className="text-slate-200">Sub Category</Label>
+                {/* Description */}
+                <div className="space-y-2">
+                  <Label htmlFor="description">Description</Label>
+                  <Textarea
+                    id="description"
+                    {...register('description')}
+                    placeholder="Describe your item..."
+                    rows={4}
+                    required
+                  />
+                  {errors.description && (
+                      <p className="text-red-500 text-sm">{errors.description?.message as string}</p>
+                  )}
+                </div>
+
+                {/* Price Fields */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="price">Price (₹)</Label>
+                    <Input
+                      id="price"
+                      type="number"
+                      {...register('price', { valueAsNumber: true })}
+                      placeholder="499"
+                      required
+                    />
+                    {errors.price && (
+                        <p className="text-red-500 text-sm">{errors.price?.message as string}</p>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="originalPrice">Original Price (₹)</Label>
+                    <Input
+                      id="originalPrice"
+                      type="number"
+                      {...register('originalPrice', { valueAsNumber: true })}
+                      placeholder="999"
+                      required
+                    />
+                    {errors.originalPrice && (
+                      <p className="text-red-500 text-sm">{errors.originalPrice?.message as string}</p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Stock */}
+                <div className="space-y-2">
+                  <Label htmlFor="stock">Stock (pcs)</Label>
+                  <Input
+                    id="stock"
+                    type="number"
+                    {...register('stock', { valueAsNumber: true })}
+                    placeholder="10"
+                    required
+                  />
+                  {errors.stock && (
+                      <p className="text-red-500 text-sm">{errors.stock?.message as string}</p>
+                  )}
+                </div>
+
+                {/* Sizes */}
+                <div className="space-y-2">
+                  <Label>Sizes</Label>
                   <Controller
-                    name='subCategory'
+                    name='size'
                     control={control}
-                    defaultValue="Topwear"
+                    defaultValue={['M']}
                     render={({ field })=>(
-                      <Select
-                      value={field.value}
-                        onValueChange={field.onChange}
-                      >
-                        <SelectTrigger className="cursor-pointer bg-slate-700 border-slate-600 text-white">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent className=" bg-slate-700 border-slate-600">
-                          <SelectItem value="Topwear" className="text-white cursor-pointer">Topwear</SelectItem>
-                          <SelectItem value="Bottomwear" className="text-white cursor-pointer">Bottomwear</SelectItem>
-                          <SelectItem value="Winterwear" className="text-white cursor-pointer">Winterwear</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <div className="flex flex-wrap gap-2">
+                        {sizeOptions.map((size) => (
+                          <motion.div
+                            key={size}
+                            whileHover={{ scale: 1.05 }}
+                            className="flex items-center space-x-2"
+                          >
+                            <Checkbox
+                              id={size}
+                              checked={field.value?.includes(size)}
+                              onCheckedChange={(checked)=>{
+                                if(checked){
+                                  field.onChange([...(field.value || []), size])
+                                }else{
+                                  field.onChange((field.value || []).filter((s) => s !== size));
+                                }
+                              }}
+                              className='cursor-pointer'
+                            />
+                            <Label htmlFor={size} className="text-sm">{size}</Label>
+                          </motion.div>
+                        ))}
+                      </div>
                     )}
                   />
-                  {errors.subCategory && (
-                    <p className="text-red-500 text-sm">{errors.subCategory?.message as string}</p>
+                  {errors.size && (
+                    <p className="text-red-500 text-sm">{errors.size.message as string}</p>
                   )}
                 </div>
 
-              </div>
+                {/* Category */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Category</Label>
+                    <Controller
+                      name='category'
+                      control={control}
+                      defaultValue="Men"
+                      render={({ field }) => (
+                        <Select
+                          value={field.value}
+                          onValueChange={field.onChange}
+                        >
+                          <SelectTrigger className="cursor-pointer">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Men">Men</SelectItem>
+                            <SelectItem value="Women">Women</SelectItem>
+                            <SelectItem value="Kids">Kids</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      )}
+                    />
+                    {errors.category && (
+                      <p className="text-red-500 text-sm">{errors.category?.message as string}</p>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Sub Category</Label>
+                    <Controller
+                      name='subCategory'
+                      control={control}
+                      defaultValue="Topwear"
+                      render={({ field })=>(
+                        <Select
+                          value={field.value}
+                          onValueChange={field.onChange}
+                        >
+                          <SelectTrigger className="cursor-pointer">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Topwear">Topwear</SelectItem>
+                            <SelectItem value="Bottomwear">Bottomwear</SelectItem>
+                            <SelectItem value="Winterwear">Winterwear</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      )}
+                    />
+                    {errors.subCategory && (
+                      <p className="text-red-500 text-sm">{errors.subCategory?.message as string}</p>
+                    )}
+                  </div>
+                </div>
 
-            </div>
-            <Button
-              type="submit"
-              className="w-full cursor-pointer bg-orange-600 hover:bg-orange-700 text-white"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? 'Listing Item...' : 'List Item'}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
-    </div>
+                {/* Submit Button */}
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <Button 
+                    type="submit"
+                    className="w-full bg-orange-600 hover:bg-orange-700 text-white"
+                    disabled={isSubmitting}
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    {isSubmitting ? 'Listing Item...' : 'Add Item'}
+                  </Button>
+                </motion.div>
+              </form>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </div>
+    </>
   );
 }

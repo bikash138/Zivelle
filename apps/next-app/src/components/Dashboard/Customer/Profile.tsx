@@ -1,79 +1,59 @@
 'use client'
 import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Edit, Save, X, User, Store, Calendar, Loader } from 'lucide-react';
-import type { SellerProfile } from '@/types';
+import { Edit, Save, X, User, Calendar, Loader } from 'lucide-react';
 import axios from 'axios';
 import { toast } from 'sonner';
 import { useForm } from 'react-hook-form';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '@/redux/reducer';
+import { setProfile } from '@/redux/slices/profileSlice';
+import { formatDate } from '@/lib/formatDate';
 
-interface UpadatedDataForm{
-    name: string,
-    email: string,
-    store: string
-  }
+interface UpadatedDataForm {
+  name: string,
+  email: string,
+}
 
 export function Profile() {
-  const user = useSelector((state: RootState)=>state.profile.user)
-  const [profile, setProfile] = useState<SellerProfile | null>(null);
+  const dispatch = useDispatch();
+  const profile = useSelector((state: RootState) => state.profile.profile);
   const [isEditing, setIsEditing] = useState(false);
-  const [editedProfile, setEditedProfile] = useState<SellerProfile | null>(null);
   const [isSaving, setIsSaving] = useState(false);
-  const[profileUpdated, setProfileUpdated] = useState(false)
 
-  const{
+  const {
     register,
     handleSubmit,
     reset,
-  } = useForm<UpadatedDataForm>()
+  } = useForm<UpadatedDataForm>();
 
-  useEffect(()=>{
-  const fetchUser = async()=>{
-    if (!profileUpdated) {
-      if (user) {
-        setProfile(user);
-        setEditedProfile(user);
-        return;
+  useEffect(() => {
+    const fetchUser = async() => {
+      if (!profile) {
+        const toastId = toast.loading('Loading...')
+        try {
+          const response = await axios.get('/api/user/profile')
+          if(!response.data?.success){
+            throw new Error('Cannot get user details')
+          }
+          const userData = response.data?.userDetails;
+          
+          dispatch(setProfile(userData));
+          toast.dismiss(toastId)
+        } catch(error) {
+          toast.error('Cannot get Profile Details', {id: toastId})
+          console.log('Error while getting user details', error)
+        }
       }
     }
-    const toastId = toast.loading('Loading...')
-    try{
-      const response = await axios.get('/api/user/profile')
-      if(!response.data?.success){
-        throw new Error('Cannnot get seller details')
-      }
-      const seller = response.data?.userDetails
-      setProfile(seller)
-      setEditedProfile(seller);
-      localStorage.setItem('userProfile', JSON.stringify(seller))
-      toast.dismiss(toastId)
-    }catch(error){
-      toast.error('Cant get Profile Details', {id: toastId})
-      console.log('Error while getting seller details', error)
-    }
-  }
-  fetchUser()
-},[profileUpdated, user])
-
-  function formatDate(isoString: string) {
-    const date = new Date(isoString);
-
-    // Options to display date nicely
-    const options: Intl.DateTimeFormatOptions = {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-    };
-
-    return date.toLocaleString('en-US', options);
-  }
+    fetchUser()
+  }, [profile, dispatch])
 
   const handleEdit = () => {
     setIsEditing(true);
@@ -84,196 +64,180 @@ export function Profile() {
 
   const handleCancel = () => {
     setIsEditing(false);
-    setEditedProfile(profile);
   };
 
-  const handleSave = async (data:UpadatedDataForm) => {
+  const handleSave = async (data: UpadatedDataForm) => {
     setIsSaving(true);
-    const toastId = toast.loading('Updating...')
-    try{
-      await axios.patch('/api/profile', {
+    try {
+      const response = await axios.patch('/api/user/profile', {
         name: data.name,
         email: data.email,
-        store: data.store,
       });
-      toast.success('Profile Updated Successfully', {id: toastId})
-      setProfileUpdated(prev => !prev);
-    }catch(error){
-      console.log("Can't update the profile", error)
-      toast.error('Profile Not updated', {id: toastId})
+      
+      if (response.data?.success) {
+        const updatedProfile = response.data.userDetails;
+        localStorage.setItem('profile', JSON.stringify(updatedProfile))
+        dispatch(setProfile(updatedProfile));
+        toast.success('Profile Updated Successfully');
+      } else {
+        toast.error('Profile Not updated');
+      }
+    } catch(error) {
+      console.log("Can't update the profile", error);
+      toast.error('Something went worong while updating profile');
     }
-    setProfile(editedProfile);
     setIsEditing(false);
     setIsSaving(false);
   };
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold text-white mb-2">Profile</h2>
-        <p className="text-slate-400">Manage your seller profile and account settings</p>
-      </div>
+    <div className="space-y-8">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="mb-6"
+      >
+        <div className="relative">
+          <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-black">
+            Profile
+          </h1>
+          <div className="h-1 w-16 bg-orange-500 mt-2 rounded-full"></div>
+        </div>
+        <p className="text-gray-600 mt-4 max-w-lg">
+          Manage your customer profile and account settings
+        </p>
+      </motion.div>
 
       {/* Profile Header */}
-      <Card className="bg-slate-800 border-slate-700">
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <Avatar className="h-20 w-20">
-                <AvatarImage src="/placeholder.svg" alt={profile?.name} />
-                <AvatarFallback className="text-2xl bg-orange-600 text-white">
-                  {profile?.name.split(' ').map(n => n[0]).join('')}
-                </AvatarFallback>
-              </Avatar>
-              <div>
-                <h3 className="text-2xl font-bold text-white">{profile?.name}</h3>
-                <p className="text-slate-400">{profile?.store}</p>
-                <Badge variant="secondary" className="mt-2">
-                  <Store className="h-3 w-3 mr-1" />
-                  Customer since {profile?.createdAt ? formatDate(profile.createdAt) : 'N/A'}
-                </Badge>
-              </div>
-            </div>
-            
-          </div>
-        </CardHeader>
-      </Card>
-
-      <div className="grid grid-cols-1 lg:grid-cols-1 gap-6">
-        {/* Profile Information */}
-        <Card className="bg-slate-800 border-slate-700">
-          <CardHeader>
-            <CardTitle className="text-white flex items-center justify-between">
-              <div className="text-white flex items-center mr-3">
-                <User className="h-5 w-5 mr-2" />
-                <p>Profile</p>
-              </div>
-              <div className="min-w-[100px] flex items-center justify-end">
-                {!isEditing ? (
-                  <Button onClick={handleEdit} className="hover:text-orange-400 cursor-pointer h-10">
-                    <Edit className="h-4 w-4" />
-                  </Button>
-                ) : (
-                  <div className="flex flex-wrap gap-2">
-                    <Button
-                      onClick={handleSubmit(handleSave)}
-                      disabled={isSaving}
-                      className="cursor-pointer bg-green-600 hover:bg-green-700 h-10"
-                    >
-                      {isSaving ? <Loader /> : <Save />}
-                    </Button>
-                    <Button
-                      onClick={handleCancel}
-                      variant="outline"
-                      className="cursor-pointer border-slate-600 text-slate-700 bg-gray-300 h-10"
-                    >
-                      <X />
-                    </Button>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.1 }}
+      >
+        <Card className="border border-gray-100">
+          <CardContent className="p-8">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-6">
+                <Avatar className="w-24 h-24 border-4 bg-orange-600">
+                  <AvatarFallback className="bg-orange-600 text-white text-5xl font-bold">
+                    {profile?.name ? profile.name.split(' ').map(n => n[0]).join('') : 'U'}
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <h2 className="text-3xl font-bold text-gray-900">{profile?.name}</h2>
+                  <div className="flex flex-col gap-3 mt-3">
+                    <Badge variant="secondary" className="bg-green-100 text-green-800 border-0">
+                      <Calendar className="w-3 h-3 mr-1" />
+                      Customer since {profile?.createdAt ? formatDate(profile.createdAt) : 'N/A'}
+                    </Badge>
                   </div>
-                )}
                 </div>
-            </CardTitle>
-            
-          </CardHeader>
-          <CardContent className="space-y-4">
-
-            <form id='profile-form'>
-              <div className="space-y-2">
-                <Label htmlFor="name" className="text-slate-300">Full Name</Label>
-                {isEditing ? (
-                  <Input
-                    id="name"
-                    {...register('name')}
-                    // onChange={(e) => handleInputChange('name', e.target.value)}
-                    className="bg-slate-700 border-slate-600 text-white h-10 px-3 py-2 rounded-md"
-                  />
-                ) : (
-                  <div className="bg-slate-700 border border-slate-600 text-white h-10 px-3 py-2 rounded-md flex items-center">
-                    <p className="text-white">{profile?.name}</p>
-                  </div>
-                )}
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-slate-300">Email Address</Label>
-                {isEditing ? (
-                  <Input
-                    id="email"
-                    {...register('email')}
-                    type="email"
-                    // onChange={(e) => handleInputChange('email', e.target.value)}
-                    className="bg-slate-700 border-slate-600 text-white h-10 px-3 py-2 rounded-md"
-                  />
-                ) : (
-                  <div className="p-3 bg-slate-700 border border-slate-600 text-white h-10 px-3 py-2 rounded-md flex items-center">
-                    <p className="text-white">{profile?.email}</p>
-                  </div>
-                )}
-              </div>
-            </form>
-            
-
-            <div className="space-y-2">
-              <Label className="text-slate-300">Member Since</Label>
-              <div className="bg-slate-700 border border-slate-600 text-white h-10 px-3 py-2 rounded-md flex items-center">
-                <p className="text-white flex items-center">
-                  <Calendar className="h-4 w-4 mr-2 text-slate-400" />
-                  {profile?.createdAt ? formatDate(profile.createdAt) : 'N/A'}
-                </p>
               </div>
             </div>
           </CardContent>
         </Card>
+      </motion.div>
 
-        {/* Account Statistics */}
-        {/* <Card className="bg-slate-800 border-slate-700">
-          <CardHeader>
-            <CardTitle className="text-white flex items-center">
-              <DollarSign className="h-5 w-5 mr-2" />
-              Account Statistics
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="text-center p-4 bg-slate-700 rounded-lg">
-                <DollarSign className="h-8 w-8 text-green-400 mx-auto mb-2" />
-                <div className="text-2xl font-bold text-white">
-                  $9000
+      <div className="grid grid-cols-1 lg:grid-cols-1 gap-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.6 }}
+        >
+          <Card className="border border-gray-100">
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between w-full">
+                <div className="flex items-center gap-2">
+                  <User className="w-5 h-5 text-orange-600" />
+                  <p>Profile Information</p>
                 </div>
-                <div className="text-sm text-slate-400">Total Sales</div>
-              </div>
-              <div className="text-center p-4 bg-slate-700 rounded-lg">
-                <Package className="h-8 w-8 text-orange-400 mx-auto mb-2" />
-                <div className="text-2xl font-bold text-white">
-                  90
+                {!isEditing ? (
+                  <Button 
+                    onClick={handleEdit} 
+                    className="cursor-pointer bg-orange-600 hover:bg-orange-700 flex items-center justify-center"
+                  >
+                    <Edit className="h-4 w-4" />
+                  </Button>
+                ) : (
+                  <div className="flex space-x-2">
+                    <Button
+                      onClick={handleSubmit(handleSave)}
+                      disabled={isSaving}
+                      className="cursor-pointer bg-green-600 hover:bg-green-700 flex items-center justify-center"
+                    >
+                      {isSaving ? <Loader className="h-4 w-4" /> : <Save className="h-4 w-4" />}
+                    </Button>
+                    <Button
+                      onClick={handleCancel}
+                      variant="destructive"
+                      className="cursor-pointer border-slate-600 hover:bg-red-700 flex items-center justify-center"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                )}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <form id='profile-form'>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="name" className="text-sm font-medium text-gray-700">Full Name</Label>
+                    {isEditing ? (
+                      <Input
+                        id="name"
+                        {...register('name')}
+                        className="p-3 border border-gray-300 rounded-md text-gray-800 focus:border-orange-400 focus:ring-2 focus:ring-orange-200 transition-all duration-200"
+                      />
+                    ) : (
+                      <div className="p-3 border border-gray-300 rounded-md min-h-[38px] flex items-center">
+                        <p className="text-gray-800">{profile?.name}</p>
+                      </div>
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="email" className="text-sm font-medium text-gray-700">Email Address</Label>
+                    {isEditing ? (
+                      <Input
+                        id="email"
+                        {...register('email')}
+                        type="email"
+                        className="p-3 border border-gray-300 rounded-md text-gray-800 focus:border-orange-400 focus:ring-2 focus:ring-orange-200 transition-all duration-200"
+                      />
+                    ) : (
+                      <div className="p-3 border border-gray-300 rounded-md min-h-[38px] flex items-center">
+                        <p className="text-gray-800">{profile?.email}</p>
+                      </div>
+                    )}
+                  </div>
                 </div>
-                <div className="text-sm text-slate-400">Active Listings</div>
-              </div>
-            </div>
+              </form>
 
-            <Separator className="bg-slate-600" />
-
-            <div className="space-y-3">
-              <div className="flex justify-between items-center">
-                <span className="text-slate-300">Account Status</span>
-                <Badge variant="secondary" className="bg-green-600 text-white">
-                  Active
-                </Badge>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-slate-300">Verification Status</span>
-                <Badge variant="secondary" className="bg-orange-600 text-white">
-                  Verified
-                </Badge>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-slate-300">Seller Rating</span>
-                <div className="flex items-center text-yellow-400">
-                  ★★★★★ <span className="ml-1 text-white">4.9</span>
+              <div className="space-y-2">
+                <Label className="text-sm font-medium text-gray-700">Member Since</Label>
+                <div className="p-3 border border-gray-300 rounded-md min-h-[38px] flex items-center">
+                  <p className="text-gray-800 flex items-center">
+                    <Calendar className="h-4 w-4 mr-2 text-gray-500" />
+                    {profile?.createdAt ? formatDate(profile.createdAt) : 'N/A'}
+                  </p>
                 </div>
               </div>
-            </div>
-          </CardContent>
-        </Card> */}
+              
+              {isEditing && (
+                <Button 
+                  type='button' 
+                  disabled={isSaving} 
+                  onClick={handleSubmit(handleSave)} 
+                  className="cursor-pointer w-full bg-orange-600 hover:bg-orange-700 text-white"
+                >
+                  Update Profile
+                  {isSaving && 'Saving...'}
+                </Button>
+              )}
+            </CardContent>
+          </Card>
+        </motion.div>
       </div>
     </div>
   );

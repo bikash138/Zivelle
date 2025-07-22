@@ -10,8 +10,8 @@ import { SignInSchema } from '@repo/zod/zodTypes';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
+import { setProfile } from '@/redux/slices/profileSlice';
 import { useDispatch } from 'react-redux';
-import { setUser } from '@/redux/slices/profileSlice';
 import { setToken } from '@/redux/slices/authSlice';
 
 type formType = z.infer<typeof SignInSchema>;
@@ -19,6 +19,7 @@ type formType = z.infer<typeof SignInSchema>;
 const Signin = () => {
   const router = useRouter()
   const dispatch = useDispatch()
+
   const{
       register,
       handleSubmit,
@@ -34,17 +35,17 @@ const Signin = () => {
   const onsubmit = async (data: formType) => {
     const toastId = toast.loading('Signing in...')
     try{
-      const response = await axios.post('/api/user/signin', data)
+      const response = await axios.post('/api/seller/signin', data)
       if(!response.data?.success){
         toast.error(response.data?.message, {id: toastId})
         return
       }
       localStorage.setItem("token", response.data?.token)
-      dispatch(setToken(response.data?.token))
+      dispatch(setProfile({...response.data?.user}))
+      dispatch(setToken(response.data.token))
       toast.success(response.data?.message, {id: toastId})
-      dispatch(setUser({...response.data?.user}))
       reset()
-      router.push("/")
+      router.push("/seller/profile")
     }catch(error){
       console.log("Something went wrong while SignIn", error)
       toast.error('SignIn Failed', {id: toastId})
@@ -62,7 +63,7 @@ const Signin = () => {
             </h1>
           </Link>
           <h2 className="mt-6 text-2xl font-semibold text-white">
-            Sign in to your account
+            Sign in to your Seller account
           </h2>
           <p className="mt-2 text-gray-400">
             Welcome back! Please enter your details.
@@ -120,7 +121,7 @@ const Signin = () => {
             <p className="text-gray-400">
               Don&apos;t have an account?{' '}
               <Link
-                href="/user/signup"
+                href="/auth/seller/signup"
                 className="text-white hover:text-gray-300 font-semibold transition-colors duration-200"
               >
                 Create a new account

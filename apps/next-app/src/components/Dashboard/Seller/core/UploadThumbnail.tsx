@@ -1,7 +1,6 @@
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
-import { Label } from '@radix-ui/react-label'
 import axios from 'axios'
 import { Loader2, Trash2 } from 'lucide-react'
 import React, { useCallback, useEffect, useState } from 'react'
@@ -11,12 +10,13 @@ import { FieldErrors, UseFormSetValue } from "react-hook-form";
 import { z } from 'zod'
 import { ListItemSchema } from '@repo/zod/zodTypes'
 import Image from 'next/image'
+import { motion } from 'framer-motion'
 type formType = z.infer<typeof ListItemSchema>;
 
 type UploadThumbnailProps = {
   errors: FieldErrors<formType>;
   setValue: UseFormSetValue<formType>; 
-  resetThumbnail: number
+  resetThumbnail: number;
 };
 
 const UploadThumbnail = ({errors, setValue, resetThumbnail}: UploadThumbnailProps) => {
@@ -80,7 +80,7 @@ const uploadFile = useCallback(async (file: File) => {
     const data = {
       fileName: file.name,
       contentType: file.type,
-      size: file.size
+      size: file.size,
     }
     const response = await axios.post('/api/s3/upload', data)
     if(!response){
@@ -182,85 +182,96 @@ const uploadFile = useCallback(async (file: File) => {
   return (
     <div className='space-x-4 flex'>
         <div className='w-[50%] space-y-4'>
-        <Label htmlFor="image" className="text-slate-200">Product Thumnail</Label>
-            {/* DropZOone */}
-            <Card className={cn(
-                'border-dashed border-slate-500 transition-colors duration-200 border-2 bg-transparent text-slate-400 p-2 h-44',
-                files.length >= 1 && 'opacity-50 pointer-events-none cursor-not-allowed'
-                )} {...getRootProps()}>
-                <CardContent className='h-full flex flex-col w-full justify-center items-center'>
-                <input {...getInputProps()} />
-                {
-                isDragActive ?
-                    <p>Drop the files here ...</p> :
+            {/* DropZone - Updated with motion and new styling */}
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+            >
+              <Card
+                className={cn(
+                  'border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-orange-400 transition-colors cursor-pointer',
+                  files.length >= 1 && 'opacity-50 pointer-events-none cursor-not-allowed'
+                )}
+                {...getRootProps()}
+              >
+                <CardContent className='h-full flex flex-col w-full justify-center items-center py-6'>
+                  <input {...getInputProps()} />
+                  {isDragActive ? (
+                    <p className="text-gray-600">Drop the thumbnail here...</p>
+                  ) : (
                     <div className='flex justify-center items-center flex-col gap-y-3'>
-                    <p>Drag &aps;n&aps; drop thumnail here</p>
-                    <Button
+                      <p className="text-gray-600">Drag &amp; drop thumbnail here</p>
+                      <Button
                         type="button"
-                        className="mt-2"
+                        className="mt-2 bg-orange-600 hover:bg-orange-700 text-white"
                         onClick={e => {
-                        e.stopPropagation();
-                        open();
+                          e.stopPropagation();
+                          open();
                         }}
-                    >
+                      >
                         Click to browse
-                    </Button>
+                      </Button>
                     </div>
-                }
+                  )}
                 </CardContent>
-            </Card>
+              </Card>
+            </motion.div>
             {errors.thumbnail && (
-                <p className="text-red-500 text-sm">{errors.thumbnail.message as string}</p>
+              <p className="text-red-500 text-sm">{errors.thumbnail.message as string}</p>
             )}
         </div>
 
         {/* Image Preview */}
         <div className='mt-6 grid grid-cols-2 sm:grid-cols-1 gap-x-1'>
         {files.map((file) => (
-            <div key={file.id} className="relative w-32 h-32 rounded overflow-hidden shadow-lg group">
-            <Image
+            <motion.div 
+              key={file.id} 
+              className="relative w-32 h-32 rounded overflow-hidden shadow-lg group"
+              whileHover={{ scale: 1.05 }}
+              transition={{ duration: 0.2 }}
+            >
+              <Image
                 src={file.objectUrl}
                 alt={file.file.name}
                 fill
                 className="w-full h-full object-cover rounded"
-            />
-            {/* Overlay for progress and delete */}
-            {(file.uploading || file.progress < 100 || file.isDeleting) && (
+              />
+              {/* Overlay for progress and delete */}
+              {(file.uploading || file.progress < 100 || file.isDeleting) && (
                 <div className="absolute inset-0 bg-black/60 flex flex-col justify-center items-center transition-opacity">
-                {/* Progress Bar */}
-                {file.uploading && (
+                  {/* Progress Bar */}
+                  {file.uploading && (
                     <div className="w-4/5">
-                    <div className="h-2 bg-gray-700 rounded-full overflow-hidden mb-2">
+                      <div className="h-2 bg-gray-700 rounded-full overflow-hidden mb-2">
                         <div
-                        className="bg-orange-500 h-2 rounded-full transition-all duration-300"
-                        style={{ width: `${file.progress}%` }}
+                          className="bg-orange-500 h-2 rounded-full transition-all duration-300"
+                          style={{ width: `${file.progress}%` }}
                         />
+                      </div>
+                      <span className="text-xs text-white font-semibold">{file.progress}%</span>
                     </div>
-                    <span className="text-xs text-white font-semibold">{file.progress}%</span>
-                    </div>
-                )}
-                {/* Deleting Spinner */}
-                {file.isDeleting && (
+                  )}
+                  {/* Deleting Spinner */}
+                  {file.isDeleting && (
                     <Loader2 className="animate-spin text-white mt-2" />
-                )}
+                  )}
                 </div>
-            )}
-            {/* Delete Button */}
-            <Button
+              )}
+              {/* Delete Button */}
+              <Button
                 variant="destructive"
                 size="icon"
                 className="absolute top-2 right-2 z-10 opacity-80 group-hover:opacity-100"
                 onClick={() => deleteFile(file.id)}
                 disabled={file.uploading || file.isDeleting}
                 style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.2)' }}
-            >
+              >
                 {file.isDeleting ? (
-                <Loader2 className="animate-spin" />
+                  <Loader2 className="animate-spin" />
                 ) : (
-                <Trash2 className="size-4" />
+                  <Trash2 className="size-4" />
                 )}
-            </Button>
-            </div>
+              </Button>
+            </motion.div>
         ))}
         </div>
     </div>

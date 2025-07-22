@@ -6,7 +6,7 @@ export default async function getUserIdToken(token: string | undefined){
         return { error: "User Unauthorized" };
       }
     
-      const jwtSecret = process.env.JWT_SECRET;
+      const jwtSecret = process.env.NEXT_PUBLIC_JWT_SECRET;
       if (!jwtSecret) {
         return { error: "JWT secret not set" };
       }
