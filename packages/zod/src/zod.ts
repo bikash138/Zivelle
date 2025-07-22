@@ -35,6 +35,7 @@ export const ListItemSchema = z.object({
     // })).nonempty()
 })
 export const ListSchema = z.object({
+    thumbnail: z.string(),
     title: z.string().max(30),
     description: z.string(),
     price: z.number().min(100),

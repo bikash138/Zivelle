@@ -9,12 +9,13 @@ import { SignUpSchema } from '@repo/zod/zodTypes';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
 import axios from 'axios';
+import { useRouter } from 'next/navigation';
 
 type formType = z.infer<typeof SignUpSchema>;
 
 
 const Signup = () => {
-
+  const router = useRouter()
   const{
     register,
     handleSubmit,
@@ -40,6 +41,7 @@ const Signup = () => {
         return
       }
       toast.success(response.data?.message, {id: toastId})
+      router.push('/auth/seller/signin')
       reset()
     }catch(error){
       console.log("Something went wrong while SigningUp", error)
@@ -58,7 +60,7 @@ const Signup = () => {
             </h1>
           </Link>
           <h2 className="mt-6 text-2xl font-semibold text-white">
-            Create your account
+            Create your seller account
           </h2>
           <p className="mt-2 text-gray-400">
             Join Zivelle and discover your unique style.
@@ -152,7 +154,7 @@ const Signup = () => {
             <p className="text-gray-400">
               Already have an account?{' '}
               <Link
-                href="/seller/signin"
+                href="auth/seller/signin"
                 className="text-white cursor-pointer hover:text-gray-300 font-semibold transition-colors duration-200"
               >
                 Sign in

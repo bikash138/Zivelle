@@ -134,7 +134,7 @@ const Header = () => {
                   </span>
                 </motion.div>
               </Link>
-            <Link href='/dashboard/user/profile' className='hidden md:block lg:block'>
+            <Link href='/user/profile' className='hidden md:block lg:block'>
               <motion.button 
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
@@ -165,7 +165,7 @@ const Header = () => {
                   {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
                 </motion.button>
                 <Link 
-                  href="/user/signin" 
+                  href="/auth/user/signin" 
                   className={`p-2 transition-colors relative rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 ${
                     pathname === '/favourites' 
                       ? 'text-red-400' 
@@ -177,7 +177,7 @@ const Header = () => {
                   </Button>
                 </Link>
                 <Link 
-                  href="/user/signup" 
+                  href="auth/user/signup" 
                   className={`p-2 transition-colors relative rounded-lg dark:hover:bg-white/10`}
                 >
                   <Button className='cursor-pointer'>
@@ -223,14 +223,14 @@ const Header = () => {
               ))}
               <div className="flex space-x-4 pt-4 border-t border-gray-200 dark:border-white/10">
                 <Link 
-                  href={isAuthenticated ? "/dashboard/user/profile" : "/user/signup"}
+                  href={isAuthenticated ? "/user/profile" : "/user/signup"}
                   className="text-gray-700 dark:text-gray-300 hover:text-red-400 transition-colors"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {isAuthenticated ? "Profile" : "Create Account"}
                 </Link>
                 <Link 
-                  href={isAuthenticated ? "/cart" : "/user/signin"}
+                  href={isAuthenticated ? "/cart" : "/auth/user/signin"}
                   className="text-gray-700 dark:text-gray-300 hover:text-blue-400 transition-colors"
                   onClick={() => setIsMenuOpen(false)}
                 >

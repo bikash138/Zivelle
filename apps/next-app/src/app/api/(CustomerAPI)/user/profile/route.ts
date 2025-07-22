@@ -43,17 +43,25 @@ export async function PATCH(req: NextRequest) {
     const body = await req.json()
     const { name, email } = body 
 
-    await prisma.customer.update({
+    const updatedUser = await prisma.customer.update({
       where:{
         id: userId
       },
       data:{
         name, email
+      },
+      select:{
+        id: true,
+        name: true,
+        email: true,
+        createdAt: true
       }
     })
+    
     return NextResponse.json({ 
       success: true,
-      message: "Profile Updated Sucessfully" 
+      message: "Profile Updated Successfully",
+      userDetails: updatedUser
     }, { status: 200 });
   }catch(error){
     console.log(error)

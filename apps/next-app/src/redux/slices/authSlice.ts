@@ -1,4 +1,3 @@
-'use client'
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
@@ -19,9 +18,19 @@ const authSlice = createSlice({
     setToken(state, value) {
       state.token = value.payload;
     },
+    logout: (state) => {
+      state.token = null
+      localStorage.removeItem('userProfile')
+      localStorage.removeItem('sellerProfile')
+      localStorage.removeItem('profile')
+      localStorage.removeItem('token')
+      localStorage.removeItem('cart')
+      localStorage.removeItem('totalItems')
+      localStorage.removeItem('total')
+    }
   },
 });
 
-export const { hydrateToken, setLoading, setToken } = authSlice.actions;
+export const { hydrateToken, setLoading, setToken, logout } = authSlice.actions;
 
 export default authSlice.reducer;

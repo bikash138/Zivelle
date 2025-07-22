@@ -1,14 +1,19 @@
 import { PutObjectCommand } from "@aws-sdk/client-s3";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { v4 as uuidv4 } from 'uuid';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 import { S3 } from "@/lib/s3Client";
+import getUserIdFromRequest from "@/lib/getUserId";
 
-export async function POST(req: Request){
+export async function POST(req: NextRequest){
     try{
+        const { userId, error } = await getUserIdFromRequest(req);
+        if (error) {
+            return error;
+        }
         const  body = await req.json()
         const {contentType, fileName, size} = body
-        const uniqueKey = `${uuidv4()}-${fileName}`
+        const uniqueKey = `${userId}/${uuidv4()}-${fileName}`
         const command = new PutObjectCommand({
             Bucket: process.env.S3_BUCKET_NAME,
             Key: uniqueKey,

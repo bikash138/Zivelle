@@ -2,14 +2,13 @@
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Search, Eye, Edit, Trash2 } from 'lucide-react';
-import {ListSchema} from '@repo/zod/zodTypes'
-import {z} from 'zod'
+import { ListSchema } from '@repo/zod/zodTypes'
+import { z } from 'zod'
 import { formatDate } from '@/lib/formatDate'
+import { motion } from 'framer-motion';
 
 type ListedItems = z.infer<typeof ListSchema>;
 interface ListedItemsProps {
@@ -64,134 +63,163 @@ export function ListedItems({ initialListedItems }: ListedItemsProps) {
     setFilteredItems(filtered);
   };
 
- const getStatusBadgeVariant = (status: string) => {
-  switch (status) {
-    case 'Active':
-      return 'secondary'; 
-    case 'Draft':
-      return 'outline';   
-    case 'Sold':
-      return 'destructive';
-    default:
-      return 'default';  
-  }
- };
+  const getStatusBadgeVariant = (status: string) => {
+    switch (status) {
+      case 'Active':
+        return 'bg-green-100 text-green-800';
+      case 'Draft':
+        return 'bg-gray-100 text-gray-800';
+      case 'Sold':
+        return 'bg-blue-100 text-blue-800';
+      default:
+        return 'bg-gray-100 text-gray-800';
+    }
+  };
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold text-white mb-2">Listed Items</h2>
-        <p className="text-slate-400">Manage your listed items</p>
-      </div>
+    <div className="space-y-8">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="mb-6"
+      >
+        <div className="relative">
+          <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-black">
+            Profile
+          </h1>
+          <div className="h-1 w-16 bg-orange-500 mt-2 rounded-full"></div>
+        </div>
+        <p className="text-gray-600 mt-4 max-w-lg">
+          Manage your seller profile, update your information, and view your account status
+        </p>
+      </motion.div>
 
-      <Card className="bg-slate-800 border-slate-700">
-        <CardHeader>
-          <CardTitle className="text-white">Your Items</CardTitle>
-          <div className="flex flex-col sm:flex-row gap-4 mt-4 ">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
-              <Input
-                placeholder="Search items..."
-                value={searchTerm}
-                onChange={(e) => handleSearch(e.target.value)}
-                className="pl-10 bg-slate-700 border-slate-600 text-white placeholder:text-slate-400"
-              />
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.1 }}
+      >
+        <Card>
+          <CardHeader>
+            <CardTitle>Your Items</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {/* Filters */}
+            <div className="flex flex-col sm:flex-row gap-4 mb-6">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <Input
+                  placeholder="Search items..."
+                  value={searchTerm}
+                  onChange={(e) => handleSearch(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+              <Select value={statusFilter} onValueChange={handleStatusFilter}>
+                <SelectTrigger className="w-full sm:w-48 border-gray-200">
+                  <SelectValue placeholder="All Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Status</SelectItem>
+                  <SelectItem value="Active">Active</SelectItem>
+                  <SelectItem value="Draft">Draft</SelectItem>
+                  <SelectItem value="Sold">Sold</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select value={categoryFilter} onValueChange={handleCategoryFilter}>
+                <SelectTrigger className="w-full sm:w-48 border-gray-200">
+                  <SelectValue placeholder="All Categories" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Categories</SelectItem>
+                  <SelectItem value="Men">Men</SelectItem>
+                  <SelectItem value="Women">Women</SelectItem>
+                  <SelectItem value="Children">Children</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
-            <Select value={statusFilter} onValueChange={handleStatusFilter}>
-              <SelectTrigger className="w-[180px] bg-slate-700 border-slate-600 text-white">
-                <SelectValue placeholder="Filter by status" />
-              </SelectTrigger>
-              <SelectContent className="bg-slate-700 border-slate-600">
-                <SelectItem value="all" className="text-white">All Status</SelectItem>
-                <SelectItem value="Active" className="text-white">Active</SelectItem>
-                <SelectItem value="Sold" className="text-white">Sold</SelectItem>
-                <SelectItem value="Draft" className="text-white">Draft</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={categoryFilter} onValueChange={handleCategoryFilter}>
-              <SelectTrigger className="w-[180px] bg-slate-700 border-slate-600 text-white">
-                <SelectValue placeholder="Filter by category" />
-              </SelectTrigger>
-              <SelectContent className="bg-slate-700 border-slate-600">
-                <SelectItem value="all" className="text-white">All Categories</SelectItem>
-                <SelectItem value="Men" className="text-white">Men</SelectItem>
-                <SelectItem value="Women" className="text-white">Women</SelectItem>
-                <SelectItem value="Children" className="text-white">Children</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="rounded-md border border-slate-700">
-            <Table>
-              <TableHeader>
-                <TableRow className="border-slate-700">
-                  <TableHead className="text-slate-300">Item</TableHead>
-                  <TableHead className="text-slate-300">Category</TableHead>
-                  <TableHead className="text-slate-300">Size</TableHead>
-                  <TableHead className="text-slate-300">Price</TableHead>
-                  <TableHead className="text-slate-300">Status</TableHead>
-                  <TableHead className="text-slate-300">Date</TableHead>
-                  <TableHead className="text-slate-300">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredItems.map((item, index) => (
-                  <TableRow key={index} className="border-slate-700 hover:bg-slate-700/50">
-                    <TableCell>
-                      <div>
-                        <div className="font-medium text-white">{item.title}</div>
-                        <div className="text-sm text-slate-400 truncate max-w-[200px]">
-                          {item.description}
-                        </div>
+
+            {/* Items List */}
+            <div className="space-y-4">
+              {filteredItems.map((item, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: index * 0.1 }}
+                  className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                >
+                  <div className="flex items-center gap-4">
+                    <motion.img
+                      whileHover={{ scale: 1.05 }}
+                      src={item.thumbnail}
+                      alt={item.title}
+                      className="w-16 h-16 object-cover rounded-lg"
+                    />
+                    {/* Content visible only on medium screens and up */}
+                    <div className="hidden md:block">
+                      <h3 className="font-semibold text-gray-900">{item.title}</h3>
+                      <p className="text-sm text-gray-600 truncate max-w-[200px]">{item.description}</p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <Badge variant="outline" className="text-xs">
+                          {item.category}
+                        </Badge>
+                        <span className="text-xs text-gray-500">Stock: {item.stock}</span>
                       </div>
-                    </TableCell>
-                    <TableCell className="text-slate-200">{item.category}</TableCell>
-                    <TableCell className="text-slate-200">{item.stock}</TableCell>
-                    <TableCell className="text-slate-200">${item.price}</TableCell>
-                    <TableCell>
-                      <Badge variant={getStatusBadgeVariant(item.status)} className="text-xs">
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center gap-2">
+                    {/* Price info - visible on all screens */}
+                    <div className="text-right mr-2">
+                      <p className="font-semibold text-gray-900">₹{item.price}</p>
+                      <Badge className={getStatusBadgeVariant(item.status)}>
                         {item.status}
                       </Badge>
-                    </TableCell>
-                    <TableCell className="text-slate-200">{formatDate(item.createdAt)}</TableCell>
-                    <TableCell>
-                      <div className="flex space-x-2">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="cursor-pointer h-8 w-8 text-slate-400 hover:text-white hover:bg-slate-600"
-                        >
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="cursor-pointer h-8 w-8 text-slate-400 hover:text-white hover:bg-slate-600"
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="cursor-pointer h-8 w-8 text-slate-400 hover:text-red-400 hover:bg-slate-600"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-          {filteredItems.length === 0 && (
-            <div className="text-center py-8">
-              <p className="text-slate-400">No items found matching your criteria.</p>
+                    </div>
+                    
+                    {/* Date info - hidden on small screens */}
+                    <div className="hidden md:block text-right mr-4">
+                      <p className="text-sm text-gray-600">{formatDate(item.createdAt)}</p>
+                    </div>
+                    
+                    {/* Action buttons - visible on all screen sizes */}
+                    <div className="flex items-center gap-1 sm:gap-2">
+                      <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        className="p-1 sm:p-2 text-gray-500 hover:text-blue-600 transition-colors"
+                      >
+                        <Eye className="w-4 h-4" />
+                      </motion.button>
+                      <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        className="p-1 sm:p-2 text-gray-500 hover:text-orange-600 transition-colors"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </motion.button>
+                      <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        className="p-1 sm:p-2 text-gray-500 hover:text-red-600 transition-colors"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </motion.button>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+              {filteredItems.length === 0 && (
+                <div className="text-center py-8">
+                  <p className="text-gray-500">No items found matching your criteria.</p>
+                </div>
+              )}
             </div>
-          )}
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </motion.div>
     </div>
   );
 }

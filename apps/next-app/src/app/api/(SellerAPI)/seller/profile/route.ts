@@ -14,6 +14,7 @@ export async function GET(req: NextRequest){
         id: userId
       },
       select:{
+        id: true,
         name: true,
         store: true,
         createdAt: true,
@@ -44,17 +45,25 @@ export async function PATCH(req: NextRequest) {
     const body = await req.json()
     const { name, email, store } = body 
 
-    await prisma.seller.update({
+    const updatedSeller = await prisma.seller.update({
       where:{
         id: userId
       },
       data:{
-        name, email, store
+        name, email, store,
+      },
+      select:{
+        id: true,
+        name: true,
+        email: true,
+        store: true,
+        createdAt: true
       }
     })
     return NextResponse.json({ 
       success: true,
-      message: "Profile Updated Sucessfully" 
+      userDetails: updatedSeller,
+      message: "Profile Updated Successfully" 
     }, { status: 200 });
   }catch(error){
     console.log(error)

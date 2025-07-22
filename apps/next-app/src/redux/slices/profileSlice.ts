@@ -1,23 +1,41 @@
-import { createSlice } from "@reduxjs/toolkit"
+import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 
-const initialState = {
-  user: null,
+export interface ProfileType {
+  id: string
+  name: string
+  email: string
+  store?: string
+  createdAt: string
+}
+
+// Define the state interface
+interface ProfileState {
+  profile: ProfileType | null
+  loading: boolean
+}
+
+// Initialize state with proper typing
+const initialState: ProfileState = {
+  profile: null,
   loading: false,
 }
 
 const profileSlice = createSlice({
   name: "profile",
-  initialState: initialState,
+  initialState,
   reducers: {
-    setUser(state, value) {
-      state.user = value.payload
+    hydrateProfile: (state, action: PayloadAction<{ profile: ProfileType }>) => {
+      state.profile = action.payload.profile;
     },
-    setLoading(state, value) {
-      state.loading = value.payload
+    setProfile(state, action: PayloadAction<ProfileType>) {
+      state.profile = action.payload;
+    },
+    setLoading(state, action: PayloadAction<boolean>) {
+      state.loading = action.payload;
     },
   },
 })
 
-export const { setUser, setLoading } = profileSlice.actions
+export const { setProfile, setLoading, hydrateProfile } = profileSlice.actions
 
 export default profileSlice.reducer

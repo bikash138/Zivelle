@@ -4,12 +4,14 @@ import { store } from "@/redux/reducer";
 import { useEffect } from "react";
 import { hydrateCart } from "@/redux/slices/cartSlice";
 import { hydrateToken } from "@/redux/slices/authSlice";
+import { hydrateProfile } from "@/redux/slices/profileSlice";
 
 function ReduxStateHydrater({ children }: { children: React.ReactNode }) {
   const dispatch = useDispatch();
 
   useEffect(() => {
     const token = localStorage.getItem("token")
+    const profile = localStorage.getItem("profile")
     const cart = localStorage.getItem("cart");
     const total = localStorage.getItem("total");
     const totalItems = localStorage.getItem("totalItems");
@@ -22,6 +24,9 @@ function ReduxStateHydrater({ children }: { children: React.ReactNode }) {
     );
     dispatch(hydrateToken({
       token: token || null
+    }));
+    dispatch(hydrateProfile({
+      profile: profile ? JSON.parse(profile) : null
     }))
   }, [dispatch]);
 

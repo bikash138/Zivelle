@@ -10,11 +10,15 @@ import { SignInSchema } from '@repo/zod/zodTypes';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
+import { useDispatch } from 'react-redux';
+import { setProfile } from '@/redux/slices/profileSlice';
+import { setToken } from '@/redux/slices/authSlice';
 
 type formType = z.infer<typeof SignInSchema>;
 
 const Signin = () => {
   const router = useRouter()
+  const dispatch = useDispatch()
   const{
       register,
       handleSubmit,
@@ -30,14 +34,17 @@ const Signin = () => {
   const onsubmit = async (data: formType) => {
     const toastId = toast.loading('Signing in...')
     try{
-      const response = await axios.post('/api/seller/signin', data)
+      const response = await axios.post('/api/user/signin', data)
       if(!response.data?.success){
         toast.error(response.data?.message, {id: toastId})
         return
       }
+      localStorage.setItem("token", response.data?.token)
+      dispatch(setToken(response.data?.token))
+      dispatch(setProfile({...response.data?.user}))
       toast.success(response.data?.message, {id: toastId})
       reset()
-      router.push("/dashboard/seller/profile")
+      router.push("/")
     }catch(error){
       console.log("Something went wrong while SignIn", error)
       toast.error('SignIn Failed', {id: toastId})
@@ -113,7 +120,7 @@ const Signin = () => {
             <p className="text-gray-400">
               Don&apos;t have an account?{' '}
               <Link
-                href="/seller/signup"
+                href="/auth/user/signup"
                 className="text-white hover:text-gray-300 font-semibold transition-colors duration-200"
               >
                 Create a new account
