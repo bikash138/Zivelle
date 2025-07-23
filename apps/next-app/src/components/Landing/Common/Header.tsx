@@ -88,22 +88,22 @@ const Header = () => {
           {/* Right side actions */}
           {isAuthenticated ? (
             <div className="flex items-center space-x-3">
-              <motion.button 
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={toggleTheme}
-                className="p-2 hidden md:block lg:block text-gray-700 dark:text-gray-300 hover:text-blue-400 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-white/10"
-              >
-                {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
-              </motion.button>
-              <motion.button 
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                className="p-2 text-gray-700 dark:text-gray-300 hover:text-blue-400 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-white/10"
-              >
-                <Search size={20} />
-                {/* <AnimatedSearchBar/> */}
-              </motion.button>
+                <motion.button 
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={toggleTheme}
+                  className="p-2 hidden md:block lg:block text-gray-700 dark:text-gray-300 hover:text-blue-400 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-white/10"
+                >
+                  {<Moon size={20} />}
+                </motion.button>
+                <motion.button 
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="p-2 text-gray-700 dark:text-gray-300 hover:text-blue-400 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-white/10"
+                >
+                  <Search size={20} />
+                  {/* <AnimatedSearchBar/> */}
+                </motion.button>
               {/* <Link 
                 href="/favourites" 
                 className={`p-2 transition-colors relative rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 ${
@@ -156,14 +156,16 @@ const Header = () => {
           ):(
             <div className="flex items-center">
               <div className='hidden lg:block'>
+                <Link href='/auth/seller/signin' >
                 <motion.button 
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={toggleTheme}
-                  className="p-2 text-gray-700 dark:text-gray-300 hover:text-blue-400 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-white/10"
+                  className="p-2 text-gray-700 border border-black cursor-pointer dark:text-gray-300 hover:text-blue-400 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-white/10"
                 >
-                  {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+                  Seller's Panel
                 </motion.button>
+                </Link>
                 <Link 
                   href="/auth/user/signin" 
                   className={`p-2 transition-colors relative rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 ${
@@ -236,12 +238,14 @@ const Header = () => {
                 >
                   {isAuthenticated ? "Cart" : "Signin"}
                 </Link>
-                <button 
-                  onClick={toggleTheme}
-                  className="text-gray-700 dark:text-gray-300 hover:text-blue-400 transition-colors"
-                >
-                  {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
-                </button>
+                <Link href='/auth/seller/signin'>
+                  <button 
+                    onClick={toggleTheme}
+                    className="text-gray-700 dark:text-gray-300 hover:text-blue-400 transition-colors"
+                  >
+                    {isAuthenticated ? null : "Seller's Panel"}
+                  </button>
+                </Link>
               </div>
             </nav>
           </motion.div>
