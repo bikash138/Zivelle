@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion'
-import { Search, ShoppingCart, User, Menu, X, Sun, Moon } from 'lucide-react';
+import { Search, ShoppingCart, User, Menu, X, Moon } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { Button } from '@/components/ui/button';
 import { useSelector } from 'react-redux';
@@ -21,7 +21,7 @@ const Header = () => {
   const router = useRouter()
   // eslint-disable-next-line
   //@ts-expect-error
-  const { theme, toggleTheme } = useTheme();
+  const { toggleTheme } = useTheme();
 
   const navLinks = [
     { name: 'Home', path: '/' },
@@ -163,7 +163,7 @@ const Header = () => {
                   onClick={toggleTheme}
                   className="p-2 text-gray-700 border border-black cursor-pointer dark:text-gray-300 hover:text-blue-400 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-white/10"
                 >
-                  Seller's Panel
+                  Seller&apos;s Panel
                 </motion.button>
                 </Link>
                 <Link 
