@@ -5,7 +5,9 @@ services:
     volumes:
       - valkey-dev-data:/data
   app:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
     command: pnpm --filter=next-app start
     env_file:
       - .env.dev

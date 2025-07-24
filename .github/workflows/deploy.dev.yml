@@ -33,7 +33,7 @@ jobs:
 
         echo "📄 Creating dev environment files..."
         printf "%s" "${{ secrets.DEV_ENV_FILE }}" > .env.dev
-        echo "${{ secrets.DEV_ENV_DB }}" > ./packages/database/.env.dev
+        echo "${{ secrets.DEV_ENV_DB }}" > ./packages/database/.env
 
         echo "👇 Try to build first, without stopping current app"
         docker compose -f docker-compose.dev.yml build
