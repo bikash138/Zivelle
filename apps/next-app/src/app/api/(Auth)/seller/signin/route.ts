@@ -57,6 +57,7 @@ export async function POST(req: NextRequest){
                     name: user.name,
                     email: user.email,
                     store: user.store,
+                    role: "SELLER",
                     createdAt: user.createdAt
                 },
                 token,

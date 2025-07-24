@@ -1,19 +1,19 @@
 services:
-  valkey:
+  valkey-dev:
     image: valkey/valkey:latest
     restart: always
     volumes:
-      - valkey-data:/data
+      - valkey-dev-data:/data
   app:
-    build: 
+    build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     command: pnpm --filter=next-app start
     env_file:
-      - .env
+      - .env.dev
     ports:
-      - "3000:3000"
+      - "3001:3000"
     depends_on:
-      - valkey
+      - valkey-dev
 volumes:
-  valkey-data:
+  valkey-dev-data:

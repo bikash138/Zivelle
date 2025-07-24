@@ -40,6 +40,7 @@ const Signin = () => {
         return
       }
       localStorage.setItem("token", response.data?.token)
+      localStorage.setItem("profile", JSON.stringify(response.data?.user))
       dispatch(setToken(response.data?.token))
       dispatch(setProfile({...response.data?.user}))
       toast.success(response.data?.message, {id: toastId})

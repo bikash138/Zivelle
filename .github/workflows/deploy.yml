@@ -8,6 +8,7 @@ jobs:
   deploy:
     name: Deploy to VPS on push to main
     runs-on: ubuntu-latest
+    environment: production
 
     steps:
     - name: 📥 Checkout repository
@@ -49,7 +50,7 @@ jobs:
           docker compose up -d
           echo "✅ Deployment complete!"
         else
-          echo "❌ Build failed! Keeping old app running."
+          echo "❌ B\uild failed! Keeping old app running."
           docker compose logs
           exit 1
         fi

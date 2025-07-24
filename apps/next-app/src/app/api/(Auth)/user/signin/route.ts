@@ -57,6 +57,7 @@ export async function POST(req: NextRequest){
                 user: {
                     name: user.name,
                     email: user.email,
+                    role: "CUSTOMER",
                     createdAt: user.createdAt
                 },
                 message: "User Login Success"
