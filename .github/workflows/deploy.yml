@@ -30,7 +30,7 @@ jobs:
     - name: 🚀 SSH into VPS and deploy
       run: |
         ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
-        cd ~/Zivelle
+        cd ~/Zivelle/zivelle-prod
 
         echo "🔄 Fetching latest code safely..."
         git fetch origin main
