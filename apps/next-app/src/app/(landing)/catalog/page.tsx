@@ -1,5 +1,6 @@
 import Catalog from "@/components/Dashboard/Landing/Catalog";
 import { prisma } from "@repo/database/prisma";
+export const revalidate = 60;
 
 export default async function CatalogRoute() {
    const items = await prisma.item.findMany({

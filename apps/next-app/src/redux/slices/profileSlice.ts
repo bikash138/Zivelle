@@ -6,6 +6,7 @@ export interface ProfileType {
   email: string
   store?: string
   createdAt: string
+  role: "SELLER" | "CUSTOMER"
 }
 
 // Define the state interface

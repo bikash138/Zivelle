@@ -14,6 +14,8 @@ import Logo from '@/assets/Logo.png'
 
 const Header = () => {
   const token = useSelector((state: RootState)=> state.auth.token)
+  const profile = useSelector((state: RootState)=> state.profile.profile)
+  const isSeller = profile?.role === "SELLER"
   const isAuthenticated = !!token
   const totalItems = useSelector((state: RootState)=>state.cart.totalItems)
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -88,70 +90,72 @@ const Header = () => {
           {/* Right side actions */}
           {isAuthenticated ? (
             <div className="flex items-center space-x-3">
-                <motion.button 
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={toggleTheme}
-                  className="p-2 hidden md:block lg:block text-gray-700 dark:text-gray-300 hover:text-blue-400 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-white/10"
-                >
-                  {<Moon size={20} />}
-                </motion.button>
-                <motion.button 
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="p-2 text-gray-700 dark:text-gray-300 hover:text-blue-400 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-white/10"
-                >
-                  <Search size={20} />
-                  {/* <AnimatedSearchBar/> */}
-                </motion.button>
-              {/* <Link 
-                href="/favourites" 
-                className={`p-2 transition-colors relative rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 ${
-                  pathname === '/favourites' 
-                    ? 'text-red-400' 
-                    : 'text-gray-700 dark:text-gray-300 hover:text-red-400'
-                }`}
+              <motion.button 
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={toggleTheme}
+                className="p-2 hidden md:block lg:block text-gray-700 dark:text-gray-300 hover:text-blue-400 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-white/10"
               >
-                <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-                  <Heart size={20} />
-                  <span className="absolute -top-1 -right-1 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center shadow-lg">
-                    2
-                  </span>
-                </motion.div>
-              </Link> */}
-              <Link 
-                href="/cart" 
-                className={`p-2 transition-colors relative rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 ${
-                  pathname === '/cart' 
-                    ? 'text-blue-400' 
-                    : 'text-gray-700 dark:text-gray-300 hover:text-blue-400'
-                }`}
-              >
-                <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
-                  <ShoppingCart size={20} />
-                  <span className="absolute -top-1 -right-1 bg-gradient-to-r from-blue-500 to-purple-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center shadow-lg">
-                    {totalItems}
-                  </span>
-                </motion.div>
-              </Link>
-            <Link href='/user/profile' className='hidden md:block lg:block'>
+                {<Moon size={20} />}
+              </motion.button>
+
               <motion.button 
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
                 className="p-2 text-gray-700 dark:text-gray-300 hover:text-blue-400 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-white/10"
               >
-                <User size={20} />
+                <Search size={20} />
               </motion.button>
-            </Link>
-            {/* Mobile menu button */}
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-              className="md:hidden p-2 text-gray-700 dark:text-gray-300 hover:text-blue-400 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-white/10"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-            >
-              {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
-            </motion.button>
+              
+              {/* Only show search, cart, and profile for non-sellers */}
+              {!isSeller ? (
+                <>
+                  <Link
+                    href="/cart" 
+                    className={`p-2 transition-colors relative rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 ${
+                      pathname === '/cart' 
+                        ? 'text-blue-400' 
+                        : 'text-gray-700 dark:text-gray-300 hover:text-blue-400'
+                    }`}
+                  >
+                    <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
+                      <ShoppingCart size={20} />
+                      <span className="absolute -top-1 -right-1 bg-gradient-to-r from-blue-500 to-purple-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center shadow-lg">
+                        {totalItems}
+                      </span>
+                    </motion.div>
+                  </Link>
+                  
+                  <Link href='/user/profile' className='hidden md:block lg:block'>
+                    <motion.button 
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="p-2 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 text-gray-700 dark:text-gray-300 hover:text-blue-400"
+                    >
+                      <User size={20} />
+                    </motion.button>
+                  </Link>
+                </>
+              ) : (
+                // For sellers, show a "Sign in as Customer" button
+                <Link href="/seller/dashboard">
+                  <Button 
+                    variant="outline" 
+                    className="border-black cursor-pointer text-black dark:border-white dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800"                    >
+                    Sign in as Customer
+                  </Button>
+                </Link>
+              )}
+              
+              {/* Mobile menu button - keep for all users */}
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                className="md:hidden p-2 text-gray-700 dark:text-gray-300 hover:text-blue-400 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-white/10"
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+              >
+                {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
+              </motion.button>
             </div>
           ):(
             <div className="flex items-center">
@@ -223,29 +227,62 @@ const Header = () => {
                   {link.name}
                 </Link>
               ))}
-              <div className="flex space-x-4 pt-4 border-t border-gray-200 dark:border-white/10">
-                <Link 
-                  href={isAuthenticated ? "/user/profile" : "/user/signup"}
-                  className="text-gray-700 dark:text-gray-300 hover:text-red-400 transition-colors"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  {isAuthenticated ? "Profile" : "Create Account"}
-                </Link>
-                <Link 
-                  href={isAuthenticated ? "/cart" : "/auth/user/signin"}
-                  className="text-gray-700 dark:text-gray-300 hover:text-blue-400 transition-colors"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  {isAuthenticated ? "Cart" : "Signin"}
-                </Link>
-                <Link href='/auth/seller/signin'>
-                  <button 
-                    onClick={toggleTheme}
-                    className="text-gray-700 dark:text-gray-300 hover:text-blue-400 transition-colors"
-                  >
-                    {isAuthenticated ? null : "Seller's Panel"}
-                  </button>
-                </Link>
+              <div className="flex flex-col space-y-4 pt-4 border-t border-gray-200 dark:border-white/10">
+                {isAuthenticated ? (
+                  isSeller ? (
+                    // For sellers in mobile menu
+                    <Link 
+                      href="/seller/dashboard"
+                      className="text-gray-700 dark:text-gray-300 hover:text-blue-400 transition-colors"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Sign in as Customer
+                    </Link>
+                  ) : (
+                    // For regular users in mobile menu
+                    <>
+                      <Link 
+                        href="/user/profile"
+                        className="text-gray-700 dark:text-gray-300 hover:text-red-400 transition-colors"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        Profile
+                      </Link>
+                      <Link 
+                        href="/cart"
+                        className="text-gray-700 dark:text-gray-300 hover:text-blue-400 transition-colors"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        Cart
+                      </Link>
+                    </>
+                  )
+                ) : (
+                  // For non-authenticated users in mobile menu
+                  <>
+                    <Link 
+                      href="/user/signup"
+                      className="text-gray-700 dark:text-gray-300 hover:text-red-400 transition-colors"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Create Account
+                    </Link>
+                    <Link 
+                      href="/auth/user/signin"
+                      className="text-gray-700 dark:text-gray-300 hover:text-blue-400 transition-colors"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Signin
+                    </Link>
+                    <Link 
+                      href='/auth/seller/signin'
+                      className="text-gray-700 dark:text-gray-300 hover:text-blue-400 transition-colors"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Seller&apos;s Panel
+                    </Link>
+                  </>
+                )}
               </div>
             </nav>
           </motion.div>
