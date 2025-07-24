@@ -1,0 +1,17 @@
+services:
+  valkey-dev:
+    image: valkey/valkey:latest
+    restart: always
+    volumes:
+      - valkey-dev-data:/data
+  app:
+    build: .
+    command: pnpm --filter=next-app start
+    env_file:
+      - .env.dev
+    ports:
+      - "3001:3000"
+    depends_on:
+      - valkey-dev
+volumes:
+  valkey-dev-data:

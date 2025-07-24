@@ -1,0 +1,52 @@
+name: Deploy Zivelle Dev Environment
+
+on:
+  push:
+    branches: [dev]
+
+jobs:
+  deploy-dev:
+    name: Deploy to Dev Environment on push to dev branch
+    runs-on: ubuntu-latest
+    environment: development
+
+    steps:
+    - name: 📥 Checkout repository
+      uses: actions/checkout@v3
+
+    - name: 🔐 Setup SSH key
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.VPS_KEY }}" > ~/.ssh/id_ed25519
+        chmod 600 ~/.ssh/id_ed25519
+        ssh-keyscan -p ${{ secrets.VPS_PORT }} ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
+
+    - name: 🚀 SSH into VPS and deploy dev environment
+      run: |
+        ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
+        cd ~/Zivelle/zivelle-dev
+
+        echo "🔄 Fetching latest code safely..."
+        git fetch origin dev
+        git checkout dev
+        git reset --hard origin/dev
+
+        echo "📄 Creating dev environment files..."
+        printf "%s" "${{ secrets.DEV_ENV_FILE }}" > .env.dev
+        echo "${{ secrets.DEV_ENV_DB }}" > ./packages/database/.env.dev
+
+        echo "👇 Try to build first, without stopping current app"
+        docker compose -f docker-compose.dev.yml build
+
+        # ✅ Only stop and restart if build succeeded
+        if [ $? -eq 0 ]; then
+          echo "✅ Build succeeded! Restarting dev environment..."
+          docker compose -f docker-compose.dev.yml down
+          docker compose -f docker-compose.dev.yml up -d
+          echo "✅ Dev Deployment complete!"
+        else
+          echo "❌ Build failed! Keeping old dev environment running."
+          docker compose -f docker-compose.dev.yml logs
+          exit 1
+        fi
+        EOF
