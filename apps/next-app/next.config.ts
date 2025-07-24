@@ -17,7 +17,6 @@ const nextConfig: NextConfig = {
       },
     ],
     unoptimized: true,
-    // domains: ["prod-zivelle.fly.storage.tigris.dev", "dev-zivelle.fly.storage.tigris.dev"],
   },
 };
 
