@@ -36,6 +36,7 @@ enum ListStatus {
 }
 
 enum OrderStatus {
+  Reserved
   Confirmed
   Shipped
   Delivered
