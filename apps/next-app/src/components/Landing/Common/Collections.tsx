@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import Footer from './Footer';
 import Link from 'next/link';
+import Image from 'next/image';
 
 const collections = [
   {
@@ -190,7 +191,7 @@ export function Collections() {
                 <Link href={{ pathname: '/catalog', query: { category: collection.category } }}>
                   <Card className="group overflow-hidden border-0 shadow-xl hover:shadow-2xl transition-all duration-500 cursor-pointer bg-white h-full">
                     <div className="relative h-80 md:h-96 overflow-hidden">
-                      <img
+                      <Image
                         src={collection.image}
                         alt={collection.name}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
@@ -235,7 +236,7 @@ export function Collections() {
                 <Link href={{ pathname: '/catalog', query: { category: collection.category } }}>
                   <Card className="group overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer bg-white h-full">
                     <div className="relative h-72 overflow-hidden">
-                      <img
+                      <Image
                         src={collection.image}
                         alt={collection.name}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"

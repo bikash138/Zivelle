@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import Footer from './Footer';
 import Link from 'next/link';
+import Image from 'next/image';
 
 const brands = [
   { name: 'Gucci', products: 245, image: 'https://images.pexels.com/photos/1038000/pexels-photo-1038000.jpeg?auto=compress&cs=tinysrgb&w=800', featured: true },
@@ -101,7 +102,7 @@ export function Brands() {
               <Link href={{ pathname: '/catalog', query: { brand: brand.name } }}>
                 <Card className="group overflow-hidden border-0 shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer bg-white">
                   <div className="relative h-64 overflow-hidden">
-                    <img
+                    <Image
                       src={brand.image}
                       alt={brand.name}
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
@@ -144,10 +145,10 @@ export function Brands() {
           className="mt-20 bg-gradient-to-r from-slate-900 to-slate-800 rounded-3xl p-8 md:p-12 text-center text-white"
         >
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Can't Find Your Favorite Brand?
+            Can&apos;t Find Your Favorite Brand?
           </h2>
           <p className="text-slate-300 text-lg mb-8 max-w-2xl mx-auto">
-            We're constantly expanding our collection. Let us know which brands you'd like to see on Zivelle.
+            We&apos;re constantly expanding our collection. Let us know which brands you&apos;d like to see on Zivelle.
           </p>
           <Button size="lg" className="bg-orange-500 hover:bg-orange-600 text-white rounded-full px-8">
             Suggest a Brand
