@@ -26,15 +26,18 @@ export async function POST(req:NextRequest) {
             //Initiate the payment using Razorpay
             const razorpay = razorpayInstance();
             const paymentResponse = await razorpay.orders.create(options);
-            await prisma.order.create({
-                data: {
-                    total: totalAmount,
-                    orderStatus: "Pending", 
-                    paymentStatus: "Pending",
-                    customerId: userId,
-                    razorpayOrderId: paymentResponse.id
-                }
-            });
+            await prisma.$transaction(async(tx)=>{
+                await tx.order.create({
+                    data: {
+                        total: totalAmount,
+                        orderStatus: "Pending", 
+                        paymentStatus: "Pending",
+                        customerId: userId,
+                        razorpayOrderId: paymentResponse.id
+                    }
+                })
+            })
+            
             return NextResponse.json({
                 success:true,
                 data: paymentResponse
