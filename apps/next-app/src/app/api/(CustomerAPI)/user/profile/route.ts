@@ -17,6 +17,7 @@ export async function GET(req: NextRequest){
         name: true,
         createdAt: true,
         email: true,
+        addresses: true
       }
     })
     return NextResponse.json({

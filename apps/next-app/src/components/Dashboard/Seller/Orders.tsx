@@ -70,7 +70,7 @@ export function Orders({ initialOrders }: { initialOrders: OrderItem[] }) {
       price: order.price,
       size: order.size,
       customerName: order.order.customer?.name || 'Customer',
-      customerAddress: order.order.customer?.address || 'Address not provided',
+      customerAddress: 'Address not provided',
       itemStatus: order.itemStatus ,
       placedOn: formatDate(String(order.order.placedOn))
     };

@@ -36,7 +36,7 @@ export default async function OrdersRoute() {
                         select:{
                             name: true,
                             email: true,
-                            address: true
+                            // addresses: true
                         }
                     }
                 }

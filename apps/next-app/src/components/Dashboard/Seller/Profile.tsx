@@ -54,7 +54,7 @@ export function Profile() {
     }
   }
   fetchSeller()
-},[profile, dispatch])
+  },[profile, dispatch])
 
   const handleEdit = () => {
     setIsEditing(true);

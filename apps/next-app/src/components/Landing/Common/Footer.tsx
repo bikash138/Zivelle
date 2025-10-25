@@ -145,7 +145,7 @@ const Footer = () => {
           className="border-t border-gray-200 dark:border-gray-800 mt-8 pt-8 text-center"
         >
           <p className="text-gray-500 dark:text-gray-400 text-sm">
-            © 2024 Zivelle. All rights reserved. | Made with ❤️ for fashion lovers
+            © 2025 Zivelle. All rights reserved. | Made with ❤️ for fashion lovers
           </p>
         </motion.div>
       </div>

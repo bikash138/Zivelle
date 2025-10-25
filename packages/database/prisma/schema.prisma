@@ -117,8 +117,22 @@ model Customer{
   email     String    @unique
   password  String
   name      String
-  address   String?
+  addresses BillingAddress[]
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   orders    Order[]
+}
+
+model BillingAddress {
+  id          String   @id @default(cuid())
+  customerId  String
+  fullName    String
+  phone       String
+  street      String
+  city        String
+  state       String
+  postalCode  String
+  country     String
+  isDefault   Boolean  @default(false)
+  customer    Customer @relation(fields: [customerId], references: [id])
 }

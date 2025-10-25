@@ -14,6 +14,7 @@ import axios from 'axios';
 import {RazorpayPaymentResponse, Razorpay} from '@/types/razorpay'
 import EmptyCart from '@/components/core/EmptyCart';
 import CartCard from '@/components/core/CartCard';
+import { AddressSelector } from '@/components/core/AddressSelector';
 
 declare global {
   interface Window {
@@ -125,7 +126,7 @@ const CartPage = () => {
           <p className="text-gray-600 dark:text-gray-400">{cart.length} items in your cart</p>
         </div>
       </motion.div>
-
+      <AddressSelector/>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Cart Items */}
         <div className="lg:col-span-2 space-y-4">
