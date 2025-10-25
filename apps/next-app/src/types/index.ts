@@ -76,7 +76,6 @@ export interface OrderedItems {
   }[]
 }
 
-
 export interface ModalOrderData {
   id: string;
   title: string;
@@ -88,3 +87,15 @@ export interface ModalOrderData {
   itemStatus: 'Pending' | 'Confirmed' | 'Shipped' | 'Cancelled' | 'Delivered';
   placedOn: string;
 }
+
+export type AddressType = {
+  id: string;
+  fullName: string;
+  phone: string;
+  street: string;
+  city: string;
+  state: string;
+  postalCode: string;
+  country: string;
+  isDefault: boolean;
+};

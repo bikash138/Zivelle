@@ -25,6 +25,7 @@ export async function POST(req: NextRequest){
             where:{
                 email
             },
+            include: { addresses: true }
         });
 
         //If not found return error
@@ -58,6 +59,7 @@ export async function POST(req: NextRequest){
                     name: user.name,
                     email: user.email,
                     role: "CUSTOMER",
+                    addresses: user.addresses,
                     createdAt: user.createdAt
                 },
                 message: "User Login Success"

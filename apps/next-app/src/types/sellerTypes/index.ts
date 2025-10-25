@@ -16,7 +16,7 @@ export interface OrderItem {
     customer?: {
       name: string;
       email: string;
-      address: string | null;
+      // addresses: [];
     };
   };
 }

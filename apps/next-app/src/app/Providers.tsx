@@ -1,10 +1,12 @@
 'use client';
 import { Provider, useDispatch } from "react-redux";
+import { QueryClientProvider, QueryClient } from '@tanstack/react-query'
 import { store } from "@/redux/reducer";
 import { useEffect } from "react";
 import { hydrateCart } from "@/redux/slices/cartSlice";
 import { hydrateToken } from "@/redux/slices/authSlice";
 import { hydrateProfile } from "@/redux/slices/profileSlice";
+const queryClient = new QueryClient()
 
 function ReduxStateHydrater({ children }: { children: React.ReactNode }) {
   const dispatch = useDispatch();
@@ -36,10 +38,12 @@ function ReduxStateHydrater({ children }: { children: React.ReactNode }) {
 export default function Providers({ children }: { children: React.ReactNode }) {
 
   return (
-    <Provider store={store}>
-      <ReduxStateHydrater>
-        {children}
-      </ReduxStateHydrater>
-    </Provider>
+    <QueryClientProvider client={queryClient}>
+      <Provider store={store}>
+        <ReduxStateHydrater>
+          {children}
+        </ReduxStateHydrater>
+      </Provider>
+    </QueryClientProvider>
   )
 }
