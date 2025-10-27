@@ -91,11 +91,13 @@ model Order{
   paymentStatus     PaymentStatus    @default(Pending)
   placedOn          DateTime         @default(now())
   customerId        String
+  deliveryAddress   Json
   razorpayOrderId   String           @unique
   razorpayPaymentId String?
-  customer          Customer          @relation(fields: [customerId], references: [id])
+  customer          Customer         @relation(fields: [customerId], references: [id])
   items             OrderItem[]
 }
+
 model OrderItem {
   id          Int         @id @default(autoincrement())
   orderId     String
@@ -109,8 +111,6 @@ model OrderItem {
   item        Item        @relation(fields: [itemId], references: [id])
   seller      Seller      @relation(fields: [sellerId], references: [id])
 }
-  // customerId  String
-  // customer    Customer  @relation((fields: [customerId], references: [id]))
 
 model Customer{
   id        String    @id @default(uuid())

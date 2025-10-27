@@ -19,6 +19,8 @@ import { AddressModal } from './AddressModal';
 import { toast } from 'sonner';
 import axios from 'axios';
 import { AddressType } from '@/types';
+import { useDispatch } from 'react-redux';
+import { removeAddress, updateAddress } from '@/redux/slices/profileSlice';
 
 export function AddressSection({initialAddresses} : {initialAddresses: AddressType[]}) {
 
@@ -27,6 +29,7 @@ export function AddressSection({initialAddresses} : {initialAddresses: AddressTy
   const [editingAddress, setEditingAddress] = useState<AddressType | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false)
+  const dispatch = useDispatch()
 
   useEffect(() => {
     if (initialAddresses?.length) {
@@ -40,8 +43,9 @@ export function AddressSection({initialAddresses} : {initialAddresses: AddressTy
     try{
       const response = await axios.delete('/api/user/profile/address', { data: { id: deleteId } });
       if(response.data?.success){
-        toast.success('Address deleted successfully');
+        dispatch(removeAddress(deleteId))
         setAddresses((prev) => prev.filter((addr) => addr.id !== deleteId));
+        toast.success('Address deleted successfully');
       }
     }catch(error){
       console.log("Something went wrong while deleting address", error);
@@ -63,6 +67,7 @@ export function AddressSection({initialAddresses} : {initialAddresses: AddressTy
 
   const handleAddressEdit = (updatedAddress: AddressType) => {
     setAddresses((prev) => prev.map(addr => addr.id === updatedAddress.id ? updatedAddress : addr))
+    dispatch(updateAddress(updatedAddress))
     setEditingAddress(null);
   }
 

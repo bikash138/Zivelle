@@ -5,67 +5,39 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
 import { AddressType } from '@/types';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/redux/reducer';
+import Link from 'next/link';
+import { DeliveryAddressType } from '@/app/(landing)/cart/page';
 
-export function AddressSelector() {
-  const [addresses] = useState<AddressType[]>([]);
-  const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
+interface AddressSelectorProps {
+  onSelect: (address: DeliveryAddressType) => void;
+  selectedAddress: DeliveryAddressType | null;
+}
+export function AddressSelector({onSelect, selectedAddress}: AddressSelectorProps) {
+  const profile = useSelector((state: RootState) => state.profile.profile);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  // const [setIsFormOpen] = useState(false);
-  // const [editingAddress, setEditingAddress] = useState<AddressType | null>(null);
   const [loading] = useState(false);
+  const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null)
 
-//   useEffect(() => {
-//     loadAddresses();
-//   }, []);
-
-//   const loadAddresses = async () => {
-//     try {
-//       const { data: { user } } = await supabase.auth.getUser();
-
-//       if (!user) {
-//         setLoading(false);
-//         return;
-//       }
-
-//       const { data, error } = await supabase
-//         .from('addresses')
-//         .select('*')
-//         .eq('user_id', user.id)
-//         .order('is_default', { ascending: false })
-//         .order('created_at', { ascending: false });
-
-//       if (error) throw error;
-
-//       setAddresses(data || []);
-
-//       //@ts-ignore
-//       const defaultAddress = data?.find(addr => addr.is_default);
-//       if (defaultAddress) {
-//         setSelectedAddressId(defaultAddress.id);
-//       } else if (data && data.length > 0) {
-//         setSelectedAddressId(data[0].id);
-//       }
-//     } catch (error) {
-//       console.error('Error loading addresses:', error);
-//       toast.error('Failed to load addresses')
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   const handleFormClose = () => {
-//     setIsFormOpen(false);
-//     setEditingAddress(null);
-//     loadAddresses();
-//   };
-
-  const handleSelectAddress = (addressId: string) => {
-    setSelectedAddressId(addressId);
-    setIsDrawerOpen(false);
+  const handleSelectAddress = (address: AddressType) => {
+    setSelectedAddressId(address.id)
+    const deliveryAddress = {
+      fullName: address.fullName,
+      phone: address.phone,
+      street: address.street,
+      city: address.city,
+      state: address.state,
+      postalCode: address.postalCode,
+      country: address.postalCode,
+    }
+    console.log("Delivery Address: ", deliveryAddress)
+    if(deliveryAddress){
+      onSelect(deliveryAddress)
+      setIsDrawerOpen(false);
+    }
   };
-
-  const selectedAddress = addresses.find(addr => addr.id === selectedAddressId);
-
+  
   if (loading) {
     return (
       <Card className="p-4 border-orange-200">
@@ -115,30 +87,30 @@ export function AddressSelector() {
                 <MapPin className="w-5 h-5 text-orange-600" />
                 Select Delivery Address
               </DrawerTitle>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  setIsDrawerOpen(false);
-                  // setIsFormOpen(true);
-                }}
-                className="gap-2 text-orange-600 hover:text-orange-700 hover:bg-orange-50"
-              >
-                <Plus className="w-4 h-4" />
-                Add New
-              </Button>
+              <Link href={'/user/profile'}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setIsDrawerOpen(false);
+                  }}
+                  className="gap-2 text-orange-600 hover:text-orange-700 hover:bg-orange-50"
+                >
+                  <Plus className="w-4 h-4" />
+                  Add New
+                </Button>
+              </Link>
             </div>
           </DrawerHeader>
 
           <div className="overflow-y-auto p-4">
-            {addresses.length === 0 ? (
+            {profile?.addresses.length === 0  ? (
               <div className="text-center py-12">
                 <MapPin className="w-16 h-16 mx-auto mb-4 text-orange-300" />
                 <p className="text-gray-600 mb-4">No addresses saved yet</p>
                 <Button
                   onClick={() => {
                     setIsDrawerOpen(false);
-                    // setIsFormOpen(true);
                   }}
                   className="gap-2 bg-orange-600 hover:bg-orange-700"
                 >
@@ -147,9 +119,9 @@ export function AddressSelector() {
                 </Button>
               </div>
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-3 grid grid-cols-2 lg:grid-cols-4 space-x-2">
                 <AnimatePresence mode="popLayout">
-                  {addresses.map((address) => (
+                  {profile?.addresses?.map((address: AddressType) => (
                     <motion.div
                       key={address.id}
                       initial={{ opacity: 0, y: 20 }}
@@ -163,7 +135,7 @@ export function AddressSelector() {
                             ? 'border-orange-500 bg-orange-50 shadow-md ring-2 ring-orange-500'
                             : 'border-gray-200 hover:border-orange-300 hover:bg-orange-50/30'
                         }`}
-                        onClick={() => handleSelectAddress(address.id)}
+                        onClick={() => handleSelectAddress(address)}
                       >
                         <div className="flex items-start gap-3">
                           <motion.div
@@ -203,8 +175,7 @@ export function AddressSelector() {
                             </p>
 
                             <p className="text-sm text-gray-700">
-                              {address.phone}
-                              {address.street && `, ${address.street}`}
+                              {address.street && `${address.street}`}
                             </p>
 
                             <p className="text-sm text-gray-700">
@@ -226,12 +197,6 @@ export function AddressSelector() {
           </div>
         </DrawerContent>
       </Drawer>
-
-      {/* <AddressForm
-        open={isFormOpen}
-        onClose={handleFormClose}
-        editingAddress={editingAddress}
-      /> */}
     </>
   );
 }
