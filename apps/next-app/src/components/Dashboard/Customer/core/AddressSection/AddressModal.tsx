@@ -15,6 +15,8 @@ import { AddressType } from '@/types';
 import axios from 'axios';
 import { toast } from 'sonner';
 import { Loader } from 'lucide-react';
+import { useDispatch } from 'react-redux';
+import { addAddress } from '@/redux/slices/profileSlice';
 
 interface AddressModalProps {
   open: boolean;
@@ -47,6 +49,7 @@ export function AddressModal({
   }, [editingAddress, reset]);
 
   const [isSaving, setIsSaving] = useState(false)
+  const dispatch = useDispatch()
   
   const onsubmit = async (data: AddressType) => {
     setIsSaving(true)
@@ -64,6 +67,7 @@ export function AddressModal({
       const response = await axios.post('/api/user/profile/address', data)
       if(response.data?.success){
         onAddressAdded?.(data)
+        dispatch(addAddress(data))
         toast.success("Address Added Successfully")
       }else{
         toast.error("Cannot add Address")

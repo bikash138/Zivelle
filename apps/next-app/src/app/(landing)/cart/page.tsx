@@ -22,6 +22,16 @@ declare global {
   }
 }
 
+export type DeliveryAddressType = {
+  fullName: string;
+  phone: string;
+  street: string;
+  city: string;
+  state: string;
+  postalCode: string;
+  country: string;
+}
+
 const CartPage = () => {
   const [promoCode, setPromoCode] = useState('');
   const [appliedPromo, setAppliedPromo] = useState('');
@@ -33,6 +43,7 @@ const CartPage = () => {
   const tax = (subTotal - discount) * 0.08;
   const total = subTotal - discount + shipping + tax;
   const [isProcessing, setIsProcessing] = useState(false)
+  const [selectedAddress, setSelectedAddress] = useState<DeliveryAddressType | null>(null)
   
   const applyPromoCode = () => {
     if (promoCode.toLowerCase() === 'save20') {
@@ -43,11 +54,14 @@ const CartPage = () => {
 
   const handleCheckout = async () => {
     if(isProcessing) return
+    if(!selectedAddress) {console.log("Address is not selected"); return}
     setIsProcessing(true)
     try {
+      console.log("Delivery address being sent: ", selectedAddress)
       const response = await axios.post('/api/user/orders', {
         items: cart,
         totalAmount: total,
+        deliveryAddress: selectedAddress
       }, {
         headers: { 'Content-Type': 'application/json' }
       });
@@ -66,7 +80,7 @@ const CartPage = () => {
                 razorpay_payment_id: response.razorpay_payment_id,
                 razorpay_order_id: response.razorpay_order_id,
                 razorpay_signature: response.razorpay_signature,
-                items: cart
+                items: cart,
               }, {
                 headers: { 'Content-Type': 'application/json' }
               });
@@ -86,9 +100,9 @@ const CartPage = () => {
       };
       const rzp = new window.Razorpay(options);
       rzp.open();
-    } else {
+      } else {
       console.log("Payment can't be done")
-    }
+      }
     } catch (error) {
       console.error(error);
     } finally{
@@ -126,8 +140,11 @@ const CartPage = () => {
           <p className="text-gray-600 dark:text-gray-400">{cart.length} items in your cart</p>
         </div>
       </motion.div>
-      <AddressSelector/>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <AddressSelector 
+        onSelect={(deliveryAddress: DeliveryAddressType)=>setSelectedAddress(deliveryAddress)} 
+        selectedAddress={selectedAddress}
+      />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-5">
         {/* Cart Items */}
         <div className="lg:col-span-2 space-y-4">
           <AnimatePresence>

@@ -16,7 +16,7 @@ export async function POST(req:NextRequest) {
             return error
         }
         const body = await req.json()
-        const totalAmount = body.totalAmount
+        const {totalAmount, deliveryAddress} = body
         const options = {
             amount: Math.round(Number((+totalAmount).toFixed(2)) * 100),
             currency: "INR",
@@ -33,7 +33,8 @@ export async function POST(req:NextRequest) {
                         orderStatus: "Pending", 
                         paymentStatus: "Pending",
                         customerId: userId,
-                        razorpayOrderId: paymentResponse.id
+                        razorpayOrderId: paymentResponse.id,
+                        deliveryAddress: deliveryAddress,
                     }
                 })
             })

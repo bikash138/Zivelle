@@ -19,7 +19,7 @@ export interface ProfileType {
   email: string
   store?: string
   createdAt: string
-  addresses?: Address[] 
+  addresses: Address[]
   role: "SELLER" | "CUSTOMER"
 }
 
@@ -48,9 +48,23 @@ const profileSlice = createSlice({
     setLoading(state, action: PayloadAction<boolean>) {
       state.loading = action.payload;
     },
+    addAddress(state, action){
+      if (!state.profile || !state.profile.addresses) return;
+      state.profile.addresses.unshift(action.payload)
+    },
+    updateAddress(state, action){
+      if (!state.profile || !state.profile.addresses) return;
+      state.profile.addresses = state.profile.addresses.map(addr =>
+        addr.id === action.payload.id ? action.payload : addr
+      )
+    },
+    removeAddress(state, action){
+      if (!state.profile || !state.profile.addresses) return;
+      state.profile.addresses = state.profile.addresses.filter(addr => addr.id !== action.payload)
+    }
   },
 })
 
-export const { setProfile, setLoading, hydrateProfile } = profileSlice.actions
+export const { setProfile, setLoading, hydrateProfile, addAddress, updateAddress, removeAddress } = profileSlice.actions
 
 export default profileSlice.reducer
