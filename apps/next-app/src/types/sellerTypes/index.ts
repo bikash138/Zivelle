@@ -1,3 +1,5 @@
+import { DeliveryAddressType } from "@/app/(landing)/cart/page";
+
 export interface OrderItem {
   id: number;
   orderId: string;
@@ -13,10 +15,10 @@ export interface OrderItem {
   order: {
     placedOn: Date;
     paymentStatus: string;
+    deliveryAddress: DeliveryAddressType;
     customer?: {
       name: string;
       email: string;
-      // addresses: [];
     };
   };
 }

@@ -1,3 +1,4 @@
+import { DeliveryAddressType } from '@/app/(landing)/cart/page';
 import {Orders} from '@/components/Dashboard/Customer/Orders';
 import getUserIdToken from '@/lib/getUserIdToken';
 import { prisma } from '@repo/database/prisma';
@@ -10,7 +11,7 @@ export default async function OrdersRoute() {
     if(error){
         return error
     }
-    const allOrders = await prisma.order.findMany({
+    const allOrdersRaw = await prisma.order.findMany({
         where: {
             customerId: userId
         }, 
@@ -27,5 +28,15 @@ export default async function OrdersRoute() {
             }
         }
     })
-  return <Orders initialOrders={allOrders} />;
+    const normalizedOrders = allOrdersRaw.map((o) => ({
+        ...o,
+        deliveryAddress: ((o.deliveryAddress as DeliveryAddressType) || {
+            fullName: "",  
+            street: "",
+            city: "",
+            postalCode: "",
+            country: "",
+        })
+    }));
+  return <Orders initialOrders={normalizedOrders} />;
 }

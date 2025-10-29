@@ -11,8 +11,9 @@ import { formatDate } from '@/lib/formatDate';
 import { OrderedItems } from '@/types';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { OrderDetailsModal } from './core/OrderDetailsModal';
+
 import { ModalOrderData } from '@/types/userTypes';
+import { OrderDetailsModal } from './core/OrderDetailsModal';
 
 export function Orders({ initialOrders }: {initialOrders : OrderedItems[]}) {
   const[orders] = useState<OrderedItems[]>(initialOrders)
@@ -74,10 +75,11 @@ export function Orders({ initialOrders }: {initialOrders : OrderedItems[]}) {
       status: order.orderStatus,
       payment: order.paymentStatus,
       date: formatDate(String(order.placedOn)),
-      customer: {
-        name: 'Bikash',
-        address: 'Kolkata'
-      }
+      deliveryAddress: order.deliveryAddress
+      // customer: {
+      //   name: 'Bikash',
+      //   address: 'Kolkata'
+      // }
     }
 
     setSelectedOrder(modalOrderData);
