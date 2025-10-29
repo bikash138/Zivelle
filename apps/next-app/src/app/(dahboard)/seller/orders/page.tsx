@@ -1,3 +1,4 @@
+import { DeliveryAddressType } from '@/app/(landing)/cart/page';
 import {Orders} from '@/components/Dashboard/Seller/Orders';
 import getUserIdToken from '@/lib/getUserIdToken';
 import { prisma } from '@repo/database/prisma';
@@ -10,7 +11,7 @@ export default async function OrdersRoute() {
     if(error){
         return error
     }
-    const allOrders = await prisma.orderItem.findMany({
+    const allOrdersRaw = await prisma.orderItem.findMany({
         where: {
             sellerId: userId
         },
@@ -32,16 +33,29 @@ export default async function OrdersRoute() {
                 select:{
                     placedOn: true,
                     paymentStatus: true,
+                    deliveryAddress: true,
                     customer:{
                         select:{
                             name: true,
                             email: true,
-                            // addresses: true
                         }
                     }
                 }
             }
         }
     })
+    const allOrders = allOrdersRaw.map((o) => ({
+        ...o,
+        order: {
+            ...o.order,
+            deliveryAddress: (o.order.deliveryAddress as DeliveryAddressType) || {
+            fullName: "",  
+            street: "",
+            city: "",
+            postalCode: "",
+            country: "",
+            },
+        },
+    }))
   return <Orders initialOrders={allOrders} />;
 }

@@ -1,3 +1,5 @@
+import { DeliveryAddressType } from "@/app/(landing)/cart/page";
+
 export interface ListedItem {
   id: string;
   title: string;
@@ -68,6 +70,7 @@ export interface OrderedItems {
   customerId: string;
   razorpayOrderId: string;
   razorpayPaymentId: string | null;
+  deliveryAddress: DeliveryAddressType
   items: {
     item: {
       thumbnail: string;
@@ -83,7 +86,7 @@ export interface ModalOrderData {
   price: number;
   size: string;
   customerName: string;
-  customerAddress: string | null;
+  deliveryAddress: DeliveryAddressType;
   itemStatus: 'Pending' | 'Confirmed' | 'Shipped' | 'Cancelled' | 'Delivered';
   placedOn: string;
 }

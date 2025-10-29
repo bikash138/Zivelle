@@ -155,16 +155,22 @@ export function OrderDetailsModal({ isOpen, onClose, order }: OrderDetailsProps)
                       <h4 className="text-sm font-medium text-gray-500 mb-2">Customer Name</h4>
                       <div className="flex items-center text-gray-700">
                         <User className="w-4 h-4 mr-2" />
-                        {order.customer.name}
+                        {order.deliveryAddress.fullName}
                       </div>
                     </div>
                     <div>
                       <h4 className="text-sm font-medium text-gray-500 mb-2">Delivery Address</h4>
                       <div className="flex items-start text-gray-700">
                         <MapPin className="w-4 h-4 mr-2 mt-1 flex-shrink-0" />
-                        <span className="break-words">
-                          {order.customer.address || 'Address not provided'}
-                        </span>
+                        <div className="flex flex-col text-sm text-gray-900 leading-relaxed">
+                          <span>
+                            {order.deliveryAddress.street}, {order.deliveryAddress.city}
+                          </span>
+                          <span>
+                            {order.deliveryAddress.state}, {order.deliveryAddress.postalCode}
+                          </span>
+                          <span>{order.deliveryAddress.country}</span>
+                        </div>
                       </div>
                     </div>
                   </div>

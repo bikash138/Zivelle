@@ -138,14 +138,22 @@ export const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({
                   <Label className="text-sm font-medium text-gray-700">Customer Name</Label>
                   <div className="p-3 bg-gray-50 rounded-md flex items-center gap-2">
                     <User className="w-4 h-4 text-gray-500" />
-                    <span className="text-sm text-gray-900">{order.customerName}</span>
+                    <span className="text-sm text-gray-900">{order.deliveryAddress.fullName}</span>
                   </div>
                 </div>
                 <div className="space-y-2">
                   <Label className="text-sm font-medium text-gray-700">Delivery Address</Label>
                   <div className="p-3 bg-gray-50 rounded-md flex items-start gap-2">
                     <MapPin className="w-4 h-4 text-gray-500 mt-0.5 flex-shrink-0" />
-                    <span className="text-sm text-gray-900 leading-relaxed">{order.customerAddress}</span>
+                      <div className="flex flex-col text-sm text-gray-900 leading-relaxed">
+                        <span>
+                          {order.deliveryAddress.street}, {order.deliveryAddress.city}
+                        </span>
+                        <span>
+                          {order.deliveryAddress.state}, {order.deliveryAddress.postalCode}
+                        </span>
+                        <span>{order.deliveryAddress.country}</span>
+                      </div>
                   </div>
                 </div>
               </div>

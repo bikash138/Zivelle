@@ -15,6 +15,7 @@ import {RazorpayPaymentResponse, Razorpay} from '@/types/razorpay'
 import EmptyCart from '@/components/core/EmptyCart';
 import CartCard from '@/components/core/CartCard';
 import { AddressSelector } from '@/components/core/AddressSelector';
+import { toast } from 'sonner';
 
 declare global {
   interface Window {
@@ -54,7 +55,10 @@ const CartPage = () => {
 
   const handleCheckout = async () => {
     if(isProcessing) return
-    if(!selectedAddress) {console.log("Address is not selected"); return}
+    if(!selectedAddress) {
+      toast.warning('Select address')
+      return
+    }
     setIsProcessing(true)
     try {
       console.log("Delivery address being sent: ", selectedAddress)

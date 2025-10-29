@@ -1,3 +1,5 @@
+import { DeliveryAddressType } from "@/app/(landing)/cart/page";
+
 interface OrderItem {
   title: string;
   thumbnail: string;
@@ -11,8 +13,5 @@ export interface ModalOrderData {
     status: 'Pending' | 'Confirmed' | 'Shipped' | 'Delivered' | 'Cancelled';
     payment: 'Success' | 'Failed' | 'Pending';
     date: string;
-    customer: {
-      name: string;
-      address?: string;
-    }
+    deliveryAddress: DeliveryAddressType
 } 
