@@ -59,10 +59,13 @@ const CartPage = () => {
       toast.warning('Select address')
       return
     }
+    console.log("Cart: ", cart)
+    console.log("Total: ", total)
+    console.log("Address: ", selectedAddress)
+    
     setIsProcessing(true)
     try {
-      console.log("Delivery address being sent: ", selectedAddress)
-      const response = await axios.post('/api/user/orders', {
+      const response = await axios.post('/api/user/reserve-stock', {
         items: cart,
         totalAmount: total,
         deliveryAddress: selectedAddress
@@ -70,6 +73,8 @@ const CartPage = () => {
         headers: { 'Content-Type': 'application/json' }
       });
       const data = response.data;
+      console.log(response.data)
+      return
 
       if (data.success) {
       const options = {

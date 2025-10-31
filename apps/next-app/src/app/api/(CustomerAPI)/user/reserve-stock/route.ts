@@ -1,0 +1,76 @@
+import getUserIdFromRequest from "@/lib/getUserId";
+import { prisma } from "@repo/database/prisma";
+import { NextRequest, NextResponse } from "next/server";
+
+type Item = {
+  id: string;
+  adminId: string;
+  quantity: number;
+  price: number;
+  selectedSize: string;
+};
+
+export async function POST(req: NextRequest){
+    try{
+        const {userId, error} = await getUserIdFromRequest(req)
+        if(error){
+            return error
+        }
+
+        const {items, totalAmount, deliveryAddress} = await req.json()
+        const expiresAt = new Date(Date.now() + 5*60*1000)
+
+        const order = await prisma.$transaction(async(tx)=>{
+            for(const item of items){
+                const result = await tx.item.updateMany({
+                    where: {
+                        id: item.id,
+                        stock: {
+                            gte: item.quantity
+                        }
+                    },
+                    data: {
+                        stock: {
+                            decrement: item.quantity
+                        },
+                    }
+                })
+                if(result.count === 0){
+                    throw new Error(`${item.id} is currently out of srock`)
+                }
+            }
+
+            return await tx.order.create({
+                data:{
+                    expiresAt,
+                    deliveryAddress,
+                    total: totalAmount,
+                    orderStatus: "Pending",
+                    paymentStatus: "Pending",
+                    customerId: userId,
+                    items: {
+                        create: items.map((item: Item) => ({
+                            itemId: item.id, 
+                            sellerId: item.adminId,
+                            quantity: item.quantity, 
+                            price: item.price, 
+                            size: item.selectedSize, 
+                        })),
+                    },
+                }
+            })
+        })
+
+        return NextResponse.json({
+            success: true,
+            message: "Order Reserved Success",
+            orderId: order.id
+        })
+    }catch(error){
+        console.log(error)
+        return NextResponse.json({
+            success: false,
+            message: "Something went while Reserving stocks"
+        })
+    }
+}
