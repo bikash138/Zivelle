@@ -1,44 +1,33 @@
 'use client'
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { MapPin, CreditCard, Clock } from 'lucide-react';
-
-interface Product {
-  id: string;
-  name: string;
-  brand: string;
-  image: string;
-  size: string;
-  price: number;
-  quantity: number;
-}
+import { MapPin, CreditCard, Clock, Loader } from 'lucide-react';
+import CartCard from './CartCard';
+import { CartItem } from '@/types';
 
 interface DeliveryAddress {
-  name: string;
+  fullName: string;
   phone: string;
-  addressLine1: string;
-  addressLine2?: string;
+  street: string;
   city: string;
   state: string;
-  pincode: string;
+  postalCode: string;
+  country: string;
 }
 
 interface OrderSummary {
   subtotal: number;
-  tax: number;
-  shipping: number;
-  total: number;
 }
 
 interface ConfirmPaymentProps {
-  products: Product[];
+  products: CartItem[];
   deliveryAddress: DeliveryAddress;
   orderSummary: OrderSummary;
   onConfirmPayment: () => void;
+  isProcessing: boolean;
 }
 
 export default function ConfirmPayment({
@@ -46,6 +35,7 @@ export default function ConfirmPayment({
   deliveryAddress,
   orderSummary,
   onConfirmPayment,
+  isProcessing,
 }: ConfirmPaymentProps) {
   const [timeLeft, setTimeLeft] = useState(30);
 
@@ -122,14 +112,14 @@ export default function ConfirmPayment({
                   <div className="flex-1">
                     <h2 className="text-xl font-bold text-gray-900 mb-1">Delivery Address</h2>
                     <div className="text-gray-700">
-                      <p className="font-semibold">{deliveryAddress.name}</p>
+                      <p className="font-semibold">{deliveryAddress.fullName}</p>
                       <p className="text-sm">{deliveryAddress.phone}</p>
-                      <p className="text-sm mt-2">{deliveryAddress.addressLine1}</p>
-                      {deliveryAddress.addressLine2 && (
-                        <p className="text-sm">{deliveryAddress.addressLine2}</p>
+                      <p className="text-sm mt-2">{deliveryAddress.street}</p>
+                      {deliveryAddress.state && (
+                        <p className="text-sm">{deliveryAddress.state}</p>
                       )}
                       <p className="text-sm">
-                        {deliveryAddress.city}, {deliveryAddress.state} - {deliveryAddress.pincode}
+                        {deliveryAddress.city}, {deliveryAddress.state} - {deliveryAddress.postalCode}
                       </p>
                     </div>
                   </div>
@@ -144,39 +134,12 @@ export default function ConfirmPayment({
             >
               <Card className="p-6">
                 <h2 className="text-xl font-bold text-gray-900 mb-4">Order Items</h2>
-                <div className="space-y-4">
-                  {products.map((product, index) => (
-                    <motion.div
-                      key={product.id}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3, delay: 0.4 + index * 0.1 }}
-                    >
-                      <div className="flex gap-4">
-                        <div className="w-24 h-24 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100">
-                          <img
-                            src={product.image}
-                            alt={product.name}
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                        <div className="flex-1">
-                          <h3 className="font-semibold text-gray-900">{product.name}</h3>
-                          <p className="text-sm text-gray-600">{product.brand}</p>
-                          <div className="mt-2">
-                            <Badge variant="secondary" className="text-xs">
-                              Size: {product.size}
-                            </Badge>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <p className="font-bold text-gray-900">₹{product.price.toFixed(2)}</p>
-                          <p className="text-sm text-gray-600 mt-1">Qty: {product.quantity}</p>
-                        </div>
-                      </div>
-                      {index < products.length - 1 && <Separator className="mt-4" />}
-                    </motion.div>
-                  ))}
+                <div className="lg:col-span-2 space-y-4">
+                  <AnimatePresence>
+                    {products.map((cartItem) => (
+                      <CartCard key={cartItem.id} cartItem={cartItem} />
+                    ))}
+                  </AnimatePresence>
                 </div>
               </Card>
             </motion.div>
@@ -195,17 +158,7 @@ export default function ConfirmPayment({
                 <div className="space-y-3 mb-4">
                   <div className="flex justify-between text-gray-700">
                     <span>Subtotal</span>
-                    <span>₹{orderSummary.subtotal.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between text-gray-700">
-                    <span>Shipping</span>
-                    <span className={orderSummary.shipping === 0 ? 'text-green-600 font-semibold' : ''}>
-                      {orderSummary.shipping === 0 ? 'Free' : `₹${orderSummary.shipping.toFixed(2)}`}
-                    </span>
-                  </div>
-                  <div className="flex justify-between text-gray-700">
-                    <span>Tax</span>
-                    <span>₹{orderSummary.tax.toFixed(2)}</span>
+                    <span>₹{orderSummary.subtotal?.toFixed(2)}</span>
                   </div>
                 </div>
 
@@ -213,7 +166,7 @@ export default function ConfirmPayment({
 
                 <div className="flex justify-between text-lg font-bold text-gray-900 mb-6">
                   <span>Total</span>
-                  <span>₹{orderSummary.total.toFixed(2)}</span>
+                  <span>₹{orderSummary.subtotal.toFixed(2)}</span>
                 </div>
 
                 <Button
@@ -221,7 +174,7 @@ export default function ConfirmPayment({
                   className="w-full bg-gray-900 hover:bg-gray-800 text-white py-6 text-base font-semibold rounded-lg transition-all duration-200 hover:scale-[1.02]"
                   disabled={timeLeft <= 0}
                 >
-                  {timeLeft <= 0 ? 'Time Expired' : 'Confirm & Pay'}
+                  {timeLeft <= 0 ? 'Time Expired' : isProcessing ? <Loader/> : 'Confirm & Pay'}
                 </Button>
 
                 {timeLeft <= 0 && (

@@ -16,6 +16,7 @@ import EmptyCart from '@/components/core/EmptyCart';
 import CartCard from '@/components/core/CartCard';
 import { AddressSelector } from '@/components/core/AddressSelector';
 import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
 
 declare global {
   interface Window {
@@ -37,6 +38,7 @@ const CartPage = () => {
   const [promoCode, setPromoCode] = useState('');
   const [appliedPromo, setAppliedPromo] = useState('');
   const dispatch = useDispatch()
+  const router = useRouter()
   const cart = useSelector((state: RootState)=>state.cart.cart)
   const subTotal = useSelector((state: RootState)=>state.cart.total)
   const discount = appliedPromo === 'SAVE20' ? subTotal * 0.2 : 0;
@@ -59,10 +61,6 @@ const CartPage = () => {
       toast.warning('Select address')
       return
     }
-    console.log("Cart: ", cart)
-    console.log("Total: ", total)
-    console.log("Address: ", selectedAddress)
-    
     setIsProcessing(true)
     try {
       const response = await axios.post('/api/user/reserve-stock', {
@@ -73,45 +71,8 @@ const CartPage = () => {
         headers: { 'Content-Type': 'application/json' }
       });
       const data = response.data;
-      console.log(response.data)
-      return
-
-      if (data.success) {
-      const options = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_WYcFPIFUgHXrUC',
-        amount: data.data.amount,
-        currency: data.data.currency,
-        order_id: data.data.id,
-        handler: function (response:RazorpayPaymentResponse ) {
-          (async () => {
-            try {
-              const verifyRes = await axios.post('/api/verify-payment', {
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_signature: response.razorpay_signature,
-                items: cart,
-              }, {
-                headers: { 'Content-Type': 'application/json' }
-              });
-              const verifyData = verifyRes.data;
-              if (verifyData.success) {
-                dispatch(resetCart())
-                alert("Payment successful and verified!");
-              } else {
-                alert("Payment verification failed!");
-              }
-            } catch (error) {
-              console.log(error)
-              alert("Payment verification failed!");
-            }
-          })();
-        },
-      };
-      const rzp = new window.Razorpay(options);
-      rzp.open();
-      } else {
-      console.log("Payment can't be done")
-      }
+      const orderId = data.orderId
+      router.push(`/confirm?orderId=${orderId}`)
     } catch (error) {
       console.error(error);
     } finally{
@@ -281,7 +242,7 @@ const CartPage = () => {
                 <Button 
                   disabled={isProcessing}
                   onClick={handleCheckout} 
-                  className="w-full bg-slate-900 hover:bg-slate-800 text-white dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-200" size="lg">
+                  className="w-full bg-slate-900 hover:bg-slate-800 text-white dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-200 cursor-pointer" size="lg">
                   {isProcessing ? <Loader2/> : "Proceed to Checkout"}
                 </Button>
                 

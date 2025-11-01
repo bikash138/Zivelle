@@ -16,7 +16,7 @@ export async function POST(req:NextRequest) {
             return error
         }
         const body = await req.json()
-        const {totalAmount, deliveryAddress} = body
+        const {totalAmount, orderId} = body
         const options = {
             amount: Math.round(Number((+totalAmount).toFixed(2)) * 100),
             currency: "INR",
@@ -27,14 +27,12 @@ export async function POST(req:NextRequest) {
             const razorpay = razorpayInstance();
             const paymentResponse = await razorpay.orders.create(options);
             await prisma.$transaction(async(tx)=>{
-                await tx.order.create({
+                await tx.order.update({
+                    where:{
+                        id: orderId
+                    },
                     data: {
-                        total: totalAmount,
-                        orderStatus: "Pending", 
-                        paymentStatus: "Pending",
-                        customerId: userId,
                         razorpayOrderId: paymentResponse.id,
-                        deliveryAddress: deliveryAddress,
                     }
                 })
             })
