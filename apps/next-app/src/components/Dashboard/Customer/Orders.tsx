@@ -76,10 +76,6 @@ export function Orders({ initialOrders }: {initialOrders : OrderedItems[]}) {
       payment: order.paymentStatus,
       date: formatDate(String(order.placedOn)),
       deliveryAddress: order.deliveryAddress
-      // customer: {
-      //   name: 'Bikash',
-      //   address: 'Kolkata'
-      // }
     }
 
     setSelectedOrder(modalOrderData);

@@ -2,18 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import { prisma } from "@repo/database/prisma";
 
-type Item = {
-  id: string;
-  adminId: string;
-  quantity: number;
-  price: number;
-  selectedSize: string;
-};
-
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature, items } = body
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature, orderId } = body
     const secret = process.env.RAZORPAY_KEY_SECRET as string
     const generated_signature = crypto
       .createHmac("sha256", secret)
@@ -29,17 +21,27 @@ export async function POST(req: NextRequest) {
           data:{
             paymentStatus: "Success",
             razorpayPaymentId: razorpay_payment_id,
-            items: {
-              create: items.map((item: Item) => ({
-                  itemId: item.id, 
-                  sellerId: item.adminId,
-                  quantity: item.quantity, 
-                  price: item.price, 
-                  size: item.selectedSize, 
-              })),
-            },
           }
         })
+        const orderItems = await tx.orderItem.findMany({
+          where: {
+            orderId: orderId
+          },
+          select:{
+            itemId: true,
+            quantity: true,
+          }
+        })
+        await Promise.all(
+          orderItems.map((item) =>
+            tx.item.update({
+              where: { id: item.itemId },
+              data: {
+                soldCount: { increment: item.quantity },
+              },
+            })
+          )
+        )
       })
       
       // Payment is verified

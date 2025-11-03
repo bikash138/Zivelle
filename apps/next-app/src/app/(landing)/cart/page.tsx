@@ -7,21 +7,14 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { useDispatch, useSelector } from 'react-redux';
-import { resetCart } from '@/redux/slices/cartSlice';
+import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/reducer';
 import axios from 'axios';
-import {RazorpayPaymentResponse, Razorpay} from '@/types/razorpay'
 import EmptyCart from '@/components/core/EmptyCart';
 import CartCard from '@/components/core/CartCard';
 import { AddressSelector } from '@/components/core/AddressSelector';
 import { toast } from 'sonner';
-
-declare global {
-  interface Window {
-    Razorpay: typeof Razorpay;
-  }
-}
+import { useRouter } from 'next/navigation';
 
 export type DeliveryAddressType = {
   fullName: string;
@@ -36,7 +29,7 @@ export type DeliveryAddressType = {
 const CartPage = () => {
   const [promoCode, setPromoCode] = useState('');
   const [appliedPromo, setAppliedPromo] = useState('');
-  const dispatch = useDispatch()
+  const router = useRouter()
   const cart = useSelector((state: RootState)=>state.cart.cart)
   const subTotal = useSelector((state: RootState)=>state.cart.total)
   const discount = appliedPromo === 'SAVE20' ? subTotal * 0.2 : 0;
@@ -45,7 +38,6 @@ const CartPage = () => {
   const total = subTotal - discount + shipping + tax;
   const [isProcessing, setIsProcessing] = useState(false)
   const [selectedAddress, setSelectedAddress] = useState<DeliveryAddressType | null>(null)
-  
   const applyPromoCode = () => {
     if (promoCode.toLowerCase() === 'save20') {
       setAppliedPromo('SAVE20');
@@ -61,8 +53,7 @@ const CartPage = () => {
     }
     setIsProcessing(true)
     try {
-      console.log("Delivery address being sent: ", selectedAddress)
-      const response = await axios.post('/api/user/orders', {
+      const response = await axios.post('/api/user/reserve-stock', {
         items: cart,
         totalAmount: total,
         deliveryAddress: selectedAddress
@@ -70,45 +61,17 @@ const CartPage = () => {
         headers: { 'Content-Type': 'application/json' }
       });
       const data = response.data;
-
-      if (data.success) {
-      const options = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'rzp_test_WYcFPIFUgHXrUC',
-        amount: data.data.amount,
-        currency: data.data.currency,
-        order_id: data.data.id,
-        handler: function (response:RazorpayPaymentResponse ) {
-          (async () => {
-            try {
-              const verifyRes = await axios.post('/api/verify-payment', {
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_signature: response.razorpay_signature,
-                items: cart,
-              }, {
-                headers: { 'Content-Type': 'application/json' }
-              });
-              const verifyData = verifyRes.data;
-              if (verifyData.success) {
-                dispatch(resetCart())
-                alert("Payment successful and verified!");
-              } else {
-                alert("Payment verification failed!");
-              }
-            } catch (error) {
-              console.log(error)
-              alert("Payment verification failed!");
-            }
-          })();
-        },
-      };
-      const rzp = new window.Razorpay(options);
-      rzp.open();
-      } else {
-      console.log("Payment can't be done")
+      const orderId = data.orderId
+      router.push(`/confirm?orderId=${orderId}`)
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+      const errData = error.response?.data;
+      if (error.response?.status === 409) {
+      toast.warning(errData?.message);
+      return;
       }
-    } catch (error) {
-      console.error(error);
+    }
+    console.error(error);
     } finally{
       setIsProcessing(false)
     }
@@ -276,7 +239,7 @@ const CartPage = () => {
                 <Button 
                   disabled={isProcessing}
                   onClick={handleCheckout} 
-                  className="w-full bg-slate-900 hover:bg-slate-800 text-white dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-200" size="lg">
+                  className="w-full bg-slate-900 hover:bg-slate-800 text-white dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-200 cursor-pointer" size="lg">
                   {isProcessing ? <Loader2/> : "Proceed to Checkout"}
                 </Button>
                 

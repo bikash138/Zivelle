@@ -31,7 +31,6 @@ export function AddressSelector({onSelect, selectedAddress}: AddressSelectorProp
       postalCode: address.postalCode,
       country: address.postalCode,
     }
-    console.log("Delivery Address: ", deliveryAddress)
     if(deliveryAddress){
       onSelect(deliveryAddress)
       setIsDrawerOpen(false);

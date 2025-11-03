@@ -68,7 +68,7 @@ export interface OrderedItems {
   orderStatus: 'Pending' | 'Confirmed' | 'Shipped' | 'Delivered' | 'Cancelled'
   paymentStatus: 'Success' | 'Failed' | 'Pending'
   customerId: string;
-  razorpayOrderId: string;
+  razorpayOrderId: string | null;
   razorpayPaymentId: string | null;
   deliveryAddress: DeliveryAddressType
   items: {

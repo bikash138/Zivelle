@@ -89,10 +89,11 @@ model Order{
   total             Float
   orderStatus       OrderStatus      @default(Pending)
   paymentStatus     PaymentStatus    @default(Pending)
+  expiresAt         DateTime?
   placedOn          DateTime         @default(now())
   customerId        String
   deliveryAddress   Json
-  razorpayOrderId   String           @unique
+  razorpayOrderId   String?          @unique
   razorpayPaymentId String?
   customer          Customer         @relation(fields: [customerId], references: [id])
   items             OrderItem[]

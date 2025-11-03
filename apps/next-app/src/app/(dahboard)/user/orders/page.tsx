@@ -26,6 +26,9 @@ export default async function OrdersRoute() {
                     }
                 }
             }
+        },
+        orderBy:{
+            placedOn: "desc"
         }
     })
     const normalizedOrders = allOrdersRaw.map((o) => ({
