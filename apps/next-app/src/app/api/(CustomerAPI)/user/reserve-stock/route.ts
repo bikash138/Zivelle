@@ -36,7 +36,7 @@ export async function POST(req: NextRequest){
                     }
                 })
                 if(result.count === 0){
-                    throw new Error(`${item.id} is currently out of srock`)
+                    throw { type: "OUT_OF_STOCK", item }; 
                 }
             }
 
@@ -65,12 +65,22 @@ export async function POST(req: NextRequest){
             success: true,
             message: "Order Reserved Success",
             orderId: order.id
-        })
-    }catch(error){
-        console.log(error)
+        }, {status: 200})
+    }catch(err: any){ // eslint-disable-line
+        if (err.type === "OUT_OF_STOCK") {
+            return NextResponse.json(
+            {
+                success: false,
+                itemId: err.item.id,
+                message: `${err.item.title} is currently out of stock`,
+            },
+            { status: 409 }
+            );
+        }
+        console.log(err)
         return NextResponse.json({
             success: false,
             message: "Something went while Reserving stocks"
-        })
+        }, {status: 500})
     }
 }

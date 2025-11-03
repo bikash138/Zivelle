@@ -7,22 +7,14 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { useDispatch, useSelector } from 'react-redux';
-import { resetCart } from '@/redux/slices/cartSlice';
+import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/reducer';
 import axios from 'axios';
-import {RazorpayPaymentResponse, Razorpay} from '@/types/razorpay'
 import EmptyCart from '@/components/core/EmptyCart';
 import CartCard from '@/components/core/CartCard';
 import { AddressSelector } from '@/components/core/AddressSelector';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
-
-declare global {
-  interface Window {
-    Razorpay: typeof Razorpay;
-  }
-}
 
 export type DeliveryAddressType = {
   fullName: string;
@@ -37,7 +29,6 @@ export type DeliveryAddressType = {
 const CartPage = () => {
   const [promoCode, setPromoCode] = useState('');
   const [appliedPromo, setAppliedPromo] = useState('');
-  const dispatch = useDispatch()
   const router = useRouter()
   const cart = useSelector((state: RootState)=>state.cart.cart)
   const subTotal = useSelector((state: RootState)=>state.cart.total)
@@ -47,7 +38,6 @@ const CartPage = () => {
   const total = subTotal - discount + shipping + tax;
   const [isProcessing, setIsProcessing] = useState(false)
   const [selectedAddress, setSelectedAddress] = useState<DeliveryAddressType | null>(null)
-  
   const applyPromoCode = () => {
     if (promoCode.toLowerCase() === 'save20') {
       setAppliedPromo('SAVE20');
@@ -73,8 +63,15 @@ const CartPage = () => {
       const data = response.data;
       const orderId = data.orderId
       router.push(`/confirm?orderId=${orderId}`)
-    } catch (error) {
-      console.error(error);
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+      const errData = error.response?.data;
+      if (error.response?.status === 409) {
+      toast.warning(errData?.message);
+      return;
+      }
+    }
+    console.error(error);
     } finally{
       setIsProcessing(false)
     }

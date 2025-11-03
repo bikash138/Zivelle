@@ -12,7 +12,6 @@ import { RootState } from '@/redux/reducer';
 
 export function Profile() {
   const profile = useSelector((state: RootState) => state.profile.profile);
-  console.log("Profile: ", profile)
   return (
     <div className="space-y-8">
       <motion.div

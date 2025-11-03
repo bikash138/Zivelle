@@ -40,7 +40,6 @@ enum OrderStatus {
   Shipped
   Delivered
   Pending
-  Payment_Pending
   Cancelled
 }
 enum PaymentStatus {

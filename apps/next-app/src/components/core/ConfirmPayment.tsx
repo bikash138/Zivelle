@@ -1,10 +1,9 @@
 'use client'
-import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { MapPin, CreditCard, Clock, Loader } from 'lucide-react';
+import { MapPin, Loader } from 'lucide-react';
 import CartCard from './CartCard';
 import { CartItem } from '@/types';
 
@@ -27,6 +26,7 @@ interface ConfirmPaymentProps {
   deliveryAddress: DeliveryAddress;
   orderSummary: OrderSummary;
   onConfirmPayment: () => void;
+  onCancelPayment: () => void;
   isProcessing: boolean;
 }
 
@@ -35,21 +35,9 @@ export default function ConfirmPayment({
   deliveryAddress,
   orderSummary,
   onConfirmPayment,
+  onCancelPayment,
   isProcessing,
 }: ConfirmPaymentProps) {
-  const [timeLeft, setTimeLeft] = useState(30);
-
-  useEffect(() => {
-    if (timeLeft <= 0) return;
-
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => prev - 1);
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [timeLeft]);
-
-  const progress = (timeLeft / 30) * 100;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -62,39 +50,6 @@ export default function ConfirmPayment({
         >
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Confirm Payment</h1>
           <p className="text-gray-600">Review your order and complete payment</p>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="mb-6"
-        >
-          <Card className="p-6 bg-gradient-to-r from-orange-50 to-red-50 border-orange-200">
-            <div className="flex items-center gap-3 mb-3">
-              <Clock className="w-6 h-6 text-orange-600" />
-              <div className="flex-1">
-                <h3 className="font-semibold text-gray-900">Stock Reserved</h3>
-                <p className="text-sm text-gray-600">Complete your purchase within</p>
-              </div>
-              <motion.div
-                key={timeLeft}
-                initial={{ scale: 1.2, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                className="text-3xl font-bold text-orange-600"
-              >
-                00:{timeLeft.toString().padStart(2, '0')}
-              </motion.div>
-            </div>
-            <div className="relative h-2 bg-gray-200 rounded-full overflow-hidden">
-              <motion.div
-                className="absolute top-0 left-0 h-full bg-orange-600 rounded-full"
-                initial={{ width: '100%' }}
-                animate={{ width: `${progress}%` }}
-                transition={{ duration: 0.5 }}
-              />
-            </div>
-          </Card>
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -172,20 +127,18 @@ export default function ConfirmPayment({
                 <Button
                   onClick={onConfirmPayment}
                   className="w-full bg-gray-900 hover:bg-gray-800 text-white py-6 text-base font-semibold rounded-lg transition-all duration-200 hover:scale-[1.02]"
-                  disabled={timeLeft <= 0}
+                  disabled={isProcessing}
                 >
-                  {timeLeft <= 0 ? 'Time Expired' : isProcessing ? <Loader/> : 'Confirm & Pay'}
+                  {isProcessing ? <Loader/> : 'Confirm & Pay'}
                 </Button>
 
-                {timeLeft <= 0 && (
-                  <motion.p
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="text-sm text-red-600 text-center mt-3"
-                  >
-                    Stock reservation expired. Please return to cart.
-                  </motion.p>
-                )}
+                <Button
+                  onClick={onCancelPayment}
+                  variant='outline'
+                  className='hover:bg-gray-100 py-6 text-gray-900 text-base font-semibold rounded-lg transition-all duration-200 hover:scale-[1.02] cursor-pointer'
+                >
+                  Cancel
+                </Button>
 
                 <div className="mt-6 space-y-2">
                   <div className="flex items-center gap-2 text-xs text-gray-500">

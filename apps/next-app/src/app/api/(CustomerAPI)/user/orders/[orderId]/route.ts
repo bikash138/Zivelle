@@ -1,6 +1,5 @@
 import { prisma } from "@repo/database/prisma"
 import { NextRequest, NextResponse } from "next/server"
-import items from "razorpay/dist/types/items"
 
 export async function GET(
     request: NextRequest,
@@ -48,7 +47,8 @@ export async function GET(
         return NextResponse.json({
             success: true,
             message: "Order Details fetched",
-            reservedOrderDetails: formattedData
+            reservedOrderDetails: formattedData,
+            expires: 30
         })
     }catch(error){
         console.log(error)

@@ -11,7 +11,7 @@ import Razorpay from 'razorpay'
 
 export async function POST(req:NextRequest) {
     try{
-        const {userId, error} = await getUserId(req)
+        const {error} = await getUserId(req)
         if(error){
             return error
         }
