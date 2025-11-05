@@ -83,7 +83,7 @@ const SidebarSkeleton = () => (
 
 
 // Desktop Skeleton Loader
-export const DesktopSkeletonLoader = () => (
+const DesktopSkeletonLoader = () => (
   <div className="min-h-screen bg-gray-50">
     
     <div className="container mx-auto">
@@ -109,7 +109,7 @@ export const DesktopSkeletonLoader = () => (
 );
 
 // Mobile Skeleton Loader
-export const MobileSkeletonLoader = () => (
+const MobileSkeletonLoader = () => (
   <div className="min-h-screen bg-gray-50">
     
     <div className="container mx-auto px-4">

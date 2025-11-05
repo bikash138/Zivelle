@@ -1,22 +1,39 @@
+'use client'
+import { PaginationComponent } from "@/components/core/Pagination";
 import Catalog from "@/components/Dashboard/Landing/Catalog";
-import { prisma } from "@repo/database/prisma";
-export const revalidate = 60;
+import { ResponsiveSkeletonLoader } from "@/components/Loaders/CatalogLoader";
+import axios from "axios";
+import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
+import useSWR from "swr";
+const fetcher = (url: string) => axios.get(url).then(res=>res.data)
 
-export default async function CatalogRoute() {
-   const items = await prisma.item.findMany({
-    select:{
-      id: true,
-      thumbnail: true,
-      title: true,
-      description: true,
-      size: true,
-      price: true,
-      originalPrice: true,
-      category: true,
-      subCategory: true,
-      createdAt: true
-    }
-   })
+export default function CatalogRoute() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <PageContent />
+    </Suspense>
+  );
+}
 
-   return <Catalog items={items}/>
+function PageContent() {
+  const searchParams = useSearchParams();
+  const page = Number(searchParams.get("page") || '1')
+  const { data, error, isLoading } = useSWR(
+    `/api/items?page=${page}`,
+    fetcher,
+    { keepPreviousData: true }
+  ); 
+
+  if (isLoading) return <ResponsiveSkeletonLoader/>;
+  if (error) return <div>Failed to load</div>;
+
+  return (
+    <>
+      <Suspense fallback={<div>Loading...</div>}>
+        <Catalog items={data.paginatedItems} />
+        <PaginationComponent currentPage={data.currentPage} totalPages={data.totalPages}/>
+    </Suspense>
+    </>
+  );
 }

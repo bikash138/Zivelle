@@ -55,9 +55,6 @@ const CatalogContent: React.FC<CatalogProps> = ({ items } :CatalogProps) => {
       case 'price-high':
         sorted.sort((a, b) => b.price - a.price);
         break;
-      // case 'rating':
-      //   sorted.sort((a, b) => b.rating - a.rating);
-      //   break;
       case 'newest':
         sorted.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
         break;
