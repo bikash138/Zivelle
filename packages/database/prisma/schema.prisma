@@ -79,6 +79,7 @@ model Item{
   isAvailable   Boolean     @default(true)
   createdAt     DateTime    @default(now())
   admin         Seller      @relation(fields: [adminId], references: [id])
+  searchVector  Unsupported("tsvector")?
 
   @@index([category])
   @@index([subCategory])

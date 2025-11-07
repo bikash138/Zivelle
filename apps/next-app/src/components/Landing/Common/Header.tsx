@@ -4,13 +4,17 @@ import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion'
 import { Search, ShoppingCart, User, Menu, X, Moon } from 'lucide-react';
-import { useTheme } from 'next-themes';
 import { Button } from '@/components/ui/button';
 import { useSelector } from 'react-redux';
 import  {useRouter}  from 'next/navigation';
 import { RootState } from '@/redux/reducer';
 import Image from 'next/image';
 import Logo from '@/assets/Logo.png'
+import { Input } from '@/components/ui/input';
+import useSWR from 'swr';
+import { useDebounce } from '@/hooks/useDebounce';
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
+
 
 const Header = () => {
   const token = useSelector((state: RootState)=> state.auth.token)
@@ -21,9 +25,14 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname()
   const router = useRouter()
-  // eslint-disable-next-line
-  //@ts-expect-error
-  const { toggleTheme } = useTheme();
+  const [query, setQuery] = useState("");
+  const debouncedQuery = useDebounce(query, 300)
+  const [page] = useState(1);
+
+  const { data, isLoading } = useSWR(
+    debouncedQuery.length > 2 ? `/api/search?q=${query}&page=${page}` : null,
+    fetcher
+  );
 
   const navLinks = [
     { name: 'Home', path: '/' },
@@ -35,6 +44,9 @@ const Header = () => {
   useEffect(() => {
     router.prefetch('/catalog');
   }, [router]);
+
+  {isLoading && query.length > 2 && <p>Searching...</p>}
+  console.log(data)
 
   return (
     <motion.header
@@ -89,23 +101,18 @@ const Header = () => {
           {/* Right side actions */}
           {isAuthenticated ? (
             <div className="flex items-center space-x-3">
-              <motion.button 
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={toggleTheme}
-                className="p-2 hidden md:block lg:block text-gray-700 dark:text-gray-300 hover:text-blue-400 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-white/10"
-              >
-                {<Moon size={20} />}
-              </motion.button>
-
-              <motion.button 
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                className="p-2 text-gray-700 dark:text-gray-300 hover:text-blue-400 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-white/10"
-              >
-                <Search size={20} />
-              </motion.button>
-              
+              <div className="space-y-4">
+                <div className="relative">
+                  <Search size={20} className="absolute left-3 top-2 text-gray-500 dark:text-gray-400" />
+                  <Input
+                    type="text"
+                    placeholder="Search products..."
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2 bg-white dark:bg-gray-800/50 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
+                  />
+                </div>
+              </div>              
               {/* Only show search, cart, and profile for non-sellers */}
               {!isSeller ? (
                 <>
@@ -160,14 +167,13 @@ const Header = () => {
             <div className="flex items-center">
               <div className='hidden lg:block'>
                 <Link href='/auth/seller/signin' >
-                <motion.button 
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={toggleTheme}
-                  className="p-2 text-gray-700 border border-black cursor-pointer dark:text-gray-300 hover:text-blue-400 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-white/10"
-                >
-                  Seller&apos;s Panel
-                </motion.button>
+                  <motion.button 
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="p-2 text-gray-700 border border-black cursor-pointer dark:text-gray-300 hover:text-blue-400 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-white/10"
+                  >
+                    Seller&apos;s Panel
+                  </motion.button>
                 </Link>
                 <Link 
                   href="/auth/user/signin" 
