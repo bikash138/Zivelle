@@ -1,9 +1,9 @@
 'use client'
 import React, { useEffect, useState } from 'react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion'
-import { Search, ShoppingCart, User, Menu, X, Moon } from 'lucide-react';
+import { Search, ShoppingCart, User, Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useSelector } from 'react-redux';
 import  {useRouter}  from 'next/navigation';
@@ -11,10 +11,6 @@ import { RootState } from '@/redux/reducer';
 import Image from 'next/image';
 import Logo from '@/assets/Logo.png'
 import { Input } from '@/components/ui/input';
-import useSWR from 'swr';
-import { useDebounce } from '@/hooks/useDebounce';
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
-
 
 const Header = () => {
   const token = useSelector((state: RootState)=> state.auth.token)
@@ -23,16 +19,9 @@ const Header = () => {
   const isAuthenticated = !!token
   const totalItems = useSelector((state: RootState)=>state.cart.totalItems)
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const pathname = usePathname()
   const router = useRouter()
-  const [query, setQuery] = useState("");
-  const debouncedQuery = useDebounce(query, 300)
-  const [page] = useState(1);
-
-  const { data, isLoading } = useSWR(
-    debouncedQuery.length > 2 ? `/api/search?q=${query}&page=${page}` : null,
-    fetcher
-  );
 
   const navLinks = [
     { name: 'Home', path: '/' },
@@ -45,8 +34,17 @@ const Header = () => {
     router.prefetch('/catalog');
   }, [router]);
 
-  {isLoading && query.length > 2 && <p>Searching...</p>}
-  console.log(data)
+  const searchParams = useSearchParams()
+  useEffect(() => {
+    const search = searchParams.get("search") || ""
+    setSearchQuery(search)
+  }, [searchParams])
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!searchQuery.trim()) router.push(`/catalog`)
+    router.push(`/catalog?search=${(searchQuery)}&page=1`)
+  }
 
   return (
     <motion.header
@@ -77,26 +75,26 @@ const Header = () => {
           {/* Desktop Navigation */}
           <nav className="hidden md:flex space-x-8">
             {navLinks.map((link) => (
-                  <Link
-                    key={link.name}
-                    href={link.path}
-                    prefetch={link.name === "Catalog"}
-                    className={`text-sm font-medium transition-all duration-300 hover:text-blue-400 relative ${
-                      pathname === link.path
-                        ? 'text-blue-400'
-                        : 'text-gray-700 dark:text-gray-300'
-                    }`}
-                  >
-                    {link.name}
-                    {pathname === link.path && (
-                      <motion.div
-                        layoutId="activeTab"
-                        className="absolute -bottom-1 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500"
-                      />
-                    )}
-                  </Link>
+              <Link
+                key={link.name}
+                href={link.path}
+                className={`relative text-sm font-medium transition-all duration-300 hover:text-orange-500 ${
+                  pathname === link.path
+                    ? 'text-orange-500 bg-clip-text '
+                    : 'text-gray-700 dark:text-gray-300'
+                }`}
+              >
+                {link.name}
+                {pathname === link.path && (
+                  <motion.div
+                    layoutId="activeTab"
+                    className="absolute -bottom-1 left-0 right-0 h-0.5 rounded-full"
+                  />
+                )}
+              </Link>
             ))}
           </nav>
+
 
           {/* Right side actions */}
           {isAuthenticated ? (
@@ -104,13 +102,15 @@ const Header = () => {
               <div className="space-y-4">
                 <div className="relative">
                   <Search size={20} className="absolute left-3 top-2 text-gray-500 dark:text-gray-400" />
-                  <Input
-                    type="text"
-                    placeholder="Search products..."
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 bg-white dark:bg-gray-800/50 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
-                  />
+                  <form onSubmit={handleSubmit}>
+                    <Input
+                      type="text"
+                      placeholder="Search products..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full pl-10 pr-4 py-2"
+                    />
+                  </form>
                 </div>
               </div>              
               {/* Only show search, cart, and profile for non-sellers */}
@@ -118,15 +118,15 @@ const Header = () => {
                 <>
                   <Link
                     href="/cart" 
-                    className={`p-2 transition-colors relative rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 ${
+                    className={`p-2 transition-colors relative rounded-lg hover:bg-gray-100 ${
                       pathname === '/cart' 
-                        ? 'text-blue-400' 
-                        : 'text-gray-700 dark:text-gray-300 hover:text-blue-400'
+                        ? 'text-orange-600' 
+                        : 'text-gray-700 hover:text-orange-500'
                     }`}
                   >
                     <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.95 }}>
                       <ShoppingCart size={20} />
-                      <span className="absolute -top-1 -right-1 bg-gradient-to-r from-blue-500 to-purple-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center shadow-lg">
+                      <span className="absolute -top-1 -right-1 font-semibold text-xs rounded-full w-5 h-5 flex items-center justify-center shadow-lg">
                         {totalItems}
                       </span>
                     </motion.div>
@@ -136,7 +136,7 @@ const Header = () => {
                     <motion.button 
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.95 }}
-                      className="p-2 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 text-gray-700 dark:text-gray-300 hover:text-blue-400"
+                      className="p-2 transition-colors rounded-lg hover:bg-gray-100 text-gray-700 dark:text-gray-300 hover:text-orange-500 cursor-pointer"
                     >
                       <User size={20} />
                     </motion.button>
@@ -170,17 +170,17 @@ const Header = () => {
                   <motion.button 
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.95 }}
-                    className="p-2 text-gray-700 border border-black cursor-pointer dark:text-gray-300 hover:text-blue-400 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-white/10"
+                    className="p-2 text-gray-700 border border-black cursor-pointer dark:text-gray-300 hover:text-orange-500 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-white/10"
                   >
                     Seller&apos;s Panel
                   </motion.button>
                 </Link>
                 <Link 
                   href="/auth/user/signin" 
-                  className={`p-2 transition-colors relative rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 ${
+                  className={`p-2 transition-colors relative rounded-lg hover:bg-gray-100 hover:text-orange-500  ${
                     pathname === '/favourites' 
                       ? 'text-red-400' 
-                      : 'text-gray-700 dark:text-gray-300 hover:text-red-400'
+                      : 'text-gray-700 dark:text-gray-300 hover:text-orange-400'
                   }`}
                 >
                   <Button variant='ghost' className='cursor-pointer'>
