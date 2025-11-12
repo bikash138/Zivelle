@@ -8,6 +8,8 @@ import {
   PaginationNext,
   PaginationEllipsis,
 } from '@/components/ui/pagination';
+import { useSearchParams } from "next/navigation"
+
 
 interface PaginationProps {
   totalPages: number;
@@ -15,6 +17,14 @@ interface PaginationProps {
 }
 
 export function PaginationComponent({ totalPages, currentPage }: PaginationProps) {
+  const searchParams = useSearchParams()
+
+  const createPageLink = (page: number) => {
+    const params = new URLSearchParams(Array.from(searchParams.entries()))
+    params.set("page", page.toString())
+    return `/catalog?${params.toString()}`
+  }
+
   const getPageNumbers = () => {
     const pages: (number | string)[] = [];
 
@@ -43,7 +53,6 @@ export function PaginationComponent({ totalPages, currentPage }: PaginationProps
     }
 
     pages.push(totalPages);
-    console.log(pages)
 
     return pages;
   };
@@ -56,7 +65,7 @@ export function PaginationComponent({ totalPages, currentPage }: PaginationProps
       <PaginationContent>
         <PaginationItem>
           <PaginationPrevious
-            href={!isFirstPage ? `?page=${currentPage - 1}` : undefined}
+            href={!isFirstPage ? createPageLink(currentPage - 1) : undefined}
             className={cn(
               'border-orange-200 text-gray-700',
               'hover:bg-orange-50 hover:text-orange-600 hover:border-orange-300',
@@ -84,7 +93,7 @@ export function PaginationComponent({ totalPages, currentPage }: PaginationProps
           return (
             <PaginationItem key={pageNum}>
               <PaginationLink
-                href={`?page=${pageNum}`}
+                href={createPageLink(pageNum)}
                 isActive={isActive}
                 className={cn(
                   isActive
@@ -101,7 +110,7 @@ export function PaginationComponent({ totalPages, currentPage }: PaginationProps
 
         <PaginationItem>
           <PaginationNext
-            href={!isLastPage ? `?page=${currentPage + 1}` : undefined}
+            href={!isLastPage ? createPageLink(currentPage + 1) : undefined}
             className={cn(
               'border-orange-200 text-gray-700',
               'hover:bg-orange-50 hover:text-orange-600 hover:border-orange-300',

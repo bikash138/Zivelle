@@ -1,9 +1,11 @@
 'use client'
 import React from 'react';
 import {motion} from 'framer-motion'
-import { Github, Twitter, Linkedin, Mail } from 'lucide-react';
+import { Github, Linkedin, Mail } from 'lucide-react';
 import Image from 'next/image';
 import Logo from '@/assets/Logo.png'
+import Link from 'next/link';
+import TwitterX from '@/assets/twitter';
 
 const Footer = () => {
 
@@ -17,7 +19,7 @@ const Footer = () => {
    {
     id: 2,
     title: "Twitter",
-    icon: Twitter,
+    icon: TwitterX,
     url: "https://x.com/Bikash__Shaw"
    },
    {
@@ -57,7 +59,7 @@ const Footer = () => {
                   key={link.id}
                   href={link.url} 
                   whileHover={{ scale: 1.2, y: -2 }}
-                  className="text-gray-400 hover:text-blue-400 transition-colors p-2 rounded-lg hover:bg-white/10"
+                  className="text-gray-400 hover:text-orange-400 transition-colors p-2 rounded-lg hover:bg-white/10"
                 >
                   {<link.icon size={20}/>}
                 </motion.a>
@@ -72,7 +74,7 @@ const Footer = () => {
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
           >
-            <h3 className="text-lg font-semibold mb-4 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+            <h3 className="text-lg font-semibold mb-4 bg-orange-600 bg-clip-text text-transparent">
               Quick Links
             </h3>
             <ul className="space-y-2">
@@ -93,7 +95,7 @@ const Footer = () => {
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
           >
-            <h3 className="text-lg font-semibold mb-4 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+            <h3 className="text-lg font-semibold mb-4 bg-orange-600 bg-clip-text text-transparent">
               Customer Service
             </h3>
             <ul className="space-y-2">
@@ -114,7 +116,7 @@ const Footer = () => {
             viewport={{ once: true }}
             transition={{ delay: 0.3 }}
           >
-            <h3 className="text-lg font-semibold mb-4 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+            <h3 className="text-lg font-semibold mb-4 bg-orange-600 bg-clip-text text-transparent">
               Stay Updated
             </h3>
             <p className="text-gray-400 text-sm mb-4">
@@ -124,13 +126,13 @@ const Footer = () => {
               <input
                 type="email"
                 placeholder="Your email"
-                className="flex-1 px-4 py-2 bg-white dark:bg-gray-800/50 border border-gray-300 dark:border-gray-700 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 backdrop-blur-sm transition-colors duration-300"
+                className="flex-1 px-4 py-2 bg-white dark:bg-gray-800/50 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-1 focus:ring-orange-500 text-gray-900 placeholder-gray-500 dark:placeholder-gray-400 backdrop-blur-sm transition-colors duration-300"
               />
               <motion.button 
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={()=>window.location.href = `mailto:bshaw1352@gmail.com?subject=Hello from Zivelle`}
-                className="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 transition-all rounded-r-lg shadow-lg"
+                className="px-4 py-2 bg-orange-600 transition-all rounded-r-lg shadow-lg cursor-pointer"
               >
                 <Mail size={16} />
               </motion.button>
@@ -145,7 +147,10 @@ const Footer = () => {
           className="border-t border-gray-200 dark:border-gray-800 mt-8 pt-8 text-center"
         >
           <p className="text-gray-500 dark:text-gray-400 text-sm">
-            © 2025 Zivelle. All rights reserved. | Made with ❤️ for fashion lovers
+            © 2025 Zivelle. All rights reserved. | Made with ❤️ by <Link href="https://x.com/Bikash__Shaw" target="_blank" rel="noopener noreferrer">
+            <span className="text-orange-600 font-medium hover:underline hover:decoration-dotted hover:underline-offset-4 duration-200 transition-all">
+              Bikash Shaw
+            </span></Link>
           </p>
         </motion.div>
       </div>

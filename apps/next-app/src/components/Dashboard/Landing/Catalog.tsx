@@ -1,6 +1,6 @@
 'use client'
 import React, { Suspense, useCallback, useEffect, useState } from 'react';
-import { ChevronDown, Filter, Grid, List, Search, SlidersHorizontal } from 'lucide-react';
+import { ChevronDown, Filter, SlidersHorizontal } from 'lucide-react';
 import ProductCard from '@/components/Landing/Common/ProductCard';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -32,8 +32,6 @@ const CatalogContent: React.FC<CatalogProps> = ({ items } :CatalogProps) => {
   const [size, setSize] = useState('')
   const [filterCategory, setFilterCategory] = useState(initialCategory);
   const [priceRange, setPriceRange] = useState([0, 10000]);
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [searchTerm, setSearchTerm] = useState('');
   const [filterModal, setFilterModal] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
 
@@ -72,12 +70,6 @@ const CatalogContent: React.FC<CatalogProps> = ({ items } :CatalogProps) => {
       filtered = filtered.filter(product => product.category === filterCategory);
     }
 
-    if (searchTerm) {
-      filtered = filtered.filter(product => 
-        product.title.toLowerCase().includes(searchTerm.toLowerCase()) 
-      );
-    }
-
     if(size){
       filtered = filtered.filter( product => 
         product.size.includes(size)
@@ -89,11 +81,11 @@ const CatalogContent: React.FC<CatalogProps> = ({ items } :CatalogProps) => {
     );
 
     setFilteredProducts(filtered);
-  },[items, filterCategory, searchTerm, size, priceRange]);
+  },[items, filterCategory, size, priceRange]);
 
   useEffect(() => {
     handleFilter();
-  }, [filterCategory, searchTerm, priceRange, size, handleFilter]);
+  }, [filterCategory, priceRange, size, handleFilter]);
 
   useEffect(()=>{
     setIsLoading(false)
@@ -118,20 +110,6 @@ const CatalogContent: React.FC<CatalogProps> = ({ items } :CatalogProps) => {
                 <Filter size={20} className="mr-2" />
                 Filters
               </h3>
-
-              {/* Search */}
-              <div className="space-y-4">
-                <div className="relative">
-                  <Search size={20} className="absolute left-3 top-3 text-gray-500 dark:text-gray-400" />
-                  <input
-                    type="text"
-                    placeholder="Search products..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 bg-white dark:bg-gray-800/50 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 transition-colors duration-300"
-                  />
-                </div>
-              </div>
 
               {/* Categories */}
               <div className="space-y-4 mt-6">
@@ -233,31 +211,7 @@ const CatalogContent: React.FC<CatalogProps> = ({ items } :CatalogProps) => {
                 <p className="text-gray-600 dark:text-gray-400">{filteredProducts.length} items found</p>
               </div>
 
-              <div className="flex items-center gap-4">
-                {/* View Mode Toggle */}
-                <div className="flex items-center glass rounded-lg p-1 border border-gray-200 dark:border-white/10">
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => setViewMode('grid')}
-                    className={`p-2 rounded-md transition-colors ${
-                      viewMode === 'grid' ? 'bg-blue-500 text-white' : 'hover:bg-white/10 text-gray-400'
-                    }`}
-                  >
-                    <Grid size={16} />
-                  </motion.button>
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => setViewMode('list')}
-                    className={`p-2 rounded-md transition-colors ${
-                      viewMode === 'list' ? 'bg-blue-500 text-white' : 'hover:bg-gray-100 dark:hover:bg-white/10 text-gray-600 dark:text-gray-400'
-                    }`}
-                  >
-                    <List size={16} />
-                  </motion.button>
-                </div>
-
+              <div className="flex items-center gap-4">                
                 {/* Sort Dropdown */}
                 <div className="relative">
                   <select
@@ -280,11 +234,7 @@ const CatalogContent: React.FC<CatalogProps> = ({ items } :CatalogProps) => {
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className={`grid gap-6 ${
-                viewMode === 'grid' 
-                  ? 'grid-cols-2 sm:grid-cols-2 lg:grid-cols-3' 
-                  : 'grid-cols-1'
-              }`}
+              className= 'grid gap-6 grid-cols-2 sm:grid-cols-2 lg:grid-cols-3' 
             >              
               {filteredProducts.map((product, index) => (
                 <motion.div
@@ -293,48 +243,10 @@ const CatalogContent: React.FC<CatalogProps> = ({ items } :CatalogProps) => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
                 >
-                  <ProductCard product={product} viewMode={viewMode} index={index}/>
+                  <ProductCard product={product}  index={index}/>
                 </motion.div>
               ))}
             </motion.div>
-
-            {/* Pagination */}
-            {/* <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="flex justify-center mt-12"
-            >
-              <div className="flex items-center space-x-2">
-                <motion.button 
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 transition-colors text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
-                >
-                  Previous
-                </motion.button>
-                {[1, 2, 3, 4, 5].map((page) => (
-                  <motion.button
-                    key={page}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className={`px-4 py-2 border rounded-lg transition-colors ${
-                      page === 1 
-                        ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white border-transparent' 
-                        : 'border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-white/10 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'
-                    }`}
-                  >
-                    {page}
-                  </motion.button>
-                ))}
-                <motion.button 
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 transition-colors text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
-                >
-                  Next
-                </motion.button>
-              </div>
-            </motion.div> */}
             </>
           </div>
         </div>

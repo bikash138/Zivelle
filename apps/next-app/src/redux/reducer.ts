@@ -8,7 +8,7 @@ export const store = configureStore({
   reducer: {
     auth: authReducer,
     profile: profileducer,
-    cart: cartReducer
+    cart: cartReducer,
   },
 });
 

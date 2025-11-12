@@ -2,7 +2,7 @@
 import { Provider, useDispatch } from "react-redux";
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query'
 import { store } from "@/redux/reducer";
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import { hydrateCart } from "@/redux/slices/cartSlice";
 import { hydrateToken } from "@/redux/slices/authSlice";
 import { hydrateProfile } from "@/redux/slices/profileSlice";
@@ -41,7 +41,9 @@ export default function Providers({ children }: { children: React.ReactNode }) {
     <QueryClientProvider client={queryClient}>
       <Provider store={store}>
         <ReduxStateHydrater>
-          {children}
+          <Suspense fallback={<div>Loading...</div>}>
+            {children}
+          </Suspense>
         </ReduxStateHydrater>
       </Provider>
     </QueryClientProvider>
