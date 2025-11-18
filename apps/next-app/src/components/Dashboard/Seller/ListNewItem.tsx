@@ -1,29 +1,34 @@
 'use client'
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Checkbox } from "@/components/ui/checkbox"
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import { Label } from '@/components/ui/label'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { useForm, Controller } from 'react-hook-form'
 import { ListItemSchema } from '@repo/zod/zodTypes'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod';
-import { sizes } from '@repo/zod/zodTypes';
+import { z } from 'zod'
+import { sizes } from '@repo/zod/zodTypes'
 import axios from 'axios'
-import { toast } from "sonner"
+import { toast } from 'sonner'
 import { motion } from 'framer-motion'
 
-import UploadThumbnail from './core/UploadThumbnail';
-import { Plus } from 'lucide-react';
+import UploadThumbnail from './core/UploadThumbnail'
+import { Plus } from 'lucide-react'
 
-const sizeOptions = [...sizes];
+const sizeOptions = [...sizes]
 
 export function ListNewItem() {
-
-  type formType = z.infer<typeof ListItemSchema>;
+  type formType = z.infer<typeof ListItemSchema>
 
   const {
     register,
@@ -31,10 +36,10 @@ export function ListNewItem() {
     reset,
     control,
     setValue,
-    formState: { errors }
+    formState: { errors },
   } = useForm<formType>({
     resolver: zodResolver(ListItemSchema),
-    defaultValues:{
+    defaultValues: {
       thumbnail: '',
       title: '',
       description: '',
@@ -43,27 +48,27 @@ export function ListNewItem() {
       category: 'Men',
       subCategory: 'Topwear',
       stock: 10,
-      size: ['M']
-    }
+      size: ['M'],
+    },
   })
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [resetThumbnail, setResetThumbnail] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [resetThumbnail, setResetThumbnail] = useState(0)
 
   const onsubmit = async (data: formType) => {
-    const toastId = toast.loading("Listing Item...")
+    const toastId = toast.loading('Listing Item...')
     setIsSubmitting(true)
-    try{
+    try {
       console.log(data)
       const response = await axios.post('/api/seller/listNewItem', data)
-       if(!response?.data?.success){
-          throw new Error("Could not Add Product")
-        }
-      toast.success(response.data?.message, {id: toastId})
-      setResetThumbnail(prev => prev + 1);
+      if (!response?.data?.success) {
+        throw new Error('Could not Add Product')
+      }
+      toast.success(response.data?.message, { id: toastId })
+      setResetThumbnail((prev) => prev + 1)
       reset()
-    }catch(error){
-      console.log("Something went while listing new Item ", error)
-      toast.error("Items Not Listed", {id: toastId})
+    } catch (error) {
+      console.log('Something went while listing new Item ', error)
+      toast.error('Items Not Listed', { id: toastId })
     }
     setIsSubmitting(false)
   }
@@ -72,21 +77,21 @@ export function ListNewItem() {
     <>
       <div className="space-y-8">
         <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="mb-6"
-      >
-        <div className="relative">
-          <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-black">
-            List New Item
-          </h1>
-          <div className="h-1 w-16 bg-orange-500 mt-2 rounded-full"></div>
-        </div>
-        <p className="text-gray-600 mt-4 max-w-lg">
-          Create a new listing by filling out the details below.
-        </p>
-      </motion.div>
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="mb-6"
+        >
+          <div className="relative">
+            <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-black">
+              List New Item
+            </h1>
+            <div className="h-1 w-16 bg-orange-500 mt-2 rounded-full"></div>
+          </div>
+          <p className="text-gray-600 mt-4 max-w-lg">
+            Create a new listing by filling out the details below.
+          </p>
+        </motion.div>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -102,9 +107,9 @@ export function ListNewItem() {
                 {/* Product Thumbnail */}
                 <div className="space-y-2">
                   <Label htmlFor="thumbnail">Product Thumbnail</Label>
-                  <UploadThumbnail 
-                    errors={errors} 
-                    setValue={setValue} 
+                  <UploadThumbnail
+                    errors={errors}
+                    setValue={setValue}
                     resetThumbnail={resetThumbnail}
                   />
                 </div>
@@ -119,7 +124,7 @@ export function ListNewItem() {
                     required
                   />
                   {errors.title && (
-                      <p className="text-red-500 text-sm">{errors.title?.message as string}</p>
+                    <p className="text-red-500 text-sm">{errors.title?.message as string}</p>
                   )}
                 </div>
 
@@ -134,7 +139,7 @@ export function ListNewItem() {
                     required
                   />
                   {errors.description && (
-                      <p className="text-red-500 text-sm">{errors.description?.message as string}</p>
+                    <p className="text-red-500 text-sm">{errors.description?.message as string}</p>
                   )}
                 </div>
 
@@ -150,7 +155,7 @@ export function ListNewItem() {
                       required
                     />
                     {errors.price && (
-                        <p className="text-red-500 text-sm">{errors.price?.message as string}</p>
+                      <p className="text-red-500 text-sm">{errors.price?.message as string}</p>
                     )}
                   </div>
                   <div className="space-y-2">
@@ -163,7 +168,9 @@ export function ListNewItem() {
                       required
                     />
                     {errors.originalPrice && (
-                      <p className="text-red-500 text-sm">{errors.originalPrice?.message as string}</p>
+                      <p className="text-red-500 text-sm">
+                        {errors.originalPrice?.message as string}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -179,7 +186,7 @@ export function ListNewItem() {
                     required
                   />
                   {errors.stock && (
-                      <p className="text-red-500 text-sm">{errors.stock?.message as string}</p>
+                    <p className="text-red-500 text-sm">{errors.stock?.message as string}</p>
                   )}
                 </div>
 
@@ -187,10 +194,10 @@ export function ListNewItem() {
                 <div className="space-y-2">
                   <Label>Sizes</Label>
                   <Controller
-                    name='size'
+                    name="size"
                     control={control}
                     defaultValue={['M']}
-                    render={({ field })=>(
+                    render={({ field }) => (
                       <div className="flex flex-wrap gap-2">
                         {sizeOptions.map((size) => (
                           <motion.div
@@ -201,16 +208,18 @@ export function ListNewItem() {
                             <Checkbox
                               id={size}
                               checked={field.value?.includes(size)}
-                              onCheckedChange={(checked)=>{
-                                if(checked){
+                              onCheckedChange={(checked) => {
+                                if (checked) {
                                   field.onChange([...(field.value || []), size])
-                                }else{
-                                  field.onChange((field.value || []).filter((s) => s !== size));
+                                } else {
+                                  field.onChange((field.value || []).filter((s) => s !== size))
                                 }
                               }}
-                              className='cursor-pointer'
+                              className="cursor-pointer"
                             />
-                            <Label htmlFor={size} className="text-sm">{size}</Label>
+                            <Label htmlFor={size} className="text-sm">
+                              {size}
+                            </Label>
                           </motion.div>
                         ))}
                       </div>
@@ -226,14 +235,11 @@ export function ListNewItem() {
                   <div className="space-y-2">
                     <Label>Category</Label>
                     <Controller
-                      name='category'
+                      name="category"
                       control={control}
                       defaultValue="Men"
                       render={({ field }) => (
-                        <Select
-                          value={field.value}
-                          onValueChange={field.onChange}
-                        >
+                        <Select value={field.value} onValueChange={field.onChange}>
                           <SelectTrigger className="cursor-pointer">
                             <SelectValue />
                           </SelectTrigger>
@@ -252,14 +258,11 @@ export function ListNewItem() {
                   <div className="space-y-2">
                     <Label>Sub Category</Label>
                     <Controller
-                      name='subCategory'
+                      name="subCategory"
                       control={control}
                       defaultValue="Topwear"
-                      render={({ field })=>(
-                        <Select
-                          value={field.value}
-                          onValueChange={field.onChange}
-                        >
+                      render={({ field }) => (
+                        <Select value={field.value} onValueChange={field.onChange}>
                           <SelectTrigger className="cursor-pointer">
                             <SelectValue />
                           </SelectTrigger>
@@ -272,17 +275,16 @@ export function ListNewItem() {
                       )}
                     />
                     {errors.subCategory && (
-                      <p className="text-red-500 text-sm">{errors.subCategory?.message as string}</p>
+                      <p className="text-red-500 text-sm">
+                        {errors.subCategory?.message as string}
+                      </p>
                     )}
                   </div>
                 </div>
 
                 {/* Submit Button */}
-                <motion.div
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <Button 
+                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                  <Button
                     type="submit"
                     className="w-full bg-orange-600 hover:bg-orange-700 text-white"
                     disabled={isSubmitting}
@@ -297,5 +299,5 @@ export function ListNewItem() {
         </motion.div>
       </div>
     </>
-  );
+  )
 }

@@ -3,10 +3,10 @@ import React, { Suspense, useCallback, useEffect, useState } from 'react'
 import { ChevronDown, Filter, SlidersHorizontal } from 'lucide-react'
 import ProductCard from '@/components/Landing/Common/ProductCard'
 import { motion } from 'framer-motion'
-import { Button } from '@/components/ui/button'
 import { FilterModal } from '../../Dashboard/Common/FilterModal'
 import { useSearchParams } from 'next/navigation'
 import { ResponsiveSkeletonLoader } from '@/components/Loaders/CatalogLoader'
+import { Button } from '@/components/ui/button'
 
 interface Product {
   id: number
@@ -29,9 +29,10 @@ const CatalogContent: React.FC<CatalogProps> = ({ items }: CatalogProps) => {
   const initialCategory = searchParams.get('category') || 'All'
   const [filteredProducts, setFilteredProducts] = useState(items)
   const [sortBy, setSortBy] = useState('featured')
+  //eslint-disable-next-line
   const [size, setSize] = useState('')
   const [filterCategory, setFilterCategory] = useState(initialCategory)
-  const [priceRange, setPriceRange] = useState([0, 10000])
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 10000])
   const [filterModal, setFilterModal] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
 
@@ -157,7 +158,7 @@ const CatalogContent: React.FC<CatalogProps> = ({ items }: CatalogProps) => {
               </div>
 
               {/* Size Filter */}
-              <div className="space-y-4 mt-6">
+              {/* <div className="space-y-4 mt-6">
                 <h4 className="font-semibold text-gray-900 dark:text-white">Size</h4>
                 <div className="grid grid-cols-3 gap-2">
                   {['XS', 'S', 'M', 'L', 'XL', 'XXL'].map((sizeOption) => (
@@ -177,7 +178,7 @@ const CatalogContent: React.FC<CatalogProps> = ({ items }: CatalogProps) => {
                     </motion.button>
                   ))}
                 </div>
-              </div>
+              </div> */}
             </div>
           </motion.div>
 
@@ -262,7 +263,15 @@ const CatalogContent: React.FC<CatalogProps> = ({ items }: CatalogProps) => {
           </div>
         </div>
       </div>
-      <FilterModal isOpen={filterModal} onClose={() => setFilterModal(false)} />
+      <FilterModal
+        isOpen={filterModal}
+        onClose={() => setFilterModal(false)}
+        categories={categories}
+        selectedCategory={filterCategory}
+        onCategoryChange={setFilterCategory}
+        priceRange={priceRange}
+        onPriceRangeChange={(range: [number, number]) => setPriceRange(range)}
+      />
     </>
   )
 }

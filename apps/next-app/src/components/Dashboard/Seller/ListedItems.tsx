@@ -1,80 +1,86 @@
 'use client'
-import { useEffect, useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, Eye, Edit, Trash2 } from 'lucide-react';
+import { useEffect, useState } from 'react'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Input } from '@/components/ui/input'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { Search, Eye, Edit, Trash2 } from 'lucide-react'
 import { ListSchema } from '@repo/zod/zodTypes'
 import { z } from 'zod'
 import { formatDate } from '@/lib/formatDate'
-import { motion } from 'framer-motion';
+import { motion } from 'framer-motion'
 
-type ListedItems = z.infer<typeof ListSchema>;
+type ListedItems = z.infer<typeof ListSchema>
 interface ListedItemsProps {
-  initialListedItems: ListedItems[];
+  initialListedItems: ListedItems[]
 }
 
 export function ListedItems({ initialListedItems }: ListedItemsProps) {
-
   const [listedItems] = useState<ListedItems[]>(initialListedItems)
-  const [filteredItems, setFilteredItems] = useState<ListedItems[]>(listedItems);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [categoryFilter, setCategoryFilter] = useState<string>('all');
+  const [filteredItems, setFilteredItems] = useState<ListedItems[]>(listedItems)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [statusFilter, setStatusFilter] = useState<string>('all')
+  const [categoryFilter, setCategoryFilter] = useState<string>('all')
 
   useEffect(() => {
-    setFilteredItems(listedItems);
-  }, [listedItems]);
-  
+    setFilteredItems(listedItems)
+  }, [listedItems])
+
   const handleSearch = (term: string) => {
-    setSearchTerm(term);
-    filterItems(term, statusFilter, categoryFilter);
-  };
+    setSearchTerm(term)
+    filterItems(term, statusFilter, categoryFilter)
+  }
 
   const handleStatusFilter = (status: string) => {
-    setStatusFilter(status);
-    filterItems(searchTerm, status, categoryFilter);
-  };
+    setStatusFilter(status)
+    filterItems(searchTerm, status, categoryFilter)
+  }
 
   const handleCategoryFilter = (category: string) => {
-    setCategoryFilter(category);
-    filterItems(searchTerm, statusFilter, category);
-  };
+    setCategoryFilter(category)
+    filterItems(searchTerm, statusFilter, category)
+  }
 
   const filterItems = (search: string, status: string, category: string) => {
-    let filtered = listedItems;
+    let filtered = listedItems
 
     if (search) {
-      filtered = filtered.filter(item =>
-        item.title.toLowerCase().includes(search.toLowerCase()) ||
-        item.description.toLowerCase().includes(search.toLowerCase())
-      );
+      filtered = filtered.filter(
+        (item) =>
+          item.title.toLowerCase().includes(search.toLowerCase()) ||
+          item.description.toLowerCase().includes(search.toLowerCase())
+      )
     }
 
     if (status !== 'all') {
-      filtered = filtered.filter(item => item.status === status);
+      filtered = filtered.filter((item) => item.status === status)
     }
 
     if (category !== 'all') {
-      filtered = filtered.filter(item => item.category === category);
+      filtered = filtered.filter((item) => item.category === category)
     }
 
-    setFilteredItems(filtered);
-  };
+    setFilteredItems(filtered)
+  }
 
   const getStatusBadgeVariant = (status: string) => {
     switch (status) {
       case 'Active':
-        return 'bg-green-100 text-green-800';
+        return 'bg-green-100 text-green-800'
       case 'Draft':
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-100 text-gray-800'
       case 'Sold':
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-blue-100 text-blue-800'
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'bg-gray-100 text-gray-800'
     }
-  };
+  }
 
   return (
     <div className="space-y-8">
@@ -85,9 +91,7 @@ export function ListedItems({ initialListedItems }: ListedItemsProps) {
         className="mb-6"
       >
         <div className="relative">
-          <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-black">
-            Profile
-          </h1>
+          <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-black">Profile</h1>
           <div className="h-1 w-16 bg-orange-500 mt-2 rounded-full"></div>
         </div>
         <p className="text-gray-600 mt-4 max-w-lg">
@@ -160,7 +164,9 @@ export function ListedItems({ initialListedItems }: ListedItemsProps) {
                     {/* Content visible only on medium screens and up */}
                     <div className="hidden md:block">
                       <h3 className="font-semibold text-gray-900">{item.title}</h3>
-                      <p className="text-sm text-gray-600 truncate max-w-[200px]">{item.description}</p>
+                      <p className="text-sm text-gray-600 truncate max-w-[200px]">
+                        {item.description}
+                      </p>
                       <div className="flex items-center gap-2 mt-1">
                         <Badge variant="outline" className="text-xs">
                           {item.category}
@@ -169,21 +175,19 @@ export function ListedItems({ initialListedItems }: ListedItemsProps) {
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center gap-2">
                     {/* Price info - visible on all screens */}
                     <div className="text-right mr-2">
                       <p className="font-semibold text-gray-900">₹{item.price}</p>
-                      <Badge className={getStatusBadgeVariant(item.status)}>
-                        {item.status}
-                      </Badge>
+                      <Badge className={getStatusBadgeVariant(item.status)}>{item.status}</Badge>
                     </div>
-                    
+
                     {/* Date info - hidden on small screens */}
                     <div className="hidden md:block text-right mr-4">
                       <p className="text-sm text-gray-600">{formatDate(item.createdAt)}</p>
                     </div>
-                    
+
                     {/* Action buttons - visible on all screen sizes */}
                     <div className="flex items-center gap-1 sm:gap-2">
                       <motion.button
@@ -221,5 +225,5 @@ export function ListedItems({ initialListedItems }: ListedItemsProps) {
         </Card>
       </motion.div>
     </div>
-  );
+  )
 }

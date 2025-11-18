@@ -1,5 +1,5 @@
-import { Profile } from '@/components/Dashboard/Seller/Profile';
+import { Profile } from '@/components/Dashboard/Seller/Profile'
 
 export default function ProfileRoute() {
-  return <Profile />;
+  return <Profile />
 }

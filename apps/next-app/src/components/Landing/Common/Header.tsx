@@ -49,25 +49,29 @@ const Header = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex justify-center space-x-8">
-            {navLinks.map((link) => (
-              <Link
-                key={link.name}
-                href={link.path}
-                className={`relative text-sm font-medium transition-all duration-300 hover:text-orange-500 ${
-                  pathname === link.path
-                    ? 'text-orange-500 bg-clip-text '
-                    : 'text-gray-700 dark:text-gray-300'
-                }`}
-              >
-                {link.name}
-                {pathname === link.path && (
-                  <motion.div
-                    layoutId="activeTab"
-                    className="absolute -bottom-1 left-0 right-0 h-0.5 rounded-full"
-                  />
+          <nav className="hidden md:flex justify-center items-center">
+            {navLinks.map((link, index) => (
+              <React.Fragment key={link.name}>
+                <Link
+                  href={link.path}
+                  className={`relative text-sm font-medium transition-all duration-300 hover:text-orange-500 px-4 ${
+                    pathname === link.path
+                      ? 'text-orange-500 bg-clip-text '
+                      : 'text-gray-700 dark:text-gray-300'
+                  }`}
+                >
+                  {link.name}
+                  {pathname === link.path && (
+                    <motion.div
+                      layoutId="activeTab"
+                      className="absolute -bottom-1 left-0 right-0 h-0.5 rounded-full"
+                    />
+                  )}
+                </Link>
+                {index < navLinks.length - 1 && (
+                  <div className="h-4 w-px bg-gray-300 dark:bg-gray-600" />
                 )}
-              </Link>
+              </React.Fragment>
             ))}
           </nav>
 
@@ -120,7 +124,7 @@ const Header = () => {
               <motion.button
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
-                className="md:hidden p-2 text-gray-700 dark:text-gray-300 hover:text-blue-400 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-white/10"
+                className="md:hidden p-2 text-gray-700 dark:text-gray-300 hover:text-orange-500 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-white/10 cursor-pointer"
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
               >
                 {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
@@ -151,7 +155,7 @@ const Header = () => {
               <motion.button
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
-                className="md:hidden p-2 text-gray-700 dark:text-gray-300 hover:text-blue-400 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-white/10"
+                className="md:hidden p-2 text-gray-700 dark:text-gray-300 hover:text-orange-500 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-white/10"
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
               >
                 {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
@@ -168,18 +172,24 @@ const Header = () => {
             exit={{ opacity: 0, height: 0 }}
             className="md:hidden py-4 border-t border-gray-200 dark:border-white/10"
           >
-            <nav className="flex flex-col space-y-4">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.name}
-                  href={link.path}
-                  className={`text-sm font-medium transition-colors hover:text-blue-400 ${
-                    pathname === link.path ? 'text-blue-400' : 'text-gray-700 dark:text-gray-300'
-                  }`}
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  {link.name}
-                </Link>
+            <nav className="flex flex-col space-y-0">
+              {navLinks.map((link, index) => (
+                <React.Fragment key={link.name}>
+                  <Link
+                    href={link.path}
+                    className={`text-sm font-medium transition-colors hover:text-orange-500 py-3 ${
+                      pathname === link.path
+                        ? 'text-orange-500'
+                        : 'text-gray-700 dark:text-gray-300'
+                    }`}
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    {link.name}
+                  </Link>
+                  {index < navLinks.length - 1 && (
+                    <div className="border-b border-gray-200 dark:border-white/10" />
+                  )}
+                </React.Fragment>
               ))}
               <div className="flex flex-col space-y-4 pt-4 border-t border-gray-200 dark:border-white/10">
                 {isAuthenticated ? (

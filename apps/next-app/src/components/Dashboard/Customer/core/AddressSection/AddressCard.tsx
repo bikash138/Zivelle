@@ -1,14 +1,14 @@
-import { motion } from 'framer-motion';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Edit2, Trash2, MapPin } from 'lucide-react';
-import { AddressType } from '@/types';
+import { motion } from 'framer-motion'
+import { Card, CardContent } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { Edit2, Trash2, MapPin } from 'lucide-react'
+import { AddressType } from '@/types'
 
 interface AddressCardProps {
-  address: AddressType;
-  onEdit: (address: AddressType) => void;
-  onDelete: (id: string) => void;
+  address: AddressType
+  onEdit: (address: AddressType) => void
+  onDelete: (id: string) => void
 }
 
 export function AddressCard({ address, onEdit, onDelete }: AddressCardProps) {
@@ -27,9 +27,7 @@ export function AddressCard({ address, onEdit, onDelete }: AddressCardProps) {
               <h3 className="font-semibold text-lg">{address.fullName}</h3>
             </div>
             {address.isDefault && (
-              <Badge className="bg-green-100 text-green-800 hover:bg-green-100">
-                Default
-              </Badge>
+              <Badge className="bg-green-100 text-green-800 hover:bg-green-100">Default</Badge>
             )}
           </div>
 
@@ -65,5 +63,5 @@ export function AddressCard({ address, onEdit, onDelete }: AddressCardProps) {
         </CardContent>
       </Card>
     </motion.div>
-  );
+  )
 }

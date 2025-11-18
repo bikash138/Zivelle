@@ -1,17 +1,17 @@
 'use client'
-import { motion } from 'framer-motion';
-import { Card, CardContent } from '@/components/ui/card';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
-import { Calendar } from 'lucide-react';
-import { formatDate } from '@/lib/formatDate';
-import { AddressSection } from './core/AddressSection/AddressSection';
-import ProfileInformation from './core/ProfileInformation/ProfileInformation';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/redux/reducer';
+import { motion } from 'framer-motion'
+import { Card, CardContent } from '@/components/ui/card'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Badge } from '@/components/ui/badge'
+import { Calendar } from 'lucide-react'
+import { formatDate } from '@/lib/formatDate'
+import { AddressSection } from '../core/AddressSection/AddressSection'
+import ProfileInformation from '../core/ProfileInformation/ProfileInformation'
+import { useSelector } from 'react-redux'
+import { RootState } from '@/redux/reducer'
 
 export function Profile() {
-  const profile = useSelector((state: RootState) => state.profile.profile);
+  const profile = useSelector((state: RootState) => state.profile.profile)
   return (
     <div className="space-y-8">
       <motion.div
@@ -21,9 +21,7 @@ export function Profile() {
         className="mb-6"
       >
         <div className="relative">
-          <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-black">
-            Profile
-          </h1>
+          <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-black">Profile</h1>
           <div className="h-1 w-16 bg-orange-500 mt-2 rounded-full"></div>
         </div>
         <p className="text-gray-600 mt-4 max-w-lg">
@@ -43,7 +41,12 @@ export function Profile() {
               <div className="flex items-center gap-6">
                 <Avatar className="w-24 h-24 border-4 bg-orange-600">
                   <AvatarFallback className="bg-orange-600 text-white text-5xl font-bold">
-                    {profile?.name ? profile.name.split(' ').map(n => n[0]).join('') : 'U'}
+                    {profile?.name
+                      ? profile.name
+                          .split(' ')
+                          .map((n) => n[0])
+                          .join('')
+                      : 'U'}
                   </AvatarFallback>
                 </Avatar>
                 <div>
@@ -60,18 +63,18 @@ export function Profile() {
           </CardContent>
         </Card>
       </motion.div>
-    
-      <div className='min-h-[400px] flex flex-col lg:flex-row lg:items-start gap-5'>
+
+      <div className="min-h-[400px] flex flex-col lg:flex-row lg:items-start gap-5">
         {/* Profile Information Section*/}
         <div className="w-full h-full lg:w-[50%] grid grid-cols-1 lg:grid-cols-1 gap-8">
-          <ProfileInformation profile={profile}/>
+          <ProfileInformation profile={profile} />
         </div>
 
         {/* Address Section */}
-        <div className='w-full lg:w-[50%]'>
+        <div className="w-full lg:w-[50%]">
           <AddressSection initialAddresses={profile?.addresses ?? []} />
         </div>
       </div>
     </div>
-  );
+  )
 }

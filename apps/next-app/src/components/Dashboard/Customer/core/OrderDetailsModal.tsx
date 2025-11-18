@@ -1,16 +1,16 @@
-import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
-import { CalendarDays, Package, User, MapPin, CreditCard, Truck } from 'lucide-react';
-import Image from 'next/image';
-import { ModalOrderData } from '@/types/userTypes';
+import React from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Badge } from '@/components/ui/badge'
+import { Card, CardContent } from '@/components/ui/card'
+import { Separator } from '@/components/ui/separator'
+import { CalendarDays, Package, User, MapPin, CreditCard, Truck } from 'lucide-react'
+import Image from 'next/image'
+import { ModalOrderData } from '@/types/userTypes'
 
 interface OrderDetailsProps {
-  isOpen: boolean;
-  onClose: () => void;
+  isOpen: boolean
+  onClose: () => void
   order?: ModalOrderData
 }
 
@@ -20,22 +20,22 @@ const statusConfig = {
   Shipped: { color: 'bg-green-100 text-green-800 border-green-200', icon: Truck },
   Delivered: { color: 'bg-emerald-100 text-emerald-800 border-emerald-200', icon: Package },
   Cancelled: { color: 'bg-red-100 text-red-800 border-red-200', icon: Package },
-};
+}
 
 const paymentConfig = {
   Success: { color: 'bg-green-100 text-green-800 border-green-200' },
   Failed: { color: 'bg-red-100 text-red-800 border-red-200' },
   Pending: { color: 'bg-yellow-100 text-yellow-800 border-yellow-200' },
-};
+}
 
 export function OrderDetailsModal({ isOpen, onClose, order }: OrderDetailsProps) {
-  if (!order) return null;
+  if (!order) return null
 
-  const StatusIcon = statusConfig[order.status]?.icon || Package;
+  const StatusIcon = statusConfig[order.status]?.icon || Package
   const trimOrderId = (id: string) => {
-    if (id.length <= 8) return id;
-    return `${id.toString().slice(0, 4)}...${id.toString().slice(-4)}`;
-  };
+    if (id.length <= 8) return id
+    return `${id.toString().slice(0, 4)}...${id.toString().slice(-4)}`
+  }
 
   return (
     <AnimatePresence>
@@ -74,8 +74,8 @@ export function OrderDetailsModal({ isOpen, onClose, order }: OrderDetailsProps)
                         <div className="flex flex-col">
                           <div className="flex flex-wrap gap-3">
                             {order.items.map((item, index) => (
-                              <div 
-                                key={index} 
+                              <div
+                                key={index}
                                 className="relative w-16 h-16 sm:w-20 sm:h-20 flex-shrink-0 group"
                               >
                                 <Image
@@ -92,7 +92,8 @@ export function OrderDetailsModal({ isOpen, onClose, order }: OrderDetailsProps)
                           </div>
                           <div className="flex justify-between items-center mt-2">
                             <span className="text-sm text-gray-500">
-                              {order.items.length} {order.items.length === 1 ? 'item' : 'items'} in this order
+                              {order.items.length} {order.items.length === 1 ? 'item' : 'items'} in
+                              this order
                             </span>
                           </div>
                         </div>
@@ -215,5 +216,5 @@ export function OrderDetailsModal({ isOpen, onClose, order }: OrderDetailsProps)
         </Dialog>
       )}
     </AnimatePresence>
-  );
+  )
 }

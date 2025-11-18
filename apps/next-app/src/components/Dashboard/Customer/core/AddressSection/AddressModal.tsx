@@ -1,29 +1,29 @@
-import { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useEffect, useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { useForm } from 'react-hook-form';
-import { AddressType } from '@/types';
-import axios from 'axios';
-import { toast } from 'sonner';
-import { Loader } from 'lucide-react';
-import { useDispatch } from 'react-redux';
-import { addAddress } from '@/redux/slices/profileSlice';
+} from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { useForm } from 'react-hook-form'
+import { AddressType } from '@/types'
+import axios from 'axios'
+import { toast } from 'sonner'
+import { Loader } from 'lucide-react'
+import { useDispatch } from 'react-redux'
+import { addAddress } from '@/redux/slices/profileSlice'
 
 interface AddressModalProps {
-  open: boolean;
-  onClose: () => void;
-  editingAddress?: AddressType | null;
+  open: boolean
+  onClose: () => void
+  editingAddress?: AddressType | null
   onAddressAdded?: (address: AddressType) => void
-  onAddressUpdated?: (address: AddressType) => void;
+  onAddressUpdated?: (address: AddressType) => void
 }
 
 export function AddressModal({
@@ -31,51 +31,45 @@ export function AddressModal({
   onClose,
   editingAddress,
   onAddressAdded,
-  onAddressUpdated
+  onAddressUpdated,
 }: AddressModalProps) {
-
-  const{
-    register,
-    handleSubmit,
-    reset,
-  } = useForm<AddressType>()
+  const { register, handleSubmit, reset } = useForm<AddressType>()
 
   useEffect(() => {
     if (editingAddress) {
-      reset(editingAddress);
+      reset(editingAddress)
     } else {
-      reset();
+      reset()
     }
-  }, [editingAddress, reset]);
+  }, [editingAddress, reset])
 
   const [isSaving, setIsSaving] = useState(false)
   const dispatch = useDispatch()
-  
+
   const onsubmit = async (data: AddressType) => {
     setIsSaving(true)
     if (editingAddress) {
       const response = await axios.patch('/api/user/profile/address', data)
-      if(response.data?.success){
-        onAddressUpdated?.(response.data.updatedAddress as AddressType);
+      if (response.data?.success) {
+        onAddressUpdated?.(response.data.updatedAddress as AddressType)
         toast.success('Address Updated Successfully')
-      }
-      else{
+      } else {
         toast.error('Cannot update Address')
       }
       reset()
     } else {
       const response = await axios.post('/api/user/profile/address', data)
-      if(response.data?.success){
+      if (response.data?.success) {
         onAddressAdded?.(data)
         dispatch(addAddress(data))
-        toast.success("Address Added Successfully")
-      }else{
-        toast.error("Cannot add Address")
+        toast.success('Address Added Successfully')
+      } else {
+        toast.error('Cannot add Address')
       }
       reset()
     }
     setIsSaving(false)
-    onClose();
+    onClose()
   }
 
   return (
@@ -84,6 +78,7 @@ export function AddressModal({
         <DialogHeader>
           <DialogTitle className="text-2xl font-semibold">
             {editingAddress ? 'Edit Address' : 'Add New Address'}
+            <div className="h-1 w-16 bg-orange-500 mt-2 rounded-full"></div>
           </DialogTitle>
           <DialogDescription>
             {editingAddress
@@ -91,7 +86,7 @@ export function AddressModal({
               : 'Fill in the details to add a new address'}
           </DialogDescription>
         </DialogHeader>
-        
+
         {/* Address Form */}
         <AnimatePresence mode="wait">
           <motion.form
@@ -181,21 +176,27 @@ export function AddressModal({
                 type="button"
                 variant="outline"
                 onClick={onClose}
-                className="flex-1"
+                className="flex-1 cursor-pointer"
               >
                 Cancel
               </Button>
               <Button
                 disabled={isSaving}
                 type="submit"
-                className="flex-1 bg-orange-600 hover:bg-orange-700 text-white"
+                className="flex-1 bg-orange-600 hover:bg-orange-700 text-white cursor-pointer"
               >
-                {isSaving ? <Loader className="h-4 w-4" />  : editingAddress ? 'Update Address' : 'Add Address'}
+                {isSaving ? (
+                  <Loader className="h-4 w-4" />
+                ) : editingAddress ? (
+                  'Update Address'
+                ) : (
+                  'Add Address'
+                )}
               </Button>
             </div>
           </motion.form>
         </AnimatePresence>
       </DialogContent>
     </Dialog>
-  );
+  )
 }

@@ -1,91 +1,85 @@
 'use client'
 import Link from 'next/link'
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { UserSignUpSchema } from '@repo/zod/zodTypes';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { toast } from 'sonner';
-import axios from 'axios';
-import { useRouter } from 'next/navigation';
+import Image from 'next/image'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+import { UserSignUpSchema } from '@repo/zod/zodTypes'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { toast } from 'sonner'
+import axios from 'axios'
+import { useRouter } from 'next/navigation'
+import Logo from '@/assets/Logo.png'
 
-type formType = z.infer<typeof UserSignUpSchema>;
-
+type formType = z.infer<typeof UserSignUpSchema>
 
 const Signup = () => {
-
   const router = useRouter()
-  const{
-    register,
-    handleSubmit,
-    reset 
-  } = useForm<formType>({
+  const { register, handleSubmit, reset } = useForm<formType>({
     resolver: zodResolver(UserSignUpSchema),
-    defaultValues:{
+    defaultValues: {
       name: '',
       email: '',
       password: '',
-      confirmPassword: ''
-    }
+      confirmPassword: '',
+    },
   })
-
 
   const onsubmit = async (data: formType) => {
     const toastId = toast.loading('Creating Account...')
-    try{
+    try {
       const response = await axios.post('/api/user/signup', data)
-      if(!response.data?.success){
-        toast.error(response.data?.message, {id: toastId})
+      if (!response.data?.success) {
+        toast.error(response.data?.message, { id: toastId })
         return
       }
-      toast.success(response.data?.message, {id: toastId})
+      toast.success(response.data?.message, { id: toastId })
       reset()
-      router.push("/auth/user/signin")
-    }catch(error){
-      console.log("Something went wrong while SigningUp", error)
-      toast.error('SignUp Failed', {id: toastId})
+      router.push('/auth/user/signin')
+    } catch (error) {
+      console.log('Something went wrong while SigningUp', error)
+      toast.error('SignUp Failed', { id: toastId })
     }
-  };
+  }
 
   return (
-    <div className="min-h-screen bg-black text-white flex items-center justify-center px-4 py-12">
+    <div className="min-h-screen bg-background text-foreground flex items-center justify-center px-4 py-12">
       <div className="max-w-md w-full space-y-8">
         {/* Logo */}
         <div className="text-center">
-          <Link href="/" className="inline-block">
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+          <Link href="/" className="inline-flex flex-col items-center space-y-3">
+            <div className="w-16 h-16 relative">
+              <Image src={Logo} alt="Zivelle Logo" priority fill className="object-contain" />
+            </div>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text text-transparent">
               Zivelle
             </h1>
           </Link>
-          <h2 className="mt-6 text-2xl font-semibold text-white">
-            Create your account
-          </h2>
-          <p className="mt-2 text-gray-400">
-            Join Zivelle and discover your unique style.
-          </p>
+          <h2 className="mt-6 text-2xl font-semibold text-foreground">Create your account</h2>
+          <p className="mt-2 text-muted-foreground">Join Zivelle and discover your unique style.</p>
         </div>
 
         {/* Sign Up Form */}
         <form className="mt-8 space-y-6" onSubmit={handleSubmit(onsubmit)}>
           <div className="space-y-4">
-              <div>
-                <Label htmlFor="firstName" className="text-white">
-                  Full Name
-                </Label>
-                <Input
-                  {...register('name')}
-                  type="text"
-                  autoComplete="given-name"
-                  required
-                  className="mt-1 bg-gray-900/50 border-gray-700 text-white placeholder-gray-400 focus:border-white focus:ring-white"
-                  placeholder="Full Name"
-                />
-              </div>
-            
             <div>
-              <Label htmlFor="email" className="text-white">
+              <Label htmlFor="firstName" className="text-foreground">
+                Full Name
+              </Label>
+              <Input
+                {...register('name')}
+                type="text"
+                autoComplete="given-name"
+                required
+                className="mt-1"
+                placeholder="Full Name"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="email" className="text-foreground">
                 Email address
               </Label>
               <Input
@@ -93,13 +87,13 @@ const Signup = () => {
                 type="email"
                 autoComplete="email"
                 required
-                className="mt-1 bg-gray-900/50 border-gray-700 text-white placeholder-gray-400 focus:border-white focus:ring-white"
+                className="mt-1"
                 placeholder="Enter your email"
               />
             </div>
-            
+
             <div>
-              <Label htmlFor="password" className="text-white">
+              <Label htmlFor="password" className="text-foreground">
                 Password
               </Label>
               <Input
@@ -107,13 +101,13 @@ const Signup = () => {
                 type="password"
                 autoComplete="new-password"
                 required
-                className="mt-1 bg-gray-900/50 border-gray-700 text-white placeholder-gray-400 focus:border-white focus:ring-white"
+                className="mt-1"
                 placeholder="Create a password"
               />
             </div>
-            
+
             <div>
-              <Label htmlFor="confirmPassword" className="text-white">
+              <Label htmlFor="confirmPassword" className="text-foreground">
                 Confirm password
               </Label>
               <Input
@@ -121,7 +115,7 @@ const Signup = () => {
                 type="password"
                 autoComplete="new-password"
                 required
-                className="mt-1 bg-gray-900/50 border-gray-700 text-white placeholder-gray-400 focus:border-white focus:ring-white"
+                className="mt-1"
                 placeholder="Confirm your password"
               />
             </div>
@@ -130,18 +124,18 @@ const Signup = () => {
           <div>
             <Button
               type="submit"
-              className="w-full bg-white text-black cursor-pointer hover:bg-gray-200 font-semibold py-3 transition-all duration-300 transform hover:scale-105"
+              className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 transition-all duration-300 transform hover:scale-105"
             >
               Create account
             </Button>
           </div>
 
           <div className="text-center">
-            <p className="text-gray-400">
+            <p className="text-muted-foreground">
               Already have an account?{' '}
               <Link
                 href="/auth/user/signin"
-                className="text-white cursor-pointer hover:text-gray-300 font-semibold transition-colors duration-200"
+                className="text-orange-500 hover:text-orange-600 font-semibold transition-colors duration-200"
               >
                 Sign in
               </Link>
@@ -150,7 +144,7 @@ const Signup = () => {
         </form>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Signup;
+export default Signup

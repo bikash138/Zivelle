@@ -1,12 +1,12 @@
 'use client'
-import React from 'react';
-import Link from 'next/link';
-import { motion } from 'framer-motion';
-import { ArrowRight, Sparkles, Star } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import ProductCard from '@/components/Landing/Common/ProductCard';
-import Image from 'next/image';
+import React from 'react'
+import Link from 'next/link'
+import { motion } from 'framer-motion'
+import { ArrowRight, Sparkles, Star } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import ProductCard from '@/components/Landing/Common/ProductCard'
+import Image from 'next/image'
 import Kids from '@/assets/Kids.png'
 import Women from '@/assets/Women.png'
 import Men from '@/assets/Men.png'
@@ -17,29 +17,29 @@ import c4 from '@/assets/c4.png'
 
 export interface ProductsProps {
   products: {
-    id: number;
-    title: string;
-    thumbnail: string;
-    price: number;
-    originalPrice: number;
-  }[];
+    id: number
+    title: string
+    thumbnail: string
+    price: number
+    originalPrice: number
+  }[]
 }
 
-const LandingPage = ({products} :ProductsProps) => {
-    const containerVariants = {
-        hidden: { opacity: 0 },
-        visible: {
-        opacity: 1,
-        transition: {
-            staggerChildren: 0.1
-        }
-        }
-    };
+const LandingPage = ({ products }: ProductsProps) => {
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  }
 
   const itemVariants = {
     hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0 }
-  };
+    visible: { opacity: 1, y: 0 },
+  }
 
   return (
     <div className="space-y-16">
@@ -52,18 +52,18 @@ const LandingPage = ({products} :ProductsProps) => {
           <div className="absolute top-0 -right-4 w-72 h-72 bg-yellow-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
           <div className="absolute -bottom-8 left-20 w-72 h-72 bg-pink-500 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000"></div>
         </div>
-        
+
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             {/* Left Content */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, x: -50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
               className="space-y-8"
             >
               <div className="space-y-4">
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
@@ -72,7 +72,7 @@ const LandingPage = ({products} :ProductsProps) => {
                   <Sparkles size={20} />
                   <span className="text-sm font-medium">New Collection 2025</span>
                 </motion.div>
-                <motion.h1 
+                <motion.h1
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3 }}
@@ -85,24 +85,28 @@ const LandingPage = ({products} :ProductsProps) => {
                     Style Game
                   </span>
                 </motion.h1>
-                <motion.p 
+                <motion.p
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.4 }}
                   className="text-xl text-gray-700 dark:text-gray-300 max-w-lg"
                 >
-                  Discover premium fashion pieces that blend contemporary design with timeless elegance. 
-                  Express your unique style with our carefully curated collection.
+                  Discover premium fashion pieces that blend contemporary design with timeless
+                  elegance. Express your unique style with our carefully curated collection.
                 </motion.p>
               </div>
-              
-              <motion.div 
+
+              <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
                 className="flex flex-col sm:flex-row gap-4"
               >
-                <Button asChild size="lg" className="bg-slate-900 hover:bg-slate-800 text-white dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-200 shadow-lg">
+                <Button
+                  asChild
+                  size="lg"
+                  className="bg-slate-900 hover:bg-slate-800 text-white dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-200 shadow-lg"
+                >
                   <Link href="/catalog" className="flex items-center space-x-2">
                     <span>Shop Now</span>
                     <ArrowRight size={20} />
@@ -113,7 +117,7 @@ const LandingPage = ({products} :ProductsProps) => {
                 </Button>
               </motion.div>
 
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.6 }}
@@ -124,25 +128,28 @@ const LandingPage = ({products} :ProductsProps) => {
                   <span className="text-gray-700 dark:text-gray-300">4.9/5 Customer Rating</span>
                 </div>
                 <div className="text-gray-700 dark:text-gray-300">
-                  <span className="font-semibold text-gray-900 dark:text-white">50K+</span> Happy Customers
+                  <span className="font-semibold text-gray-900 dark:text-white">50K+</span> Happy
+                  Customers
                 </div>
               </motion.div>
             </motion.div>
 
             {/* Right Content - Featured Products Sidebar */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, x: 50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.3 }}
               className="glass rounded-2xl p-6 space-y-4 border border-white/20"
             >
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Today&apos;s Deals</h3>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  Today&apos;s Deals
+                </h3>
                 <Badge className="bg-gradient-to-r from-red-500 to-pink-500 text-white border-0">
                   Save up to 70%
                 </Badge>
               </div>
-              
+
               <div className="space-y-3">
                 {products.slice(0, 3).map((product, index) => (
                   <motion.div
@@ -153,19 +160,23 @@ const LandingPage = ({products} :ProductsProps) => {
                     whileHover={{ scale: 1.02 }}
                     className="flex items-center space-x-3 p-3 glass-light rounded-lg hover:bg-white/20 transition-all cursor-pointer"
                   >
-                    <div className='w-12 h-12 relative'>
-                      <Image 
-                        src={product.thumbnail} 
+                    <div className="w-12 h-12 relative">
+                      <Image
+                        src={product.thumbnail}
                         alt={product.title}
                         fill
                         className="object-cover rounded-lg"
                       />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h4 className="font-medium text-sm truncate text-gray-900 dark:text-white">{product.title}</h4>
+                      <h4 className="font-medium text-sm truncate text-gray-900 dark:text-white">
+                        {product.title}
+                      </h4>
                       <div className="flex items-center space-x-2">
                         <span className="text-orange-400 font-semibold">₹{product.price}</span>
-                        <span className="text-gray-400 line-through text-sm">₹{product.originalPrice}</span>
+                        <span className="text-gray-400 line-through text-sm">
+                          ₹{product.originalPrice}
+                        </span>
                       </div>
                     </div>
                     {/* <div className="flex items-center space-x-1">
@@ -175,8 +186,11 @@ const LandingPage = ({products} :ProductsProps) => {
                   </motion.div>
                 ))}
               </div>
-              
-              <Button asChild className="w-full bg-slate-900 hover:bg-slate-800 text-white dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-200">
+
+              <Button
+                asChild
+                className="w-full bg-slate-900 hover:bg-slate-800 text-white dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-200"
+              >
                 <Link href="/catalog">View All Deals</Link>
               </Button>
             </motion.div>
@@ -186,7 +200,7 @@ const LandingPage = ({products} :ProductsProps) => {
 
       {/* Shop By Category */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -200,7 +214,7 @@ const LandingPage = ({products} :ProductsProps) => {
           </p>
         </motion.div>
 
-        <motion.div 
+        <motion.div
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
@@ -211,21 +225,21 @@ const LandingPage = ({products} :ProductsProps) => {
             {
               title: "Women's Fashion",
               image: Women,
-              items: "2,500+ Items",
-              category: "Women"
+              items: '2,500+ Items',
+              category: 'Women',
             },
             {
               title: "Men's Collection",
               image: Men,
-              items: "1,800+ Items",
-              category: "Men"
+              items: '1,800+ Items',
+              category: 'Men',
             },
             {
-              title: "Kids",
+              title: 'Kids',
               image: Kids,
-              items: "900+ Items",
-              category: "Kids"
-            }
+              items: '900+ Items',
+              category: 'Kids',
+            },
           ].map((category, index) => (
             <motion.div
               key={index}
@@ -252,7 +266,7 @@ const LandingPage = ({products} :ProductsProps) => {
 
       {/* Featured Products */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -266,7 +280,7 @@ const LandingPage = ({products} :ProductsProps) => {
           </p>
         </motion.div>
 
-        <motion.div 
+        <motion.div
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
@@ -275,18 +289,22 @@ const LandingPage = ({products} :ProductsProps) => {
         >
           {products.slice(0, 8).map((product) => (
             <motion.div key={product.id} variants={itemVariants}>
-              <ProductCard product={product} index={product.id}/>
+              <ProductCard product={product} index={product.id} />
             </motion.div>
           ))}
         </motion.div>
 
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           className="text-center mt-12"
         >
-          <Button asChild size="lg" className="bg-slate-900 hover:bg-slate-800 text-white dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-200">
+          <Button
+            asChild
+            size="lg"
+            className="bg-slate-900 hover:bg-slate-800 text-white dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-200"
+          >
             <Link href="/catalog" className="flex items-center space-x-2">
               <span>View All Products</span>
               <ArrowRight size={20} />
@@ -300,7 +318,7 @@ const LandingPage = ({products} :ProductsProps) => {
         <div className="absolute inset-0 bg-gradient-to-r from-purple-100/50 via-blue-100/50 to-indigo-100/50 dark:from-purple-900/30 dark:via-blue-900/30 dark:to-indigo-900/30"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, x: -50 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
@@ -312,11 +330,11 @@ const LandingPage = ({products} :ProductsProps) => {
                   Exclusive Summer Collection
                 </h2>
                 <p className="text-gray-700 dark:text-gray-300 text-lg">
-                  Beat the heat with our premium summer collection featuring lightweight fabrics, 
+                  Beat the heat with our premium summer collection featuring lightweight fabrics,
                   vibrant colors, and contemporary cuts designed for the modern lifestyle.
                 </p>
               </div>
-              
+
               <div className="flex items-center space-x-8">
                 <div className="text-center">
                   <div className="text-2xl font-bold text-gray-900 dark:text-white">500+</div>
@@ -328,7 +346,11 @@ const LandingPage = ({products} :ProductsProps) => {
                 </div>
               </div>
 
-              <Button asChild size="lg" className="bg-slate-900 hover:bg-slate-800 text-white dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-200">
+              <Button
+                asChild
+                size="lg"
+                className="bg-slate-900 hover:bg-slate-800 text-white dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-200"
+              >
                 <Link href="/catalog" className="flex items-center space-x-2">
                   <span>Shop Collection</span>
                   <ArrowRight size={20} />
@@ -336,7 +358,7 @@ const LandingPage = ({products} :ProductsProps) => {
               </Button>
             </motion.div>
 
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, x: 50 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
@@ -348,7 +370,12 @@ const LandingPage = ({products} :ProductsProps) => {
                     src={c3}
                     alt="Summer fashion"
                     className="w-full h-48 object-cover rounded-lg"
-                    style={{ width: '100%', height: '12rem', objectFit: 'cover', borderRadius: '0.5rem' }}
+                    style={{
+                      width: '100%',
+                      height: '12rem',
+                      objectFit: 'cover',
+                      borderRadius: '0.5rem',
+                    }}
                   />
                 </motion.div>
                 <motion.div whileHover={{ scale: 1.05 }}>
@@ -356,7 +383,12 @@ const LandingPage = ({products} :ProductsProps) => {
                     src={c1}
                     alt="Summer fashion"
                     className="w-full h-48 object-cover rounded-lg"
-                    style={{ width: '100%', height: '12rem', objectFit: 'cover', borderRadius: '0.5rem' }}
+                    style={{
+                      width: '100%',
+                      height: '12rem',
+                      objectFit: 'cover',
+                      borderRadius: '0.5rem',
+                    }}
                   />
                 </motion.div>
               </div>
@@ -366,7 +398,12 @@ const LandingPage = ({products} :ProductsProps) => {
                     src={c4}
                     alt="Summer fashion"
                     className="w-full h-48 object-cover rounded-lg"
-                    style={{ width: '100%', height: '12rem', objectFit: 'cover', borderRadius: '0.5rem' }}
+                    style={{
+                      width: '100%',
+                      height: '12rem',
+                      objectFit: 'cover',
+                      borderRadius: '0.5rem',
+                    }}
                   />
                 </motion.div>
                 <motion.div whileHover={{ scale: 1.05 }}>
@@ -374,7 +411,12 @@ const LandingPage = ({products} :ProductsProps) => {
                     src={c2}
                     alt="Summer fashion"
                     className="w-full h-48 object-cover rounded-lg"
-                    style={{ width: '100%', height: '12rem', objectFit: 'cover', borderRadius: '0.5rem' }}
+                    style={{
+                      width: '100%',
+                      height: '12rem',
+                      objectFit: 'cover',
+                      borderRadius: '0.5rem',
+                    }}
                   />
                 </motion.div>
               </div>
