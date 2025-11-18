@@ -1,6 +1,6 @@
 'use client'
 import ConfirmPayment from '@/components/core/ConfirmPayment';
-import ConfirmPaymentPageLoader from '@/components/Loaders/ConfirmPaymentPageLoader';
+import {ConfirmPaymentPageLoader} from '@/components/Loaders/ConfirmPaymentPageLoader';
 import { resetCart } from '@/redux/slices/cartSlice';
 import { Razorpay, RazorpayPaymentResponse } from '@/types/razorpay';
 import axios from 'axios';
