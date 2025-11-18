@@ -1,50 +1,31 @@
 'use client'
-import React, { useEffect, useState } from 'react';
-import { usePathname, useSearchParams } from 'next/navigation';
-import Link from 'next/link';
+import React, { useState } from 'react'
+import { usePathname } from 'next/navigation'
+import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { Search, ShoppingCart, User, Menu, X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { useSelector } from 'react-redux';
-import  {useRouter}  from 'next/navigation';
-import { RootState } from '@/redux/reducer';
-import Image from 'next/image';
+import { ShoppingCart, User, Menu, X } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { useSelector } from 'react-redux'
+import { RootState } from '@/redux/reducer'
+import Image from 'next/image'
 import Logo from '@/assets/Logo.png'
-import { Input } from '@/components/ui/input';
+import { HeaderSearchBar } from '@/components/core/HeaderSearchBar'
 
 const Header = () => {
-  const token = useSelector((state: RootState)=> state.auth.token)
-  const profile = useSelector((state: RootState)=> state.profile.profile)
-  const isSeller = profile?.role === "SELLER"
+  const token = useSelector((state: RootState) => state.auth.token)
+  const profile = useSelector((state: RootState) => state.profile.profile)
+  const totalItems = useSelector((state: RootState) => state.cart.totalItems)
+  const isSeller = profile?.role === 'SELLER'
   const isAuthenticated = !!token
-  const totalItems = useSelector((state: RootState)=>state.cart.totalItems)
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
   const pathname = usePathname()
-  const router = useRouter()
 
   const navLinks = [
     { name: 'Home', path: '/' },
     { name: 'Catalog', path: '/catalog' },
     { name: 'Brands', path: '/brands' },
-    { name: 'Collections', path: '/collections' }
-  ];
-
-  useEffect(() => {
-    router.prefetch('/catalog');
-  }, [router]);
-
-  const searchParams = useSearchParams()
-  useEffect(() => {
-    const search = searchParams.get("search") || ""
-    setSearchQuery(search)
-  }, [searchParams])
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!searchQuery.trim()) router.push(`/catalog`)
-    router.push(`/catalog?search=${(searchQuery)}&page=1`)
-  }
+    { name: 'Collections', path: '/collections' },
+  ]
 
   return (
     <motion.header
@@ -53,19 +34,14 @@ const Header = () => {
       className="backdrop-filter backdrop-blur-lg bg-white/80 dark:bg-gray-900/80 sticky top-0 z-50 border-b border-gray-200 dark:border-white/10 transition-colors duration-300"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+        <div className="grid grid-cols-[auto_1fr_auto] items-center h-16 gap-4">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
-            <motion.div 
+            <motion.div
               whileHover={{ scale: 1.05 }}
               className="w-10 h-10 relative rounded-lg flex items-center justify-center"
             >
-              <Image
-                src={Logo}
-                alt='logo'
-                priority
-                fill
-              />
+              <Image src={Logo} alt="logo" priority fill />
             </motion.div>
             <span className="text-3xl font-bold bg-gradient-to-r from-orange-400 to-orange-600 bg-clip-text text-transparent">
               Zivelle
@@ -73,7 +49,7 @@ const Header = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex space-x-8">
+          <nav className="hidden md:flex justify-center space-x-8">
             {navLinks.map((link) => (
               <Link
                 key={link.name}
@@ -95,32 +71,18 @@ const Header = () => {
             ))}
           </nav>
 
-
           {/* Right side actions */}
           {isAuthenticated ? (
-            <div className="flex items-center space-x-3">
-              <div className="space-y-4">
-                <div className="relative">
-                  <Search size={20} className="absolute left-3 top-2 text-gray-500 dark:text-gray-400" />
-                  <form onSubmit={handleSubmit}>
-                    <Input
-                      type="text"
-                      placeholder="Search products..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full pl-10 pr-4 py-2"
-                    />
-                  </form>
-                </div>
-              </div>              
+            <div className="flex items-center space-x-3 justify-end">
+              <HeaderSearchBar />
               {/* Only show search, cart, and profile for non-sellers */}
               {!isSeller ? (
                 <>
                   <Link
-                    href="/cart" 
+                    href="/cart"
                     className={`p-2 transition-colors relative rounded-lg hover:bg-gray-100 ${
-                      pathname === '/cart' 
-                        ? 'text-orange-600' 
+                      pathname === '/cart'
+                        ? 'text-orange-600'
                         : 'text-gray-700 hover:text-orange-500'
                     }`}
                   >
@@ -131,9 +93,9 @@ const Header = () => {
                       </span>
                     </motion.div>
                   </Link>
-                  
-                  <Link href='/user/profile' className='hidden md:block lg:block'>
-                    <motion.button 
+
+                  <Link href="/user/profile" className="hidden md:block lg:block">
+                    <motion.button
                       whileHover={{ scale: 1.1 }}
                       whileTap={{ scale: 0.95 }}
                       className="p-2 transition-colors rounded-lg hover:bg-gray-100 text-gray-700 dark:text-gray-300 hover:text-orange-500 cursor-pointer"
@@ -143,16 +105,17 @@ const Header = () => {
                   </Link>
                 </>
               ) : (
-                // For sellers, show a "Sign in as Customer" button
+                // For sellers, show a "Dashboard" button
                 <Link href="/seller/dashboard">
-                  <Button 
-                    variant="outline" 
-                    className="border-black cursor-pointer text-black dark:border-white dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800"                    >
-                    Sign in as Customer
+                  <Button
+                    variant="outline"
+                    className="border-black cursor-pointer text-black dark:border-white dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
+                  >
+                    Dashboard
                   </Button>
                 </Link>
               )}
-              
+
               {/* Mobile menu button - keep for all users */}
               <motion.button
                 whileHover={{ scale: 1.1 }}
@@ -163,55 +126,43 @@ const Header = () => {
                 {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
               </motion.button>
             </div>
-          ):(
-            <div className="flex items-center">
-              <div className='hidden lg:block'>
-                <Link href='/auth/seller/signin' >
-                  <motion.button 
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="p-2 text-gray-700 border border-black cursor-pointer dark:text-gray-300 hover:text-orange-500 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-white/10"
+          ) : (
+            <div className="flex items-center space-x-3 justify-end">
+              <HeaderSearchBar />
+              <div className="hidden lg:flex items-center space-x-2">
+                <Link href="/auth/seller/signin">
+                  <Button
+                    variant="outline"
+                    className="cursor-pointer border-black text-gray-800 dark:border-white dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-white/10"
                   >
                     Seller&apos;s Panel
-                  </motion.button>
+                  </Button>
                 </Link>
-                <Link 
-                  href="/auth/user/signin" 
-                  className={`p-2 transition-colors relative rounded-lg hover:bg-gray-100 hover:text-orange-500  ${
-                    pathname === '/favourites' 
-                      ? 'text-red-400' 
-                      : 'text-gray-700 dark:text-gray-300 hover:text-orange-400'
-                  }`}
+                <Link
+                  href="/auth/user/signin"
+                  className="p-2 transition-colors relative rounded-lg"
                 >
-                  <Button variant='ghost' className='cursor-pointer'>
+                  <Button className="cursor-pointer bg-black text-white hover:bg-black/90">
                     Signin
                   </Button>
                 </Link>
-                <Link 
-                  href="auth/user/signup" 
-                  className={`p-2 transition-colors relative rounded-lg dark:hover:bg-white/10`}
-                >
-                  <Button className='cursor-pointer'>
-                    Create Account
-                  </Button>
-                </Link>
               </div>
-            {/* Mobile menu button */}
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-              className="md:hidden p-2 text-gray-700 dark:text-gray-300 hover:text-blue-400 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-white/10"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-            >
-              {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
-            </motion.button>
-          </div>
+              {/* Mobile menu button */}
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                className="md:hidden p-2 text-gray-700 dark:text-gray-300 hover:text-blue-400 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-white/10"
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+              >
+                {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
+              </motion.button>
+            </div>
           )}
         </div>
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
@@ -223,9 +174,7 @@ const Header = () => {
                   key={link.name}
                   href={link.path}
                   className={`text-sm font-medium transition-colors hover:text-blue-400 ${
-                    pathname === link.path
-                      ? 'text-blue-400'
-                      : 'text-gray-700 dark:text-gray-300'
+                    pathname === link.path ? 'text-blue-400' : 'text-gray-700 dark:text-gray-300'
                   }`}
                   onClick={() => setIsMenuOpen(false)}
                 >
@@ -236,24 +185,24 @@ const Header = () => {
                 {isAuthenticated ? (
                   isSeller ? (
                     // For sellers in mobile menu
-                    <Link 
+                    <Link
                       href="/seller/dashboard"
                       className="text-gray-700 dark:text-gray-300 hover:text-blue-400 transition-colors"
                       onClick={() => setIsMenuOpen(false)}
                     >
-                      Sign in as Customer
+                      Dashboard
                     </Link>
                   ) : (
                     // For regular users in mobile menu
                     <>
-                      <Link 
+                      <Link
                         href="/user/profile"
                         className="text-gray-700 dark:text-gray-300 hover:text-red-400 transition-colors"
                         onClick={() => setIsMenuOpen(false)}
                       >
                         Profile
                       </Link>
-                      <Link 
+                      <Link
                         href="/cart"
                         className="text-gray-700 dark:text-gray-300 hover:text-blue-400 transition-colors"
                         onClick={() => setIsMenuOpen(false)}
@@ -265,22 +214,15 @@ const Header = () => {
                 ) : (
                   // For non-authenticated users in mobile menu
                   <>
-                    <Link 
-                      href="/user/signup"
-                      className="text-gray-700 dark:text-gray-300 hover:text-red-400 transition-colors"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      Create Account
-                    </Link>
-                    <Link 
+                    <Link
                       href="/auth/user/signin"
                       className="text-gray-700 dark:text-gray-300 hover:text-blue-400 transition-colors"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       Signin
                     </Link>
-                    <Link 
-                      href='/auth/seller/signin'
+                    <Link
+                      href="/auth/seller/signin"
                       className="text-gray-700 dark:text-gray-300 hover:text-blue-400 transition-colors"
                       onClick={() => setIsMenuOpen(false)}
                     >
@@ -294,7 +236,7 @@ const Header = () => {
         )}
       </div>
     </motion.header>
-  );
-};
+  )
+}
 
-export default Header;
+export default Header

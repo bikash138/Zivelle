@@ -1,4 +1,4 @@
-function ConfirmPaymentPageLoader() {
+export const ConfirmPaymentPageLoader = () => {
   return (
     <div className="min-h-screen bg-gray-100 p-6">
       <div className="max-w-6xl mx-auto">
@@ -92,7 +92,5 @@ function ConfirmPaymentPageLoader() {
         </div>
       </div>
     </div>
-  );
+  )
 }
-
-export default ConfirmPaymentPageLoader;

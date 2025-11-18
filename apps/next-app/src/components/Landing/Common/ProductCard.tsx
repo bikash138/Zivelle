@@ -1,32 +1,25 @@
-import React from 'react';
-import Link from 'next/link';
-import { motion } from 'framer-motion';
-import { Heart, ShoppingCart } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import Image from 'next/image';
+import React from 'react'
+import Link from 'next/link'
+import { motion } from 'framer-motion'
+import { Badge } from '@/components/ui/badge'
+import Image from 'next/image'
 
 interface Product {
-  id: number;
-  title: string;
-  price: number;
-  originalPrice: number;
-  thumbnail: string;
-  // rating: number;
-  // brand: string;
-  // category: string;
-  // subCategory: string
-  // createdAt: string;
+  id: number
+  title: string
+  price: number
+  originalPrice: number
+  thumbnail: string
 }
 
 interface ProductCardProps {
-  product: Product;
+  product: Product
   index: number
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       whileHover={{ y: -5 }}
@@ -34,10 +27,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
     >
       <div className="relative">
         <Link href={`/product/${product.id}`}>
-          <motion.div
-            whileHover={{ scale: 1.1 }}
-            className="w-full h-64 overflow-hidden relative"
-          >
+          <motion.div whileHover={{ scale: 1.1 }} className="w-full h-64 overflow-hidden relative">
             <Image
               src={product.thumbnail}
               alt={product.title}
@@ -48,60 +38,44 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, index }) => {
             />
           </motion.div>
         </Link>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="absolute top-4 right-4 glass-light text-gray-600 dark:text-gray-300 hover:text-red-400 h-8 w-8 hover:bg-red-500/20"
-        >
-          <Heart size={16} />
-        </Button>
         {product.originalPrice && (
           <Badge className="absolute top-4 left-4 bg-gradient-to-r from-red-500 to-pink-500 text-white border-0">
-            {Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}% OFF
+            {Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}%
+            OFF
           </Badge>
         )}
       </div>
-      
+
       <div className="p-4 space-y-3">
         <div>
-          <Badge variant="secondary" className="bg-gradient-to-r from-orange-500 to-red-500 text-white border-0 mb-2">
-            {/* {product.brand} */}
+          <Badge
+            variant="secondary"
+            className="bg-gradient-to-r from-orange-500 to-red-500 text-white border-0 mb-2"
+          >
             Zivelle
           </Badge>
           <Link href={`/product/${product.id}`}>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white hover:text-blue-400 transition-colors line-clamp-2">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white hover:text-gray-500 transition-colors line-clamp-2">
               {product.title}
             </h3>
           </Link>
         </div>
-        
-        {/* <div className="flex items-center space-x-1">
-          {[...Array(5)].map((_, i) => (
-            <Star
-              key={i}
-              size={14}
-              className={i < Math.floor(product.rating) ? 'text-yellow-400 fill-current' : 'text-gray-600'}
-            />
-          ))}
-          <span className="text-sm text-gray-500 dark:text-gray-400 ml-2">({product.rating})</span>
-        </div> */}
-        
+
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <span className="text-xl font-bold text-gray-900 dark:text-white">₹{product.price}</span>
+            <span className="text-xl font-bold text-gray-900 dark:text-white">
+              ₹{product.price}
+            </span>
             {product.originalPrice && (
               <span className="text-sm text-gray-500 dark:text-gray-500 line-through">
-                ₹{product.originalPrice} 
+                ₹{product.originalPrice}
               </span>
             )}
           </div>
-          <Button size="icon">
-            <ShoppingCart size={16} />
-          </Button>
         </div>
       </div>
     </motion.div>
-    );
-  }
+  )
+}
 
-export default ProductCard;
+export default ProductCard

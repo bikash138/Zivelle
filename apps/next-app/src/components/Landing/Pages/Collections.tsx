@@ -1,114 +1,123 @@
 'use client'
-import { motion } from 'framer-motion';
-import { Sparkles, ArrowRight, TrendingUp } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import Footer from './Footer';
-import Link from 'next/link';
-import Image from 'next/image';
+import { motion } from 'framer-motion'
+import { Sparkles, ArrowRight, TrendingUp } from 'lucide-react'
+import { Card, CardContent } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import Footer from '../Common/Footer'
+import Link from 'next/link'
+import Image from 'next/image'
 
 const collections = [
   {
     id: 1,
     name: "Women's Collection",
-    category: "Women",
-    description: "Elegant and sophisticated pieces for the modern woman",
+    category: 'Women',
+    description: 'Elegant and sophisticated pieces for the modern woman',
     items: 450,
-    image: 'https://images.pexels.com/photos/972995/pexels-photo-972995.jpeg?auto=compress&cs=tinysrgb&w=800',
+    image:
+      'https://images.pexels.com/photos/972995/pexels-photo-972995.jpeg?auto=compress&cs=tinysrgb&w=800',
     featured: true,
     tag: 'Trending',
-    color: 'from-pink-500 to-rose-500'
+    color: 'from-pink-500 to-rose-500',
   },
   {
     id: 2,
     name: "Men's Collection",
-    category: "Men",
-    description: "Classic styles with contemporary flair for men",
+    category: 'Men',
+    description: 'Classic styles with contemporary flair for men',
     items: 380,
-    image: 'https://images.pexels.com/photos/1043474/pexels-photo-1043474.jpeg?auto=compress&cs=tinysrgb&w=800',
+    image:
+      'https://images.pexels.com/photos/1043474/pexels-photo-1043474.jpeg?auto=compress&cs=tinysrgb&w=800',
     featured: true,
     tag: 'Popular',
-    color: 'from-slate-600 to-slate-800'
+    color: 'from-slate-600 to-slate-800',
   },
   {
     id: 3,
-    name: "Kids Collection",
-    category: "Kids",
-    description: "Playful and comfortable fashion for little ones",
+    name: 'Kids Collection',
+    category: 'Kids',
+    description: 'Playful and comfortable fashion for little ones',
     items: 290,
-    image: 'https://images.pexels.com/photos/1620760/pexels-photo-1620760.jpeg?auto=compress&cs=tinysrgb&w=800',
+    image:
+      'https://images.pexels.com/photos/1620760/pexels-photo-1620760.jpeg?auto=compress&cs=tinysrgb&w=800',
     featured: false,
     tag: 'New',
-    color: 'from-blue-400 to-cyan-400'
+    color: 'from-blue-400 to-cyan-400',
   },
   {
     id: 4,
     name: 'Winter Wear',
-    category: "Winter_Wear",
-    description: "Stay warm and stylish during the cold season",
+    category: 'Winter_Wear',
+    description: 'Stay warm and stylish during the cold season',
     items: 220,
-    image: 'https://images.pexels.com/photos/1183266/pexels-photo-1183266.jpeg?auto=compress&cs=tinysrgb&w=800',
+    image:
+      'https://images.pexels.com/photos/1183266/pexels-photo-1183266.jpeg?auto=compress&cs=tinysrgb&w=800',
     featured: true,
     tag: 'Seasonal',
-    color: 'from-blue-600 to-indigo-700'
+    color: 'from-blue-600 to-indigo-700',
   },
   {
     id: 5,
     name: 'Street Wear',
-    category: "Street_Wear",
-    description: "Urban style meets contemporary fashion",
+    category: 'Street_Wear',
+    description: 'Urban style meets contemporary fashion',
     items: 340,
-    image: 'https://images.pexels.com/photos/1040945/pexels-photo-1040945.jpeg?auto=compress&cs=tinysrgb&w=800',
+    image:
+      'https://images.pexels.com/photos/1040945/pexels-photo-1040945.jpeg?auto=compress&cs=tinysrgb&w=800',
     featured: true,
     tag: 'Hot',
-    color: 'from-orange-500 to-red-500'
+    color: 'from-orange-500 to-red-500',
   },
   {
     id: 6,
     name: 'Athletic Wear',
-    category: "Athletic_Wear",
-    description: "Performance meets style for active lifestyles",
+    category: 'Athletic_Wear',
+    description: 'Performance meets style for active lifestyles',
     items: 310,
-    image: 'https://images.pexels.com/photos/2294361/pexels-photo-2294361.jpeg?auto=compress&cs=tinysrgb&w=800',
+    image:
+      'https://images.pexels.com/photos/2294361/pexels-photo-2294361.jpeg?auto=compress&cs=tinysrgb&w=800',
     featured: false,
     tag: 'Active',
-    color: 'from-emerald-500 to-teal-600'
+    color: 'from-emerald-500 to-teal-600',
   },
   {
     id: 7,
     name: 'Formal Wear',
-    category: "Formal_Wear",
-    description: "Sophisticated elegance for special occasions",
+    category: 'Formal_Wear',
+    description: 'Sophisticated elegance for special occasions',
     items: 195,
-    image: 'https://images.pexels.com/photos/1926769/pexels-photo-1926769.jpeg?auto=compress&cs=tinysrgb&w=800',
+    image:
+      'https://images.pexels.com/photos/1926769/pexels-photo-1926769.jpeg?auto=compress&cs=tinysrgb&w=800',
     featured: false,
     tag: 'Elegant',
-    color: 'from-slate-700 to-slate-900'
+    color: 'from-slate-700 to-slate-900',
   },
   {
     id: 8,
     name: 'Accessories',
-    category: "Accessories",
-    description: "Complete your look with premium accessories",
+    category: 'Accessories',
+    description: 'Complete your look with premium accessories',
     items: 420,
-    image: 'https://images.pexels.com/photos/1927259/pexels-photo-1927259.jpeg?auto=compress&cs=tinysrgb&w=800',
+    image:
+      'https://images.pexels.com/photos/1927259/pexels-photo-1927259.jpeg?auto=compress&cs=tinysrgb&w=800',
     featured: false,
     tag: 'Essentials',
-    color: 'from-amber-500 to-orange-600'
+    color: 'from-amber-500 to-orange-600',
   },
   {
     id: 9,
     name: 'Summer Collection',
-    category: "Summer_Collections",
-    description: "Light and breezy styles for warm weather",
+    category: 'Summer_Collections',
+    description: 'Light and breezy styles for warm weather',
     items: 265,
-    image: 'https://images.pexels.com/photos/1536619/pexels-photo-1536619.jpeg?auto=compress&cs=tinysrgb&w=800',
+    image:
+      'https://images.pexels.com/photos/1536619/pexels-photo-1536619.jpeg?auto=compress&cs=tinysrgb&w=800',
     featured: false,
     tag: 'Seasonal',
-    color: 'from-yellow-400 to-orange-400'
+    color: 'from-yellow-400 to-orange-400',
   },
-];
+]
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -118,7 +127,7 @@ const containerVariants = {
       staggerChildren: 0.08,
     },
   },
-};
+}
 
 const itemVariants = {
   hidden: { opacity: 0, y: 30 },
@@ -129,7 +138,7 @@ const itemVariants = {
       duration: 0.6,
     },
   },
-};
+}
 
 const featuredVariants = {
   hidden: { opacity: 0, scale: 0.9 },
@@ -140,15 +149,14 @@ const featuredVariants = {
       duration: 0.7,
     },
   },
-};
+}
 
 export function Collections() {
-  const featuredCollections = collections.filter(c => c.featured);
-  const regularCollections = collections.filter(c => !c.featured);
+  const featuredCollections = collections.filter((c) => c.featured)
+  const regularCollections = collections.filter((c) => !c.featured)
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-orange-50">
-
       <motion.div
         initial="hidden"
         animate="visible"
@@ -168,7 +176,8 @@ export function Collections() {
             </span>
           </h1>
           <p className="text-slate-600 text-lg md:text-xl max-w-2xl mx-auto">
-            Explore our carefully curated collections designed to express your unique personality and elevate your wardrobe.
+            Explore our carefully curated collections designed to express your unique personality
+            and elevate your wardrobe.
           </p>
         </motion.div>
 
@@ -199,11 +208,15 @@ export function Collections() {
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
-                      <Badge className={`absolute top-6 right-6 bg-gradient-to-r ${collection.color} text-white border-0 text-sm px-4 py-1`}>
+                      <Badge
+                        className={`absolute top-6 right-6 bg-gradient-to-r ${collection.color} text-white border-0 text-sm px-4 py-1`}
+                      >
                         {collection.tag}
                       </Badge>
                       <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
-                        <h3 className="text-3xl md:text-4xl font-bold text-white mb-3">{collection.name}</h3>
+                        <h3 className="text-3xl md:text-4xl font-bold text-white mb-3">
+                          {collection.name}
+                        </h3>
                         <p className="text-white/90 text-lg mb-4">{collection.description}</p>
                         <div className="flex items-center justify-between">
                           <span className="text-white/80">{collection.items} Items</span>
@@ -246,7 +259,9 @@ export function Collections() {
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-60 group-hover:opacity-90 transition-opacity duration-300" />
-                      <Badge className={`absolute top-4 right-4 bg-gradient-to-r ${collection.color} text-white border-0`}>
+                      <Badge
+                        className={`absolute top-4 right-4 bg-gradient-to-r ${collection.color} text-white border-0`}
+                      >
                         {collection.tag}
                       </Badge>
                       <div className="absolute bottom-0 left-0 right-0 p-6 translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
@@ -275,18 +290,24 @@ export function Collections() {
           <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0id2hpdGUiIHN0cm9rZS1vcGFjaXR5PSIwLjEiIHN0cm9rZS13aWR0aD0iMSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNncmlkKSIvPjwvc3ZnPg==')] opacity-30" />
           <div className="relative z-10">
             <Sparkles className="w-12 h-12 mx-auto mb-6" />
-            <h2 className="text-3xl md:text-5xl font-bold mb-4">
-              Join Our Style Community
-            </h2>
+            <h2 className="text-3xl md:text-5xl font-bold mb-4">Join Our Style Community</h2>
             <p className="text-white/90 text-lg md:text-xl mb-8 max-w-2xl mx-auto">
-              Get exclusive access to new collections, special offers, and personalized style recommendations.
+              Get exclusive access to new collections, special offers, and personalized style
+              recommendations.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Button size="lg" className="bg-white text-slate-900 hover:bg-slate-100 rounded-full px-8 text-lg">
+              <Button
+                size="lg"
+                className="bg-white text-slate-900 hover:bg-slate-100 rounded-full px-8 text-lg"
+              >
                 Sign Up Now
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Button>
-              <Button size="lg" variant="outline" className="border-2 border-white text-white hover:bg-white/10 rounded-full px-8 text-lg">
+              <Button
+                size="lg"
+                variant="outline"
+                className="border-2 border-white text-white hover:bg-white/10 rounded-full px-8 text-lg"
+              >
                 Learn More
               </Button>
             </div>
@@ -315,7 +336,7 @@ export function Collections() {
           </div>
         </motion.div>
       </motion.div>
-      <Footer/>
+      <Footer />
     </div>
-  );
+  )
 }

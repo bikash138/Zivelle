@@ -1,28 +1,100 @@
 'use client'
-import { motion } from 'framer-motion';
-import { Sparkles, ArrowRight, Search } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import Footer from './Footer';
-import Link from 'next/link';
-import Image from 'next/image';
+import { motion } from 'framer-motion'
+import { Sparkles, ArrowRight, Search } from 'lucide-react'
+import { Card, CardContent } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import Footer from '../Common/Footer'
+import Link from 'next/link'
+import Image from 'next/image'
 
 const brands = [
-  { name: 'Gucci', products: 245, image: 'https://images.pexels.com/photos/1038000/pexels-photo-1038000.jpeg?auto=compress&cs=tinysrgb&w=800', featured: true },
-  { name: 'Chanel', products: 189, image: 'https://images.pexels.com/photos/1018911/pexels-photo-1018911.jpeg?auto=compress&cs=tinysrgb&w=800', featured: true },
-  { name: 'Versace', products: 167, image: 'https://images.pexels.com/photos/1926769/pexels-photo-1926769.jpeg?auto=compress&cs=tinysrgb&w=800', featured: false },
-  { name: 'Prada', products: 234, image: 'https://images.pexels.com/photos/291762/pexels-photo-291762.jpeg?auto=compress&cs=tinysrgb&w=800', featured: true },
-  { name: 'Louis Vuitton', products: 312, image: 'https://images.pexels.com/photos/1152077/pexels-photo-1152077.jpeg?auto=compress&cs=tinysrgb&w=800', featured: true },
-  { name: 'Dior', products: 198, image: 'https://images.pexels.com/photos/1055691/pexels-photo-1055691.jpeg?auto=compress&cs=tinysrgb&w=800', featured: false },
-  { name: 'Balenciaga', products: 156, image: 'https://images.pexels.com/photos/1159670/pexels-photo-1159670.jpeg?auto=compress&cs=tinysrgb&w=800', featured: false },
-  { name: 'Burberry', products: 143, image: 'https://images.pexels.com/photos/1852382/pexels-photo-1852382.jpeg?auto=compress&cs=tinysrgb&w=800', featured: false },
-  { name: 'Hermès', products: 178, image: 'https://images.pexels.com/photos/1456705/pexels-photo-1456705.jpeg?auto=compress&cs=tinysrgb&w=800', featured: true },
-  { name: 'Valentino', products: 134, image: 'https://images.pexels.com/photos/1926620/pexels-photo-1926620.jpeg?auto=compress&cs=tinysrgb&w=800', featured: false },
-  { name: 'Givenchy', products: 167, image: 'https://images.pexels.com/photos/1631181/pexels-photo-1631181.jpeg?auto=compress&cs=tinysrgb&w=800', featured: false },
-  { name: 'Saint Laurent', products: 201, image: 'https://images.pexels.com/photos/1926620/pexels-photo-1926620.jpeg?auto=compress&cs=tinysrgb&w=800', featured: false },
-];
+  {
+    name: 'Gucci',
+    products: 245,
+    image:
+      'https://images.pexels.com/photos/1038000/pexels-photo-1038000.jpeg?auto=compress&cs=tinysrgb&w=800',
+    featured: true,
+  },
+  {
+    name: 'Chanel',
+    products: 189,
+    image:
+      'https://images.pexels.com/photos/1018911/pexels-photo-1018911.jpeg?auto=compress&cs=tinysrgb&w=800',
+    featured: true,
+  },
+  {
+    name: 'Versace',
+    products: 167,
+    image:
+      'https://images.pexels.com/photos/1926769/pexels-photo-1926769.jpeg?auto=compress&cs=tinysrgb&w=800',
+    featured: false,
+  },
+  {
+    name: 'Prada',
+    products: 234,
+    image:
+      'https://images.pexels.com/photos/291762/pexels-photo-291762.jpeg?auto=compress&cs=tinysrgb&w=800',
+    featured: true,
+  },
+  {
+    name: 'Louis Vuitton',
+    products: 312,
+    image:
+      'https://images.pexels.com/photos/1152077/pexels-photo-1152077.jpeg?auto=compress&cs=tinysrgb&w=800',
+    featured: true,
+  },
+  {
+    name: 'Dior',
+    products: 198,
+    image:
+      'https://images.pexels.com/photos/1055691/pexels-photo-1055691.jpeg?auto=compress&cs=tinysrgb&w=800',
+    featured: false,
+  },
+  {
+    name: 'Balenciaga',
+    products: 156,
+    image:
+      'https://images.pexels.com/photos/1159670/pexels-photo-1159670.jpeg?auto=compress&cs=tinysrgb&w=800',
+    featured: false,
+  },
+  {
+    name: 'Burberry',
+    products: 143,
+    image:
+      'https://images.pexels.com/photos/1852382/pexels-photo-1852382.jpeg?auto=compress&cs=tinysrgb&w=800',
+    featured: false,
+  },
+  {
+    name: 'Hermès',
+    products: 178,
+    image:
+      'https://images.pexels.com/photos/1456705/pexels-photo-1456705.jpeg?auto=compress&cs=tinysrgb&w=800',
+    featured: true,
+  },
+  {
+    name: 'Valentino',
+    products: 134,
+    image:
+      'https://images.pexels.com/photos/1926620/pexels-photo-1926620.jpeg?auto=compress&cs=tinysrgb&w=800',
+    featured: false,
+  },
+  {
+    name: 'Givenchy',
+    products: 167,
+    image:
+      'https://images.pexels.com/photos/1631181/pexels-photo-1631181.jpeg?auto=compress&cs=tinysrgb&w=800',
+    featured: false,
+  },
+  {
+    name: 'Saint Laurent',
+    products: 201,
+    image:
+      'https://images.pexels.com/photos/1926620/pexels-photo-1926620.jpeg?auto=compress&cs=tinysrgb&w=800',
+    featured: false,
+  },
+]
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -32,7 +104,7 @@ const containerVariants = {
       staggerChildren: 0.1,
     },
   },
-};
+}
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -43,7 +115,7 @@ const itemVariants = {
       duration: 0.5,
     },
   },
-};
+}
 
 export function Brands() {
   return (
@@ -67,7 +139,8 @@ export function Brands() {
             </span>
           </h1>
           <p className="text-slate-600 text-lg md:text-xl max-w-2xl mx-auto mb-8">
-            Discover world-renowned fashion brands curated exclusively for you. Each brand represents excellence, style, and timeless elegance.
+            Discover world-renowned fashion brands curated exclusively for you. Each brand
+            represents excellence, style, and timeless elegance.
           </p>
 
           <div className="max-w-md mx-auto relative">
@@ -79,13 +152,22 @@ export function Brands() {
           </div>
         </motion.div>
 
-        <motion.div variants={itemVariants} className="mb-8 flex flex-wrap items-center justify-center gap-3">
+        <motion.div
+          variants={itemVariants}
+          className="mb-8 flex flex-wrap items-center justify-center gap-3"
+        >
           <Button variant="default" className="bg-slate-900 hover:bg-slate-800 rounded-full">
             All Brands
           </Button>
-          <Button variant="outline" className="rounded-full">Featured</Button>
-          <Button variant="outline" className="rounded-full">New Arrivals</Button>
-          <Button variant="outline" className="rounded-full">Popular</Button>
+          <Button variant="outline" className="rounded-full">
+            Featured
+          </Button>
+          <Button variant="outline" className="rounded-full">
+            New Arrivals
+          </Button>
+          <Button variant="outline" className="rounded-full">
+            Popular
+          </Button>
         </motion.div>
 
         <motion.div
@@ -132,10 +214,7 @@ export function Brands() {
           ))}
         </motion.div>
 
-        <motion.div
-          variants={itemVariants}
-          className="mt-16 text-center"
-        >
+        <motion.div variants={itemVariants} className="mt-16 text-center">
           <Button size="lg" variant="outline" className="rounded-full px-8">
             Load More Brands
             <ArrowRight className="ml-2 w-5 h-5" />
@@ -150,15 +229,19 @@ export function Brands() {
             Can&apos;t Find Your Favorite Brand?
           </h2>
           <p className="text-slate-300 text-lg mb-8 max-w-2xl mx-auto">
-            We&apos;re constantly expanding our collection. Let us know which brands you&apos;d like to see on Zivelle.
+            We&apos;re constantly expanding our collection. Let us know which brands you&apos;d like
+            to see on Zivelle.
           </p>
-          <Button size="lg" className="bg-orange-500 hover:bg-orange-600 text-white rounded-full px-8">
+          <Button
+            size="lg"
+            className="bg-orange-500 hover:bg-orange-600 text-white rounded-full px-8"
+          >
             Suggest a Brand
             <ArrowRight className="ml-2 w-5 h-5" />
           </Button>
         </motion.div>
       </motion.div>
-      <Footer/>
+      <Footer />
     </div>
-  );
+  )
 }

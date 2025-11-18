@@ -1,59 +1,61 @@
 'use client'
-import React, { useEffect, useState } from 'react';
-import { Heart, ShoppingCart, Truck, Shield, RotateCcw } from 'lucide-react';
-import { motion } from 'framer-motion';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { addToCart } from '@/redux/slices/cartSlice';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '@/redux/reducer';
-import { toast } from 'sonner';
+import React, { useEffect, useState } from 'react'
+import { Heart, ShoppingCart, Truck, Shield, RotateCcw } from 'lucide-react'
+import { motion } from 'framer-motion'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { addToCart } from '@/redux/slices/cartSlice'
+import { useDispatch, useSelector } from 'react-redux'
+import { RootState } from '@/redux/reducer'
+import { toast } from 'sonner'
 import { ProductProps } from '@/types/index'
-import { ResponsiveProductPageSkeleton } from '@/components/Loaders/ProductPageLoader';
-import Image from 'next/image';
+import { ResponsiveProductPageSkeleton } from '@/components/Loaders/ProductPageLoader'
+import Image from 'next/image'
 
-const Product = ({ product }: { product: ProductProps}) => {
+const Product = ({ product }: { product: ProductProps }) => {
   const dispatch = useDispatch()
-  const token = useSelector((state: RootState)=>state.auth.token)
-  const [selectedSize, setSelectedSize] = useState("")
-  const [selectedImage, setSelectedImage] = useState(0);
+  const token = useSelector((state: RootState) => state.auth.token)
+  const [selectedSize, setSelectedSize] = useState('')
+  const [selectedImage, setSelectedImage] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
   const quantity = 1
-  const images = [
-    product.thumbnail,
-  ];
+  const images = [product.thumbnail]
 
-  function handleAddToCart(){
-    if(!selectedSize){
+  function handleAddToCart() {
+    if (!selectedSize) {
       toast.error('Please select a size')
       return
     }
-    if(token){
-      dispatch(addToCart({
-        product, selectedSize, quantity
-      }))
-    }else{
+    if (token) {
+      dispatch(
+        addToCart({
+          product,
+          selectedSize,
+          quantity,
+        })
+      )
+    } else {
       toast.error('Please signin to continue')
     }
   }
 
-  useEffect(()=>{
+  useEffect(() => {
     setIsLoading(false)
-  },[])
+  }, [])
 
-  if(isLoading){
-    return <ResponsiveProductPageSkeleton/>
+  if (isLoading) {
+    return <ResponsiveProductPageSkeleton />
   }
 
   if (!product) {
-    return <div>Product not found</div>;
+    return <div>Product not found</div>
   }
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
         {/* Product Images */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           className="space-y-4"
@@ -76,7 +78,9 @@ const Product = ({ product }: { product: ProductProps}) => {
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setSelectedImage(index)}
                 className={`aspect-square glass rounded-lg overflow-hidden border-2 transition-colors ${
-                  selectedImage === index ? 'border-blue-500' : 'border-white/20 hover:border-white/40'
+                  selectedImage === index
+                    ? 'border-blue-500'
+                    : 'border-white/20 hover:border-white/40'
                 } relative`}
               >
                 <Image
@@ -92,7 +96,7 @@ const Product = ({ product }: { product: ProductProps}) => {
         </motion.div>
 
         {/* Product Details */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           className="space-y-6"
@@ -103,7 +107,7 @@ const Product = ({ product }: { product: ProductProps}) => {
                 {/* {product.brand} */}
                 Zivelle
               </Badge>
-              <motion.button 
+              <motion.button
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
                 className="p-2 text-gray-400 hover:text-red-400 transition-colors rounded-lg hover:bg-red-500/10"
@@ -113,19 +117,6 @@ const Product = ({ product }: { product: ProductProps}) => {
             </div>
             <h1 className="text-3xl font-bold text-black mb-2">{product.title}</h1>
 
-            {/* <div className="flex items-center space-x-4 mb-4">
-              <div className="flex items-center space-x-1">
-                {[...Array(5)].map((_, i) => (
-                  <Star
-                    key={i}
-                    size={16}
-                    className={i < Math.floor(product.rating) ? 'text-yellow-400 fill-current' : 'text-gray-600'}
-                  />
-                ))}
-                <span className="text-sm text-gray-400 ml-2">({product.rating}) · 245 reviews</span>
-              </div>
-            </div> */}
-
             <div className="flex items-center space-x-4">
               <span className="text-3xl font-bold text-black">₹{product.price}</span>
               {product.originalPrice && (
@@ -133,16 +124,17 @@ const Product = ({ product }: { product: ProductProps}) => {
               )}
               {product.originalPrice && (
                 <Badge className="bg-gradient-to-r from-red-500 to-pink-500 text-white border-0">
-                  {Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}% OFF
+                  {Math.round(
+                    ((product.originalPrice - product.price) / product.originalPrice) * 100
+                  )}
+                  % OFF
                 </Badge>
               )}
             </div>
           </div>
 
           <div className="space-y-4">
-            <p className="text-slate-700">
-              {product.description}
-            </p>
+            <p className="text-slate-700">{product.description}</p>
 
             {/* Size Selection */}
             <div>
@@ -166,52 +158,10 @@ const Product = ({ product }: { product: ProductProps}) => {
               </div>
             </div>
 
-            {/* Color Selection */}
-            {/* <div>
-              <h3 className="text-sm font-medium text-white mb-3">Color</h3>
-              <div className="flex space-x-2">
-                {colors.map((color) => (
-                  <motion.button
-                    key={color}
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => setSelectedColor(color)}
-                    className={`w-8 h-8 rounded-full border-2 ${
-                      selectedColor === color ? 'border-blue-500' : 'border-gray-600'
-                    }`}
-                    style={{ backgroundColor: color.toLowerCase() }}
-                  />
-                ))}
-              </div>
-            </div> */}
-
-            {/* Quantity */}
-            {/* <div>
-              <h3 className="text-sm font-medium text-white mb-3">Quantity</h3>
-              <div className="flex items-center space-x-3">
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="border-gray-600 hover:bg-white/10"
-                >
-                  <Minus size={16} />
-                </Button>
-                <span className="w-12 text-center font-medium text-black">{quantity}</span>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={() => setQuantity(quantity + 1)}
-                  className="border-gray-600 hover:bg-white/10"
-                >
-                  <Plus size={16} />
-                </Button>
-              </div>
-            </div> */}
-
             {/* Actions */}
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              <Button className="cursor-pointer flex-1 bg-slate-900 hover:bg-slate-800 text-white dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-200 py-3 px-6 font-semibold flex items-center justify-center space-x-2"
+              <Button
+                className="cursor-pointer flex-1 bg-slate-900 hover:bg-slate-800 text-white dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-200 py-3 px-6 font-semibold flex items-center justify-center space-x-2"
                 onClick={handleAddToCart}
                 disabled={!selectedSize}
               >
@@ -225,21 +175,21 @@ const Product = ({ product }: { product: ProductProps}) => {
 
             {/* Features */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6 border-t border-gray-700">
-              <motion.div 
+              <motion.div
                 whileHover={{ scale: 1.05 }}
                 className="flex items-center space-x-2 p-3 glass rounded-lg border border-white/10"
               >
                 <Truck size={20} className="text-green-400" />
                 <span className="text-sm text-gray-700">Free Shipping</span>
               </motion.div>
-              <motion.div 
+              <motion.div
                 whileHover={{ scale: 1.05 }}
                 className="flex items-center space-x-2 p-3 glass rounded-lg border border-white/10"
               >
                 <RotateCcw size={20} className="text-blue-400" />
                 <span className="text-sm text-gray-700">30-Day Returns</span>
               </motion.div>
-              <motion.div 
+              <motion.div
                 whileHover={{ scale: 1.05 }}
                 className="flex items-center space-x-2 p-3 glass rounded-lg border border-white/10"
               >
@@ -252,7 +202,7 @@ const Product = ({ product }: { product: ProductProps}) => {
       </div>
 
       {/* Product Details Tabs */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
@@ -276,9 +226,7 @@ const Product = ({ product }: { product: ProductProps}) => {
         </div>
         <div className="py-8">
           <div className="prose max-w-none">
-            <p className="text-gray-400 mb-4">
-              {product.description}
-            </p>
+            <p className="text-gray-400 mb-4">{product.description}</p>
             <ul className="text-gray-400 space-y-2">
               <li>• Premium quality fabric with excellent breathability</li>
               <li>• Machine washable for easy care</li>
@@ -289,30 +237,8 @@ const Product = ({ product }: { product: ProductProps}) => {
           </div>
         </div>
       </motion.div>
-
-      {/* Related Products */}
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
-        className="mt-16"
-      >
-        <h2 className="text-2xl font-bold text-white mb-8">You Might Also Like</h2>
-        {/* <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {relatedProducts.map((product, index) => (
-            <motion.div
-              key={product.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 + index * 0.1 }}
-            >
-              <ProductCard product={product} />
-            </motion.div>
-          ))}
-        </div> */}
-      </motion.div>
     </div>
-  );
-};
+  )
+}
 
-export default Product;
+export default Product

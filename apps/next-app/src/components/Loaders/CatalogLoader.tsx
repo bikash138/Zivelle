@@ -1,5 +1,5 @@
-import { Skeleton } from "@/components/ui/skeleton";
-import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from '@/components/ui/skeleton'
+import { Card, CardContent } from '@/components/ui/card'
 
 // Product Card Skeleton Component
 const ProductCardSkeleton = () => (
@@ -7,27 +7,27 @@ const ProductCardSkeleton = () => (
     <CardContent className="p-0">
       {/* Product Image */}
       <Skeleton className="w-full h-64 rounded-none" />
-      
+
       {/* Product Info */}
       <div className="p-4 space-y-3">
         {/* Brand */}
         <Skeleton className="h-4 w-16 bg-orange-100" />
-        
+
         {/* Product Title */}
         <Skeleton className="h-5 w-3/4" />
-        
+
         {/* Price Section */}
         <div className="flex items-center gap-2">
           <Skeleton className="h-6 w-20" />
           <Skeleton className="h-4 w-16" />
         </div>
-        
+
         {/* Add to Cart Button */}
         <Skeleton className="h-10 w-10 rounded-md ml-auto" />
       </div>
     </CardContent>
   </Card>
-);
+)
 
 // Desktop Sidebar Skeleton
 const SidebarSkeleton = () => (
@@ -37,12 +37,12 @@ const SidebarSkeleton = () => (
       <Skeleton className="h-5 w-5" />
       <Skeleton className="h-6 w-16" />
     </div>
-    
+
     {/* Search */}
     <div className="space-y-2">
       <Skeleton className="h-10 w-full rounded-lg" />
     </div>
-    
+
     {/* Categories */}
     <div className="space-y-4">
       <Skeleton className="h-6 w-24" />
@@ -56,7 +56,7 @@ const SidebarSkeleton = () => (
         ))}
       </div>
     </div>
-    
+
     {/* Price Range */}
     <div className="space-y-4">
       <Skeleton className="h-6 w-24" />
@@ -68,7 +68,7 @@ const SidebarSkeleton = () => (
         </div>
       </div>
     </div>
-    
+
     {/* Size */}
     <div className="space-y-4">
       <Skeleton className="h-6 w-12" />
@@ -79,23 +79,20 @@ const SidebarSkeleton = () => (
       </div>
     </div>
   </div>
-);
-
+)
 
 // Desktop Skeleton Loader
 const DesktopSkeletonLoader = () => (
   <div className="min-h-screen bg-gray-50">
-    
     <div className="container mx-auto">
       <div className="flex">
         {/* Sidebar */}
         <aside className="hidden lg:block border-r bg-white">
           <SidebarSkeleton />
         </aside>
-        
+
         {/* Main Content */}
         <main className="flex-1 p-6">
-          
           {/* Products Grid */}
           <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[...Array(6)].map((_, i) => (
@@ -106,15 +103,13 @@ const DesktopSkeletonLoader = () => (
       </div>
     </div>
   </div>
-);
+)
 
 // Mobile Skeleton Loader
 const MobileSkeletonLoader = () => (
   <div className="min-h-screen bg-gray-50">
-    
     <div className="container mx-auto px-4">
       <main className="py-6">
-        
         {/* Products Grid - Mobile */}
         <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
           {[...Array(4)].map((_, i) => (
@@ -124,7 +119,7 @@ const MobileSkeletonLoader = () => (
       </main>
     </div>
   </div>
-);
+)
 
 // Combined Responsive Skeleton Loader
 export const ResponsiveSkeletonLoader = () => (
@@ -133,10 +128,10 @@ export const ResponsiveSkeletonLoader = () => (
     <div className="hidden lg:block">
       <DesktopSkeletonLoader />
     </div>
-    
+
     {/* Mobile Version */}
     <div className="lg:hidden">
       <MobileSkeletonLoader />
     </div>
   </>
-);
+)
